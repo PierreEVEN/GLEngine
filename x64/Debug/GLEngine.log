@@ -1,0 +1,29 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: Le répertoire intermédiaire (x64\Debug\) contient des fichiers partagés provenant d'un autre projet (TestOpenGL.vcxproj). Cela peut entraîner un comportement de nettoyage et de régénération incorrect.
+world.obj : error LNK2019: symbole externe non résolu glfwTerminate référencé dans la fonction "public: __cdecl World::World(void)" (??0World@@QEAA@XZ)
+main.obj : error LNK2001: symbole externe non résolu glfwTerminate
+world.obj : error LNK2019: symbole externe non résolu glfwCreateWindow référencé dans la fonction "public: __cdecl World::World(void)" (??0World@@QEAA@XZ)
+world.obj : error LNK2019: symbole externe non résolu glfwSetWindowShouldClose référencé dans la fonction "public: void __cdecl World::processInput(void)" (?processInput@World@@QEAAXXZ)
+world.obj : error LNK2019: symbole externe non résolu glfwSetFramebufferSizeCallback référencé dans la fonction "public: __cdecl World::World(void)" (??0World@@QEAA@XZ)
+world.obj : error LNK2019: symbole externe non résolu glfwPollEvents référencé dans la fonction "private: void __cdecl World::UpdateWorld(double)" (?UpdateWorld@World@@AEAAXN@Z)
+world.obj : error LNK2019: symbole externe non résolu glfwSetInputMode référencé dans la fonction "public: __cdecl World::World(void)" (??0World@@QEAA@XZ)
+world.obj : error LNK2019: symbole externe non résolu glfwGetKey référencé dans la fonction "public: void __cdecl World::processInput(void)" (?processInput@World@@QEAAXXZ)
+world.obj : error LNK2019: symbole externe non résolu glfwSetCursorPosCallback référencé dans la fonction "public: __cdecl World::World(void)" (??0World@@QEAA@XZ)
+world.obj : error LNK2019: symbole externe non résolu glfwSetScrollCallback référencé dans la fonction "public: __cdecl World::World(void)" (??0World@@QEAA@XZ)
+world.obj : error LNK2019: symbole externe non résolu glfwMakeContextCurrent référencé dans la fonction "public: __cdecl World::World(void)" (??0World@@QEAA@XZ)
+world.obj : error LNK2019: symbole externe non résolu glfwSwapBuffers référencé dans la fonction "private: void __cdecl World::UpdateWorld(double)" (?UpdateWorld@World@@AEAAXN@Z)
+main.obj : error LNK2019: symbole externe non résolu glfwInit référencé dans la fonction main
+main.obj : error LNK2019: symbole externe non résolu glfwWindowHint référencé dans la fonction main
+main.obj : error LNK2019: symbole externe non résolu glfwWindowShouldClose référencé dans la fonction main
+main.obj : error LNK2019: symbole externe non résolu glfwGetTime référencé dans la fonction main
+main.obj : error LNK2019: symbole externe non résolu glfwGetProcAddress référencé dans la fonction main
+staticMesh.obj : error LNK2019: symbole externe non résolu "public: __cdecl Assimp::Importer::Importer(void)" (??0Importer@Assimp@@QEAA@XZ) référencé dans la fonction "public: void __cdecl StaticMesh::LoadData(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?LoadData@StaticMesh@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+staticMesh.obj : error LNK2019: symbole externe non résolu "public: __cdecl Assimp::Importer::~Importer(void)" (??1Importer@Assimp@@QEAA@XZ) référencé dans la fonction "public: void __cdecl StaticMesh::LoadData(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?LoadData@StaticMesh@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+staticMesh.obj : error LNK2019: symbole externe non résolu "public: struct aiScene const * __cdecl Assimp::Importer::ReadFile(char const *,unsigned int)" (?ReadFile@Importer@Assimp@@QEAAPEBUaiScene@@PEBDI@Z) référencé dans la fonction "public: struct aiScene const * __cdecl Assimp::Importer::ReadFile(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,unsigned int)" (?ReadFile@Importer@Assimp@@QEAAPEBUaiScene@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@I@Z)
+staticMesh.obj : error LNK2019: symbole externe non résolu "public: char const * __cdecl Assimp::Importer::GetErrorString(void)const " (?GetErrorString@Importer@Assimp@@QEBAPEBDXZ) référencé dans la fonction "public: void __cdecl StaticMesh::LoadData(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?LoadData@StaticMesh@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+E:\Dev\Cpp\GLEngine\GLEngine\Lib\glfw3\glfw3.lib : warning LNK4272: type d'ordinateur bibliothèque 'x86' en conflit avec le type d'ordinateur cible 'x64'
+E:\Dev\Cpp\GLEngine\GLEngine\Lib\assimp\assimp-vc141-mt.lib : warning LNK4272: type d'ordinateur bibliothèque 'x86' en conflit avec le type d'ordinateur cible 'x64'
+E:\Dev\Cpp\GLEngine\GLEngine\Lib\assimp\assimp-vc141-mtd.lib : warning LNK4272: type d'ordinateur bibliothèque 'x86' en conflit avec le type d'ordinateur cible 'x64'
+E:\Dev\Cpp\GLEngine\GLEngine\Lib\assimp\IrrXMLd.lib : warning LNK4272: type d'ordinateur bibliothèque 'x86' en conflit avec le type d'ordinateur cible 'x64'
+E:\Dev\Cpp\GLEngine\GLEngine\Lib\assimp\zlibd.lib : warning LNK4272: type d'ordinateur bibliothèque 'x86' en conflit avec le type d'ordinateur cible 'x64'
+E:\Dev\Cpp\GLEngine\GLEngine\Lib\assimp\zlibstaticd.lib : warning LNK4272: type d'ordinateur bibliothèque 'x86' en conflit avec le type d'ordinateur cible 'x64'
+E:\Dev\Cpp\GLEngine\x64\Debug\GLEngine.exe : fatal error LNK1120: 20 externes non résolus
