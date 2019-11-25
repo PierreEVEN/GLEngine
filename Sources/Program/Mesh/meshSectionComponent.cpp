@@ -19,10 +19,7 @@ void MeshSectionComponent::BuildMesh()
 	// A great thing about structs is that their memory layout is sequential for all its items.
 	// The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
 	// again translates to 3/2 floats which translates to a byte array.
-
-	std::cout << staticMeshSection->sectionVertices.size() << std::endl;
-	std::cout << staticMeshSection->sectionIndices.size() << std::endl;
-
+	
 	glBufferData(GL_ARRAY_BUFFER, staticMeshSection->sectionVertices.size() * sizeof(Vertex), &staticMeshSection->sectionVertices[0], GL_STATIC_DRAW);
 
 	if (staticMeshSection->sectionIndices.size() > 0)
@@ -61,10 +58,6 @@ MeshSectionComponent::MeshSectionComponent(World* inWorld, StaticMeshSection* in
 	if (inStaticMeshSection)
 	{
 		BuildMesh();
-	}
-	else
-	{
-		std::cout << "FAILED to load mesh" << std::endl;
 	}
 }
 

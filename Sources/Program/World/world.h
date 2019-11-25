@@ -46,7 +46,7 @@ class World
 
 public:
 
-	World();
+	World(std::string worldName);
 	~World();
 
 	GLFWwindow* GetWindow() const { return window; }

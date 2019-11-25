@@ -1,5 +1,7 @@
-#include <string>
+
+
 #include <glm/gtx/matrix_decompose.hpp>
+#include "../Asset/asset.h"
 #include <vector>
 
 class Material;
@@ -29,7 +31,7 @@ struct StaticMeshSection
 	Material* material;
 };
 
-class StaticMesh
+class StaticMesh : public Asset
 {
 public:
 
@@ -37,9 +39,12 @@ public:
 	std::vector<StaticMeshSection> meshSections;
 	std::vector<Material*> usedMaterial;
 
+	StaticMesh(std::string dataAssetPath) : Asset(dataAssetPath) {}
 	StaticMesh(std::string newDataPath, std::vector<Material*> newUsedMaterials);
 
 	void LoadData(std::string path);
 	void processNode(aiNode *node, const aiScene *scene);
 	StaticMeshSection processMesh(aiMesh *mesh, const aiScene *scene, unsigned int meshIndex);
+
+	virtual void Parse(const Document& data) override;
 };

@@ -1,0 +1,5 @@
+{ 
+	"AssetName" : "GridMaterial",
+	"VertexShaderPath" : "GLEngine/Sources/Shaders/Default/defaultGridVertexShader.vs",
+	"FragmentShaderPath" : "GLEngine/Sources/Shaders/Default/defaultGridVertexShader.fs"
+}

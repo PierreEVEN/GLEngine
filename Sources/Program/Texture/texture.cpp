@@ -3,14 +3,14 @@
 #include "../ThirdParty/stb_image.h"
 #include <glad/glad.h>
 
-Texture2D::Texture2D(std::string texturePath)
+void Texture2D::LoadFromPath(std::string textAssetPath)
 {
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char *data = stbi_load(texturePath.data(), &width, &height, &nrChannels, 0);
+	unsigned char *data = stbi_load(textAssetPath.data(), &width, &height, &nrChannels, 0);
 	if (!data)
 	{
-		std::cout << "Failed to load texture " << texturePath << std::endl;
+		std::cout << "Failed to load texture " << textAssetPath << std::endl;
 		return;
 	}
 
@@ -38,4 +38,20 @@ Texture2D::Texture2D(std::string texturePath)
 	// load image, create texture and generate mipmaps
 
 	stbi_image_free(data);
+}
+
+Texture2D::Texture2D(std::string texturePath, bool bIsDynamic)
+	: Asset()
+{
+	textureDataPath = texturePath;
+	LoadFromPath(texturePath);
+}
+
+void Texture2D::Parse(const Document& data)
+{
+	Asset::Parse(data);
+	assert(data.HasMember("TextureDataPath"));
+	assert(data["TextureDataPath"].IsString());
+	textureDataPath = data["TextureDataPath"].GetString();
+	LoadFromPath(textureDataPath);
 }

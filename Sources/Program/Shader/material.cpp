@@ -3,6 +3,13 @@
 
 Material::Material(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures)
 {
+	Load(vertexShaderPath, fragmentShaderPath, newTextures);
+}
+
+
+
+void Material::Load(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures)
+{
 	ShaderLoader* compiler = new ShaderLoader(vertexShaderPath, fragmentShaderPath);
 	ShaderID = compiler->Get();
 	textures = newTextures;
@@ -84,4 +91,18 @@ void Material::setMat3(const std::string &name, const glm::mat3 &mat) const
 void Material::setMat4(const std::string &name, const glm::mat4 &mat) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+void Material::Parse(const Document& data)
+{
+	Asset::Parse(data);
+	assert(data.HasMember("VertexShaderPath"));
+	assert(data["VertexShaderPath"].IsString());
+	vertexShaderPath = data["VertexShaderPath"].GetString();
+
+	assert(data.HasMember("FragmentShaderPath"));
+	assert(data["FragmentShaderPath"].IsString());
+	fragmentShaderPath = data["FragmentShaderPath"].GetString();
+
+	Load(vertexShaderPath.data(), fragmentShaderPath.data(), {});
 }

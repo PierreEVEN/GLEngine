@@ -31,7 +31,7 @@ ShaderLoader::ShaderLoader(const char* vertexShaderPath, const char* fragmentSha
 	}
 	catch (std::ifstream::failure e)
 	{
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ : '" << vertexShaderPath << "' | '" << fragmentShaderPath << "'" << std::endl;
 	}
 }
 

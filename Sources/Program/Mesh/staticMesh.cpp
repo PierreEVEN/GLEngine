@@ -114,3 +114,12 @@ StaticMeshSection StaticMesh::processMesh(aiMesh *mesh, const aiScene *scene, un
 	}
 	return StaticMeshSection(vertices, indices, sectionMaterial);
 }
+
+void StaticMesh::Parse(const Document& data)
+{
+	Asset::Parse(data);
+	assert(data.HasMember("MeshObjectPath"));
+	assert(data["MeshObjectPath"].IsString());
+	dataPath = data["MeshObjectPath"].GetString();
+	LoadData(dataPath);
+}

@@ -12,11 +12,12 @@
 
 std::vector<World*> GWorlds;
 
-World::World()
+World::World(std::string worldName)
 {
 	GWorlds.push_back(this);
 	worldDeltaSecond = 0.0;
-	window = glfwCreateWindow(screenWidth, screenHeight, "World", NULL, NULL);
+	std::string viewportName = std::string("GLEngine 0.1 - ") + worldName;
+	window = glfwCreateWindow(screenWidth, screenHeight, viewportName.data(), NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;

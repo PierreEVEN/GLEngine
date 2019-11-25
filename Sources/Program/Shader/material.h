@@ -10,17 +10,25 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "../Texture/texture.h"
+#include "../Asset/asset.h"
 
-class Material
+class Material : public Asset
 {
 public:
 
 	unsigned int ShaderID;
 
+	std::string vertexShaderPath;
+	std::string fragmentShaderPath;
 	std::vector<Texture2D*> textures;
 
+	Material(std::string textAssetPath) : Asset(textAssetPath) { }
 	Material(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures);
-	
+
+	void Load(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures);
+
+	virtual void Parse(const Document& data) override;
+
 	void use() const;
 
 	void setBool(const std::string &name, bool value) const;

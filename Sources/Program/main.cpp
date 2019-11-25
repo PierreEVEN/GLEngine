@@ -19,13 +19,14 @@
 #include "Mesh/meshSectionComponent.h"
 #include "Lighting/pointLight.h"
 #include "Mesh/staticMeshComponent.h"
-
-StaticMesh* GLobalMesh;
+#include "Asset/assetLibrary.h"
 
 double DeltaSecond;
 
 int main()
 {
+
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -38,60 +39,60 @@ int main()
 	double LastTime = 0.0;
 	double MaxFPS = 60.0;
 
-
 	/************************************************************************/
-	/* GLFW window creation                                                 */
+	/* World initialization                                                 */
 	/************************************************************************/
 
-	World* WorldOne = new World();
+	World* WorldOne = new World("Main");
 
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
+	assert(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress));
+
+	AssetLibrary::LoadLibraryFiles("GLEngine/Sources/Assets");
 
 	/************************************************************************/
 	/* Textures building / compilation                                      */
 	/************************************************************************/
 
-	Texture2D* defaultTexture_A = new Texture2D("GLEngine/Sources/Ressources/metal_plate_diff_1k.jpg");
-	Texture2D* defaultTexture_S = new Texture2D("GLEngine/Sources/Ressources/TexturesCom_MetalBare0234_1_seamless_S.jpg");
-	Texture2D* texture2 = new Texture2D("GLEngine/Sources/Ressources/metal_plate_diff_1k.jpg");
+	Texture2D* defaultGridTexture = new Texture2D("GLEngine/Sources/Ressources/Textures/defaultGrid.png", true);
+	Texture2D* defaultTexture_A = new Texture2D("GLEngine/Sources/Ressources/Textures/metal_plate_diff_1k.jpg", true);
+	Texture2D* defaultTexture_S = new Texture2D("GLEngine/Sources/Ressources/Textures/TexturesCom_MetalBare0234_1_seamless_S.jpg", true);
+	Texture2D* texture2 = new Texture2D("GLEngine/Sources/Ressources/Textures/metal_plate_diff_1k.jpg", true);
+
 
 	/************************************************************************/
 	/* Shaders building / compilation                                       */
 	/************************************************************************/
 
-	Material* defaultMaterial = new Material("GLEngine/Sources/Shaders/defaultVertexShader.vs", "GLEngine/Sources/Shaders/defaultFragmentShaderss.fs", { defaultTexture_S });
-	Material* secondMaterial = new Material("GLEngine/Sources/Shaders/defaultVertexShader.vs", "GLEngine/Sources/Shaders/defaultFragmentShaderss.fs", { texture2 });
+	Texture2D* testVal = dynamic_cast<Texture2D*>(AssetLibrary::FindAssetByName("GridTexture"));
 
-	Material* lampShaders = new Material("GLEngine/Sources/Shaders/defaultVertexShader.vs", "GLEngine/Sources/Shaders/lampFragmentShaders.fs", { texture2 });
+
+
+	Material* defaultGridMaterial = new Material("GLEngine/Sources/Shaders/Default/defaultGridVertexShader.vs", "GLEngine/Sources/Shaders/Default/defaultGridFragmentShader.fs", { testVal });
+	Material* secondMaterial = new Material("GLEngine/Sources/Shaders/defaultVertexShader.vs", "GLEngine/Sources/Shaders/defaultFragmentShaderss.fs", { defaultTexture_A });
+	Material* lampShaders = new Material("GLEngine/Sources/Shaders/defaultVertexShader.vs", "GLEngine/Sources/Shaders/lampFragmentShaders.fs", { defaultTexture_A });
 
 	/************************************************************************/
 	/* Mesh loading                                                         */
 	/************************************************************************/
 
-	StaticMesh* cubeMesh = new StaticMesh("GLEngine/Sources/Ressources/TransporterBasic.obj", { defaultMaterial });
-	StaticMesh* cubeMesh2 = new StaticMesh("GLEngine/Sources/Ressources/cube.obj", { secondMaterial });
-	StaticMesh* lightBuble = new StaticMesh("GLEngine/Sources/Ressources/LightBuble.obj", { lampShaders });
 
+	StaticMesh* cubeMesh = new StaticMesh("GLEngine/Sources/Ressources/Mesh/cube.obj", { defaultGridMaterial });
+	StaticMesh* lightBulbMesh = new StaticMesh("GLEngine/Sources/Ressources/Mesh/LightBulb.obj", { secondMaterial });
+	StaticMesh* transporterMesh = new StaticMesh("GLEngine/Sources/Ressources/Mesh/Transporter.obj", { lampShaders });
 
+	/************************************************************************/
+	/* World generation                                                     */
+	/************************************************************************/
 
-
-	MeshSectionComponent* Comp0 = new MeshSectionComponent(WorldOne, &cubeMesh->meshSections[0]);
+	StaticMeshComponent* Comp0 = new StaticMeshComponent(WorldOne, cubeMesh);
 	Comp0->SetLocation(glm::vec3(0,-3.7, 0));
 	Comp0->SetScale3D(glm::vec3(2.f));
-
-	MeshSectionComponent* Comp1 = new MeshSectionComponent(WorldOne, &cubeMesh2->meshSections[0]);
+	StaticMeshComponent* Comp1 = new StaticMeshComponent(WorldOne, cubeMesh);
 	Comp1->SetLocation(glm::vec3(3, -3.2, 5));
-
-	MeshSectionComponent* Comp2 = new MeshSectionComponent(WorldOne, &cubeMesh2->meshSections[0]);
+	StaticMeshComponent* Comp2 = new StaticMeshComponent(WorldOne, cubeMesh);
 	Comp2->SetLocation(glm::vec3(0, -4.2, 0));
 	Comp2->SetScale3D(glm::vec3(200.f, 0.1f, 200.f));
-
-	StaticMeshComponent* LightBubleMesh = new StaticMeshComponent(WorldOne, lightBuble);
-
+	StaticMeshComponent* LightBubleMesh = new StaticMeshComponent(WorldOne, lightBulbMesh);
 
 	PointLight* Light = new PointLight(WorldOne);
 
@@ -119,9 +120,9 @@ int main()
 
 		// light properties
 		glm::vec3 lightColor = glm::vec3(1.f);
-		lightColor.x = sin(glfwGetTime() * 2.f) / 10.f + .75f;
-		lightColor.y = sin(glfwGetTime() * 2.f) / 10.f + .75f;
-		lightColor.z = sin(glfwGetTime() * 2.f) / 10.f + .75f;
+		lightColor.x = sin((float)glfwGetTime() * 2.f) / 10.f + .75f;
+		lightColor.y = sin((float)glfwGetTime() * 2.f) / 10.f + .75f;
+		lightColor.z = sin((float)glfwGetTime() * 2.f) / 10.f + .75f;
 
 		lampShaders->setVec3("lightColor", lightColor);
 
@@ -142,43 +143,43 @@ int main()
 
 
 
-		defaultMaterial->use();
-		defaultMaterial->setVec3("light.position", Light->GetLocation());
-		defaultMaterial->setVec3("viewPos", WorldOne->GetCamera()->GetCameraLocation());
+		defaultGridMaterial->use();
+		defaultGridMaterial->setVec3("light.position", Light->GetLocation());
+		defaultGridMaterial->setVec3("viewPos", WorldOne->GetCamera()->GetCameraLocation());
 
 		// light properties
 
 		diffuseColor = lightColor * glm::vec3(5.f); // decrease the influence
 		ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
-		defaultMaterial->setVec3("light.ambient", ambientColor);
-		defaultMaterial->setVec3("light.diffuse", diffuseColor);
-		defaultMaterial->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+		defaultGridMaterial->setVec3("light.ambient", ambientColor);
+		defaultGridMaterial->setVec3("light.diffuse", diffuseColor);
+		defaultGridMaterial->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
 		// material properties
-		defaultMaterial->setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-		defaultMaterial->setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-		defaultMaterial->setVec3("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
-		defaultMaterial->setFloat("material.shininess", 32.0f);
+		defaultGridMaterial->setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+		defaultGridMaterial->setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+		defaultGridMaterial->setVec3("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
+		defaultGridMaterial->setFloat("material.shininess", 32.0f);
 
 
 		World::UpdateWorlds(DeltaSecond);
 
-		defaultMaterial->setVec3("light.position", Light->GetLocation());
-		defaultMaterial->setVec3("viewPos", WorldOne->GetCamera()->GetCameraLocation());
+		defaultGridMaterial->setVec3("light.position", Light->GetLocation());
+		defaultGridMaterial->setVec3("viewPos", WorldOne->GetCamera()->GetCameraLocation());
 
 		// light properties
 
 		diffuseColor = lightColor * glm::vec3(5.f); // decrease the influence
 		ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
-		defaultMaterial->setVec3("light.ambient", ambientColor);
-		defaultMaterial->setVec3("light.diffuse", diffuseColor);
-		defaultMaterial->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+		defaultGridMaterial->setVec3("light.ambient", ambientColor);
+		defaultGridMaterial->setVec3("light.diffuse", diffuseColor);
+		defaultGridMaterial->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
 		// material properties
-		defaultMaterial->setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-		defaultMaterial->setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-		defaultMaterial->setVec3("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
-		defaultMaterial->setFloat("material.shininess", 32.0f);
+		defaultGridMaterial->setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+		defaultGridMaterial->setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+		defaultGridMaterial->setVec3("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
+		defaultGridMaterial->setFloat("material.shininess", 32.0f);
 
 
 	}
