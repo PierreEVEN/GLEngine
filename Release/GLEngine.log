@@ -1,2 +1,0 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: Le répertoire intermédiaire (Release\) contient des fichiers partagés provenant d'un autre projet (TestOpenGL.vcxproj). Cela peut entraîner un comportement de nettoyage et de régénération incorrect.
-  GLEngine.vcxproj -> E:\Dev\Cpp\GLEngine\Release\GLEngine.exe
