@@ -43,11 +43,13 @@ void AssetLibrary::LoadLibraryFiles(std::string RootFolder)
 {
 	std::vector<std::string> filesToLoad = CollectFilesUnderFolder(RootFolder);
 
+	Asset* newAsset = nullptr;
+
 	for (auto& filePath : filesToLoad)
 	{
 		if (CheckExtension(filePath, ".TextAsset"))
 		{
-			AssetRegistry.push_back(new Texture2D(filePath));
+			newAsset = new Texture2D(filePath);
 		}
 	}
 
@@ -55,14 +57,14 @@ void AssetLibrary::LoadLibraryFiles(std::string RootFolder)
 	{
 		if (CheckExtension(filePath, ".MatAsset"))
 		{
-			AssetRegistry.push_back(new Material(filePath));
+			newAsset = new Material(filePath);
 		}
 	}
 	for (auto& filePath : filesToLoad)
 	{
 		if (CheckExtension(filePath, ".SMAsset"))
 		{
-			AssetRegistry.push_back(new StaticMesh(filePath));
+			newAsset = new StaticMesh(filePath);
 		}
 	}
 	for (auto& filePath : filesToLoad)
@@ -71,6 +73,11 @@ void AssetLibrary::LoadLibraryFiles(std::string RootFolder)
 		{
 
 		}
+	}
+	if (newAsset)
+	{
+		newAsset->LoadAsset();
+		AssetRegistry.push_back(newAsset);
 	}
 }
 

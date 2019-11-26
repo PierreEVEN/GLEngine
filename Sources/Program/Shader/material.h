@@ -23,6 +23,7 @@ public:
 	std::vector<Texture2D*> textures;
 
 	Material(std::string textAssetPath) : Asset(textAssetPath) { }
+
 	Material(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures);
 
 	void Load(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures);

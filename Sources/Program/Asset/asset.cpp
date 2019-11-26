@@ -16,7 +16,30 @@ Asset::Asset()
 Asset::Asset(std::string inAssetPath)
 {
 	assetPath = inAssetPath;
-	std::cout << "LOAD : " << inAssetPath << std::endl;
+}
+
+void Asset::Parse(const Document& data)
+{
+	assert(data.IsObject());
+	assert(data.HasMember("AssetName"));
+	assert(data["AssetName"].IsString());
+	assetName = data["AssetName"].GetString();
+
+	assert(data.IsObject());
+	assert(data.HasMember("AssetName"));
+	assert(data["AssetName"].IsString());
+	assetName = data["AssetName"].GetString();
+	std::cout << "Parse base : " << std::endl;
+}
+
+void Asset::Serialize()
+{
+
+}
+
+void Asset::LoadAsset()
+{
+	std::cout << "LOAD : " << assetPath << std::endl;
 	std::string jSon;
 	std::string line;
 	std::ifstream myfile(assetPath);
@@ -32,18 +55,5 @@ Asset::Asset(std::string inAssetPath)
 	Document document;
 	document.Parse(jSon.data());
 	Parse(document);
-}
-
-void Asset::Parse(const Document& data)
-{
-	assert(data.IsObject());
-	assert(data.HasMember("AssetName"));
-	assert(data["AssetName"].IsString());
-	assetName = data["AssetName"].GetString();
-}
-
-void Asset::Serialize()
-{
-
 }
 

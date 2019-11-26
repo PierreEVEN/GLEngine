@@ -21,6 +21,8 @@ public:
 	virtual void Parse(const Document& data);
 	virtual void Serialize();
 
+	void LoadAsset();
+
 	std::string GetName() const { return assetName; }
 };
 #endif

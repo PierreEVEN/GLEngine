@@ -58,13 +58,11 @@ int main()
 	Texture2D* defaultTexture_S = new Texture2D("GLEngine/Sources/Ressources/Textures/TexturesCom_MetalBare0234_1_seamless_S.jpg", true);
 	Texture2D* texture2 = new Texture2D("GLEngine/Sources/Ressources/Textures/metal_plate_diff_1k.jpg", true);
 
-
 	/************************************************************************/
 	/* Shaders building / compilation                                       */
 	/************************************************************************/
 
 	Texture2D* testVal = dynamic_cast<Texture2D*>(AssetLibrary::FindAssetByName("GridTexture"));
-
 
 
 	Material* defaultGridMaterial = new Material("GLEngine/Sources/Shaders/Default/defaultGridVertexShader.vs", "GLEngine/Sources/Shaders/Default/defaultGridFragmentShader.fs", { testVal });

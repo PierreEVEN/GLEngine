@@ -5,6 +5,7 @@
 #include <vector>
 #include <glm/fwd.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <string>
 
 class Camera;
 struct GLFWwindow;
