@@ -30,24 +30,26 @@ void main()
     float Specular = pow(max(dot(viewDir, reflectDir), 0.0), 5.f);
 
 
+    vec2 CoordinatesOffset = vec2(-1.f, 1.f);
+
     if (CameraDistance < 100)
     {
       if (abs(NormalizedNormal.y) > .5f)
       {
-          FragColor = texture(material.diffuse, FragPos.xz / ScaleMultiplier);
+          FragColor = texture(material.diffuse, FragPos.xz / ScaleMultiplier * CoordinatesOffset);
       }
       else if (abs(NormalizedNormal.x) > .5f)
       {
-          FragColor = texture(material.diffuse, FragPos.yz / ScaleMultiplier) * vec4(0.8f, 0.8f, 1.f, 0.f);
+          FragColor = texture(material.diffuse, FragPos.yz / ScaleMultiplier * CoordinatesOffset) * vec4(0.8f, 0.8f, 1.f, 0.f);
       }
       else
       {
-          FragColor = texture(material.diffuse, FragPos.xy / ScaleMultiplier) * vec4(1.f, 0.8f, .8f, 0.f);
+          FragColor = texture(material.diffuse, FragPos.xy / ScaleMultiplier * CoordinatesOffset) * vec4(1.f, 0.8f, .8f, 0.f);
       }
     }
     else
     {
-        FragColor = texture(material.diffuse, TexCoords);
+        FragColor = texture(material.diffuse, TexCoords * CoordinatesOffset);
     }
 
 

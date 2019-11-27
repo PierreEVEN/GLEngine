@@ -4,6 +4,7 @@
 #include "../Texture/texture.h"
 #include "../Shader/material.h"
 #include "../Mesh/staticMesh.h"
+#include "../World/worldAsset.h"
 
 
 std::vector<Asset*> AssetRegistry;
@@ -59,6 +60,13 @@ void AssetLibrary::LoadLibraryFiles(std::string RootFolder)
 		if (CheckExtension(filePath, ".SMAsset"))
 		{
 			AssetRegistry.push_back(LoadAsset<StaticMesh>(filePath));
+		}
+	}
+	for (auto& filePath : filesToLoad)
+	{
+		if (CheckExtension(filePath, ".WorldAsset"))
+		{
+			AssetRegistry.push_back(LoadAsset<WorldAsset>(filePath));
 		}
 	}
 }
