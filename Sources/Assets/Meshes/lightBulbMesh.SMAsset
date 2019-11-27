@@ -1,0 +1,5 @@
+{
+	"AssetName" : "LightBulbMesh",
+	"MeshObjectPath" : "GLEngine/Sources/Ressources/Mesh/LightBulb.obj",
+	"Materials" : [ "GridMaterial" ]
+}

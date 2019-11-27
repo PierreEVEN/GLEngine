@@ -11,15 +11,12 @@ std::vector<Asset*> AssetRegistry;
 
 std::vector<std::string> AssetLibrary::CollectFilesUnderFolder(std::string folder)
 {
-	std::vector<std::string> names;
+	std::vector<std::string> names = {};
 	std::string search_path = folder + "/*.*";
 	WIN32_FIND_DATA fd;
 	HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
-			// read all (real) files in current folder
-			// , delete '!' read other 2 default folder . and ..
-
 			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 				names.push_back(folder + "/" + fd.cFileName);
 			}
@@ -29,7 +26,7 @@ std::vector<std::string> AssetLibrary::CollectFilesUnderFolder(std::string folde
 				{
 					for (auto& subFolder : CollectFilesUnderFolder(folder + "/" + fd.cFileName))
 					{
-						names.push_back(folder + "/" + subFolder);
+						names.push_back(subFolder);
 					}
 				}
 			}
@@ -43,41 +40,26 @@ void AssetLibrary::LoadLibraryFiles(std::string RootFolder)
 {
 	std::vector<std::string> filesToLoad = CollectFilesUnderFolder(RootFolder);
 
-	Asset* newAsset = nullptr;
-
 	for (auto& filePath : filesToLoad)
 	{
 		if (CheckExtension(filePath, ".TextAsset"))
 		{
-			newAsset = new Texture2D(filePath);
+			AssetRegistry.push_back(LoadAsset<Texture2D>(filePath));
 		}
 	}
-
 	for (auto& filePath : filesToLoad)
 	{
 		if (CheckExtension(filePath, ".MatAsset"))
 		{
-			newAsset = new Material(filePath);
+			AssetRegistry.push_back(LoadAsset<Material>(filePath));
 		}
 	}
 	for (auto& filePath : filesToLoad)
 	{
 		if (CheckExtension(filePath, ".SMAsset"))
 		{
-			newAsset = new StaticMesh(filePath);
+			AssetRegistry.push_back(LoadAsset<StaticMesh>(filePath));
 		}
-	}
-	for (auto& filePath : filesToLoad)
-	{
-		if (CheckExtension(filePath, ".World"))
-		{
-
-		}
-	}
-	if (newAsset)
-	{
-		newAsset->LoadAsset();
-		AssetRegistry.push_back(newAsset);
 	}
 }
 
@@ -94,14 +76,4 @@ bool AssetLibrary::CheckExtension(const std::string& filePath, const std::string
 	return false;
 }
 
-Asset* AssetLibrary::FindAssetByName(std::string AssetName)
-{
-	for (auto& asset : AssetRegistry)
-	{
-		if (asset->GetName() == AssetName)
-		{
-			return asset;
-		}
-	}
-	return nullptr;
-}
+std::vector<Asset*> AssetLibrary::GetAssetRegistry() { return AssetRegistry; }

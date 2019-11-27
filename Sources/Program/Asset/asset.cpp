@@ -29,17 +29,12 @@ void Asset::Parse(const Document& data)
 	assert(data.HasMember("AssetName"));
 	assert(data["AssetName"].IsString());
 	assetName = data["AssetName"].GetString();
-	std::cout << "Parse base : " << std::endl;
 }
 
-void Asset::Serialize()
-{
-
-}
+void Asset::Serialize() { }
 
 void Asset::LoadAsset()
 {
-	std::cout << "LOAD : " << assetPath << std::endl;
 	std::string jSon;
 	std::string line;
 	std::ifstream myfile(assetPath);
@@ -51,6 +46,12 @@ void Asset::LoadAsset()
 		}
 		myfile.close();
 	}
+	else
+	{
+		std::cout << "FAILED TO LOAD : " << assetPath << std::endl;
+		return;
+	}
+	std::cout << "LOAD : " << assetPath << std::endl;
 
 	Document document;
 	document.Parse(jSon.data());

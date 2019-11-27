@@ -4,6 +4,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <iostream>
+#include "../Asset/assetLibrary.h"
+#include "../Shader/material.h"
 
 StaticMesh::StaticMesh(std::string newDataPath, std::vector<Material*> newUsedMaterials)
 {
@@ -28,18 +30,21 @@ void StaticMesh::LoadData(std::string path)
 
 void StaticMesh::processNode(aiNode *node, const aiScene *scene)
 {
+	if (!node) return;
 	// process each mesh located at the current node
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		// the node object only contains indices to index the actual objects in the scene. 
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
-		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshSections.push_back(processMesh(mesh, scene, i));
+		if (aiMesh* mesh = scene->mMeshes[node->mMeshes[i]])
+		{
+			meshSections.push_back(processMesh(mesh, scene, i));
+		}
 	}
 	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
 	{
-		processNode(node->mChildren[i], scene);
+			processNode(node->mChildren[i], scene);
 	}
 }
 
@@ -52,6 +57,7 @@ StaticMeshSection StaticMesh::processMesh(aiMesh *mesh, const aiScene *scene, un
 	// Walk through each of the mesh's vertices
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
+
 		Vertex vertex;
 		glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
 		// positions
@@ -60,10 +66,17 @@ StaticMeshSection StaticMesh::processMesh(aiMesh *mesh, const aiScene *scene, un
 		vector.z = mesh->mVertices[i].z;
 		vertex.Position = vector;
 		// normals
-		vector.x = mesh->mNormals[i].x;
-		vector.y = mesh->mNormals[i].y;
-		vector.z = mesh->mNormals[i].z;
-		vertex.Normal = vector;
+		if (mesh->HasNormals())
+		{
+			vector.x = mesh->mNormals[i].x;
+			vector.y = mesh->mNormals[i].y;
+			vector.z = mesh->mNormals[i].z;
+			vertex.Normal = vector;
+		}
+		else
+		{
+			vertex.Normal = glm::vec3(0.f, 0.f, 1.f);
+		}
 		// texture coordinates
 		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
 		{
@@ -75,7 +88,9 @@ StaticMeshSection StaticMesh::processMesh(aiMesh *mesh, const aiScene *scene, un
 			vertex.TexCoords = vec;
 		}
 		else
+		{
 			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		}
 		// tangent
 		vector.x = mesh->mTangents ? mesh->mTangents[i].x : 0.f;
 		vector.y = mesh->mTangents ? mesh->mTangents[i].y : 0.f;
@@ -88,6 +103,7 @@ StaticMeshSection StaticMesh::processMesh(aiMesh *mesh, const aiScene *scene, un
 		vertex.Bitangent = vector;
 		vertices.push_back(vertex);
 	}
+
 	// now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 	{
@@ -121,5 +137,31 @@ void StaticMesh::Parse(const Document& data)
 	assert(data.HasMember("MeshObjectPath"));
 	assert(data["MeshObjectPath"].IsString());
 	dataPath = data["MeshObjectPath"].GetString();
+
+	Asset::Parse(data);
+	assert(data.HasMember("MeshObjectPath"));
+	assert(data["MeshObjectPath"].IsString());
+	dataPath = data["MeshObjectPath"].GetString();
+
+	usedMaterial = {};
+	if (data.HasMember("Materials"))
+	{
+		const Value& textureData = data["Materials"];
+		assert(textureData.IsArray());
+		for (SizeType textureIndex = 0; textureIndex < textureData.Size(); textureIndex++)
+		{
+			assert(textureData[textureIndex].IsString());
+
+			if (Material* texture2DAsset = AssetLibrary::FindAssetByName<Material>(textureData[textureIndex].GetString()))
+			{
+				usedMaterial.push_back(texture2DAsset);
+			}
+			else
+			{
+				std::cout << textureData[textureIndex].GetString() << " is not a valid material file" << std::endl;
+			}
+		}
+	}
+
 	LoadData(dataPath);
 }

@@ -1,0 +1,5 @@
+{
+	"AssetName" : "CampusMesh",
+	"MeshObjectPath" : "GLEngine/Sources/Ressources/Mesh/CampusV3.obj",
+	"Materials" : [ "GridMaterial" ]
+}

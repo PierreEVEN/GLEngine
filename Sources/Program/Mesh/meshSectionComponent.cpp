@@ -71,7 +71,7 @@ void MeshSectionComponent::MarkRenderStateDirty()
 {
 	if (staticMeshSection->material)
 	{
-		staticMeshSection->material->use();
+		staticMeshSection->material->use(GetWorld());
 
 		glm::mat4 model = glm::mat4(1.0f); 
 		model = glm::translate(model, location);

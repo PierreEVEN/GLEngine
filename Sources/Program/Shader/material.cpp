@@ -2,15 +2,17 @@
 #include "shaderLoader.h"
 #include "../Asset/assetLibrary.h"
 #include "../Texture/texture.h"
+#include "../World/world.h"
+#include "../Camera/camera.h"
 
 Material::Material(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures)
 {
-	Load(vertexShaderPath, fragmentShaderPath, newTextures);
+	InitializeShader(vertexShaderPath, fragmentShaderPath, newTextures);
 }
 
 
 
-void Material::Load(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures)
+void Material::InitializeShader(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures)
 {
 	ShaderLoader* compiler = new ShaderLoader(vertexShaderPath, fragmentShaderPath);
 	ShaderID = compiler->Get();
@@ -25,20 +27,28 @@ void Material::Load(const char* vertexShaderPath, const char* fragmentShaderPath
 	}
 }
 
-void Material::use() const
+void Material::use(World* OwningWorld) const
 {
+	glUseProgram(ShaderID);
+
+
+	glUniform3f(glGetUniformLocation(ShaderID, "CameraPosition"), OwningWorld->GetCamera()->GetCameraLocation()[0], OwningWorld->GetCamera()->GetCameraLocation()[1], OwningWorld->GetCamera()->GetCameraLocation()[2]);
+
+	glUniform3f(glGetUniformLocation(ShaderID, "LightDirection"), .5, -.5, .5);
+
+
 	std::string name = "texture";
 	for (unsigned int textureIndex = 0; textureIndex < textures.size(); ++textureIndex)
 	{
 
 		if (textures[textureIndex])
 		{
+
 			glUniform1i(glGetUniformLocation(ShaderID, (name + std::to_string(textureIndex)).c_str()), textureIndex);
 			glBindTexture(GL_TEXTURE_2D, textures[textureIndex]->GetTextureID());
 		}
 	}
 
-	glUseProgram(ShaderID);
 }
 
 void Material::setBool(const std::string &name, bool value) const
@@ -103,7 +113,6 @@ void Material::setMat4(const std::string &name, const glm::mat4 &mat) const
 
 void Material::Parse(const Document& data)
 {
-	std::cout << "Parse 0" << std::endl;
 	Asset::Parse(data);
 	assert(data.HasMember("VertexShaderPath"));
 	assert(data["VertexShaderPath"].IsString());
@@ -113,22 +122,16 @@ void Material::Parse(const Document& data)
 	assert(data["FragmentShaderPath"].IsString());
 	fragmentShaderPath = data["FragmentShaderPath"].GetString();
 
-	std::cout << "Load texture 0" << std::endl;
-	Load(vertexShaderPath.data(), fragmentShaderPath.data(), {});
-
+	textures = {};
 	if (data.HasMember("Textures"))
 	{
-		std::cout << "Load texture 1" << std::endl;
 		const Value& textureData = data["Textures"];
 		assert(textureData.IsArray());
 		for (SizeType textureIndex = 0; textureIndex < textureData.Size(); textureIndex++)
 		{
-			std::cout << "Load texture 2" << std::endl;
 			assert(textureData[textureIndex].IsString());
-			Asset* textureAsset = AssetLibrary::FindAssetByName(textureData[textureIndex].GetString());
-			if (Texture2D* texture2DAsset = dynamic_cast<Texture2D*>(textureAsset))
+			if (Texture2D* texture2DAsset = AssetLibrary::FindAssetByName<Texture2D>(textureData[textureIndex].GetString()))
 			{
-				std::cout << "Load texture " << textureData[textureIndex].GetString() << std::endl;
 				textures.push_back(texture2DAsset);
 			}
 			else
@@ -137,4 +140,5 @@ void Material::Parse(const Document& data)
 			}
 		}
 	}
+	InitializeShader(vertexShaderPath.data(), fragmentShaderPath.data(), textures);
 }

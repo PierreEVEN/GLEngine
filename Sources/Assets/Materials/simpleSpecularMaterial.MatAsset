@@ -1,0 +1,6 @@
+{
+	"AssetName" : "SimpleSpecularMaterial",
+	"VertexShaderPath" : "GLEngine/Sources/Shaders/specularFragmentShader.vs",
+	"FragmentShaderPath" : "GLEngine/Sources/Shaders/specularFragmentShader.fs",
+	"Textures" : [ "MetalPlateTexture" ]
+}

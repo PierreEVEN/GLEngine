@@ -17,6 +17,8 @@ public:
 
 	virtual void MarkRenderStateDirty() override;
 
+	StaticMeshSection* GetSectionData() const { return staticMeshSection; }
+
 private:
 	   
 	StaticMeshSection* staticMeshSection;

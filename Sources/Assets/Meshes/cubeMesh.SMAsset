@@ -1,0 +1,5 @@
+{
+	"AssetName" : "CubeMesh",
+	"MeshObjectPath" : "GLEngine/Sources/Ressources/Mesh/cube.obj",
+	"Materials" : [ "GridMaterial" ]
+}

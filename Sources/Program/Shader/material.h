@@ -12,6 +12,8 @@
 #include "../Texture/texture.h"
 #include "../Asset/asset.h"
 
+class World;
+
 class Material : public Asset
 {
 public:
@@ -26,11 +28,13 @@ public:
 
 	Material(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures);
 
-	void Load(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures);
+	void InitializeShader(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures);
+
+
 
 	virtual void Parse(const Document& data) override;
 
-	void use() const;
+	void use(World* OwningWorld) const;
 
 	void setBool(const std::string &name, bool value) const;
 	void setInt(const std::string &name, int value) const;

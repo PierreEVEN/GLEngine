@@ -9,6 +9,7 @@
 #include "../Mesh/PhysicPrimitiveComponent.h"
 #include "../Mesh/staticMesh.h"
 #include "../Mesh/staticMeshComponent.h"
+#include "../Asset/assetLibrary.h"
 
 std::vector<World*> GWorlds;
 
@@ -37,6 +38,9 @@ World::World(std::string worldName)
 	defaultMaterial = nullptr;
 	cubeMesh = nullptr;
 	ambiantColor = glm::vec3(0, 0, 0);
+
+
+
 }
 
 World::~World()
@@ -58,7 +62,7 @@ World::~World()
 glm::mat4 World::GetProjection() const
 {
 	glm::mat4 projection = glm::mat4(1.0f);
-	projection = glm::perspective(glm::radians(worldCamera->Zoom), (float)screenWidth / (float)screenHeight, 0.1f, 500.f);
+	projection = glm::perspective(glm::radians(worldCamera->Zoom), (float)screenWidth / (float)screenHeight, 0.1f, 5000.f);
 	return projection;
 }
 
@@ -85,22 +89,14 @@ void World::processInput() {
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
 
-		if (!defaultTexture) defaultTexture = new Texture2D("GLEngine/Sources/Ressources/container.jpg");
-		if (!defaultMaterial) defaultMaterial = new Material("GLEngine/Sources/Shaders/defaultVertexShader.vs", "GLEngine/Sources/Shaders/defaultFragmentShaderss.fs", { defaultTexture });
-		if (!cubeMesh) cubeMesh = new StaticMesh("GLEngine/Sources/Ressources/cube.obj", { defaultMaterial });
-
-		StaticMeshComponent* newObj = new StaticMeshComponent(this, cubeMesh);
+		StaticMeshComponent* newObj = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
 		newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(10.f));
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
 
-		if (!defaultTexture) defaultTexture = new Texture2D("GLEngine/Sources/Ressources/container.jpg");
-		if (!defaultMaterial) defaultMaterial = new Material("GLEngine/Sources/Shaders/defaultVertexShader.vs", "GLEngine/Sources/Shaders/defaultFragmentShaderss.fs", { defaultTexture });
-		if (!cubeMesh) cubeMesh = new StaticMesh("GLEngine/Sources/Ressources/cube.obj", { defaultMaterial });
-
-		PhysicPrimitiveComponent* newObj = new PhysicPrimitiveComponent(this, &cubeMesh->meshSections[0]);
+		PhysicPrimitiveComponent* newObj = new PhysicPrimitiveComponent(this, &AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh")->meshSections[0]);
 		newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
 		newObj->SetLinearVelocity(worldCamera->GetCameraForwardVector() * glm::vec3(10.f));
 	}

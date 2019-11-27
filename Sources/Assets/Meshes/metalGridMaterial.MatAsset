@@ -1,0 +1,6 @@
+{
+	"AssetName" : "MetalGridMaterial",
+	"VertexShaderPath" : "GLEngine/Sources/Shaders/Default/defaultGridVertexShader.vs",
+	"FragmentShaderPath" : "GLEngine/Sources/Shaders/Default/defaultGridFragmentShader.fs",
+	"Textures" : [ "MetalGrid_diff" ]
+}
