@@ -30,7 +30,7 @@ void main()
     float Specular = pow(max(dot(viewDir, reflectDir), 0.0), 5.f);
 
 
-    vec2 CoordinatesOffset = vec2(-1.f, 1.f);
+    vec2 CoordinatesOffset = vec2(1.f, 1.f);
 
     if (CameraDistance < 100)
     {

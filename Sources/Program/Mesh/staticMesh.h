@@ -8,6 +8,9 @@ class Material;
 struct aiNode;
 struct aiScene;
 struct aiMesh;
+struct aiMaterial;
+enum aiTextureType;
+class Texture2D;
 
 struct Vertex
 {
@@ -20,15 +23,17 @@ struct Vertex
 
 struct StaticMeshSection
 {
-	StaticMeshSection(std::vector<Vertex> newSectionVertices, std::vector<unsigned int> newSectionIndices, Material* usedMaterial)
+	StaticMeshSection(std::vector<Vertex> newSectionVertices, std::vector<unsigned int> newSectionIndices, Material* usedMaterial, std::vector<Texture2D*> usedTextures)
 	{
 		sectionVertices = newSectionVertices;
 		sectionIndices = newSectionIndices;
 		material = usedMaterial;
+		textures = usedTextures;
 	}
 	std::vector<Vertex> sectionVertices;
 	std::vector<unsigned int> sectionIndices;
 	Material* material;
+	std::vector<Texture2D*> textures;
 };
 
 class StaticMesh : public Asset
@@ -45,6 +50,8 @@ public:
 	void LoadData(std::string path);
 	void processNode(aiNode *node, const aiScene *scene);
 	StaticMeshSection processMesh(aiMesh *mesh, const aiScene *scene, unsigned int meshIndex);
+
+	std::vector<Texture2D*> loadMaterialTextures(aiMaterial *mat, aiTextureType type);
 
 	virtual void Parse(const Document& data) override;
 };

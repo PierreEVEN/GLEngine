@@ -6,6 +6,8 @@
 #include <iostream>
 #include "../Asset/assetLibrary.h"
 #include "../Shader/material.h"
+#include "../ThirdParty/stb_image.h"
+#include <assimp/material.h>
 
 StaticMesh::StaticMesh(std::string newDataPath, std::vector<Material*> newUsedMaterials)
 {
@@ -114,12 +116,7 @@ StaticMeshSection StaticMesh::processMesh(aiMesh *mesh, const aiScene *scene, un
 	}
 	// process materials
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-	// we assume a convention for sampler names in the shaders. Each diffuse texture should be named
-	// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
-	// Same applies to other texture as the following list summarizes:
-	// diffuse: texture_diffuseN
-	// specular: texture_specularN
-	// normal: texture_normalN
+	std::vector<Texture2D*> materialTextures = loadMaterialTextures(material, aiTextureType_DIFFUSE);
 
 
 	// return a mesh object created from the extracted mesh data
@@ -128,7 +125,23 @@ StaticMeshSection StaticMesh::processMesh(aiMesh *mesh, const aiScene *scene, un
 	{
 		sectionMaterial = usedMaterial[meshIndex];
 	}
-	return StaticMeshSection(vertices, indices, sectionMaterial);
+	return StaticMeshSection(vertices, indices, sectionMaterial, materialTextures);
+}
+
+
+std::vector<Texture2D*> StaticMesh::loadMaterialTextures(aiMaterial *mat, aiTextureType type)
+{
+	std::vector<Texture2D*> textures = {};
+	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+	{
+		aiString str;
+		mat->GetTexture(type, i, &str);
+
+		Texture2D* texture = new Texture2D("this->directory" + '/' + std::string(str.C_Str()), true);
+		std::cout << "Registered new dynamic texture " << mat->GetName().C_Str() << std::endl;
+		textures.push_back(texture);
+	}
+	return textures;
 }
 
 void StaticMesh::Parse(const Document& data)

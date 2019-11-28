@@ -20,7 +20,9 @@ public:
 
 	static bool CheckExtension(const std::string& filePath, const std::string& extension);
 
-	static std::string GenerateNonExistingAssetName() { return "NewAsset"; }
+	static std::string GenerateNonExistingAssetName();
+
+	static void RegisterDynamicAsset(Asset* newAsset);
 
 	template <class T>
 	static T* FindAssetByName(const std::string AssetName)

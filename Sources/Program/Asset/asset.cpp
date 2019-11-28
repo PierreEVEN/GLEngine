@@ -20,12 +20,15 @@ Asset::Asset(std::string inAssetPath)
 
 void Asset::Parse(const Document& data)
 {
-	assert(data.IsObject());
+	if (!data.IsObject())
+	{
+		std::cout << "ERROR : Failed to parse asset '" << assetPath << "' (wrong JSon format)" << std::endl;
+		assert(data.IsObject());
+	}
 	assert(data.HasMember("AssetName"));
 	assert(data["AssetName"].IsString());
 	assetName = data["AssetName"].GetString();
 
-	assert(data.IsObject());
 	assert(data.HasMember("AssetName"));
 	assert(data["AssetName"].IsString());
 	assetName = data["AssetName"].GetString();

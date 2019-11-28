@@ -84,4 +84,19 @@ bool AssetLibrary::CheckExtension(const std::string& filePath, const std::string
 	return false;
 }
 
+std::string AssetLibrary::GenerateNonExistingAssetName()
+{
+	int assetIndex;
+	do
+	{
+		assetIndex = std::rand();
+	} while (FindAssetByName<Asset>("DynamicAsset_" + std::to_string(assetIndex)));
+	return "DynamicAsset_" + std::to_string(assetIndex);
+}
+
+void AssetLibrary::RegisterDynamicAsset(Asset* newAsset)
+{
+	AssetRegistry.push_back(newAsset);
+}
+
 std::vector<Asset*> AssetLibrary::GetAssetRegistry() { return AssetRegistry; }

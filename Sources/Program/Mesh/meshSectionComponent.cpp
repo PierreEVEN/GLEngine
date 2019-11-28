@@ -5,6 +5,7 @@
 #include <glfw3/glfw3.h>
 #include "staticMesh.h"
 #include "meshSectionComponent.h"
+#include "../Asset/assetLibrary.h"
 
 void MeshSectionComponent::BuildMesh()
 {
@@ -78,25 +79,29 @@ void MeshSectionComponent::MarkRenderStateDirty()
 		model = glm::rotate(model, glm::radians(angle), forwardVector);
 		model = glm::scale(model, scale3D);
 		
+		/** Set materials commons */
 		staticMeshSection->material->setMat4("view", GetWorld()->GetCamera()->GetViewMatrix());
 		staticMeshSection->material->setMat4("projection", GetWorld()->GetProjection());
 		staticMeshSection->material->setMat4("model", model);
 		staticMeshSection->material->setMat4("ambient", model);
+
+		/** Load additional textures */
+		for (unsigned int i = 0; i < staticMeshSection->textures.size(); ++i)
+		{
+			staticMeshSection->material->setInt(std::string("DynamicTexture_") + std::to_string(i), i + staticMeshSection->material->textures.size());
+			glActiveTexture(GL_TEXTURE0 + i + staticMeshSection->material->textures.size());
+			glBindTexture(GL_TEXTURE_2D, staticMeshSection->textures[i]->GetTextureID());
+		}
 	}
 
+	/** Draw vertices */
 	glBindVertexArray(VAO);
-
 	if (staticMeshSection->sectionIndices.size() > 0)
-	{
 		glDrawElements(GL_TRIANGLES, staticMeshSection->sectionIndices.size(), GL_UNSIGNED_INT, 0);
-	}
 	else
-	{
 		glDrawArrays(GL_TRIANGLES, 0, staticMeshSection->sectionVertices.size());
-	}
 
+	/** Set GL to defaults */
 	glBindVertexArray(0);
-
-	// always good practice to set everything back to defaults once configured.
 	glActiveTexture(GL_TEXTURE0);
 }

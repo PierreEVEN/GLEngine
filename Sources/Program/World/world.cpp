@@ -38,9 +38,6 @@ World::World(std::string worldName)
 	defaultMaterial = nullptr;
 	cubeMesh = nullptr;
 	ambiantColor = glm::vec3(0, 0, 0);
-
-
-
 }
 
 World::~World()
@@ -113,6 +110,11 @@ void World::processInput() {
 		worldCamera->ProcessKeyboard(UP, (float)worldDeltaSecond);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		worldCamera->ProcessKeyboard(DOWN, (float)worldDeltaSecond);
+
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+		worldCamera->SetCameraSpeed(worldCamera->GetCameraSpeed() * 1.1f);
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+		worldCamera->SetCameraSpeed(worldCamera->GetCameraSpeed() * .9f);
 }
 
 void World::UpdateFramebufferSize(int width, int height)

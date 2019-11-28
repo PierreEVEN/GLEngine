@@ -33,22 +33,19 @@ void Material::use(World* OwningWorld) const
 
 
 	glUniform3f(glGetUniformLocation(ShaderID, "CameraPosition"), OwningWorld->GetCamera()->GetCameraLocation()[0], OwningWorld->GetCamera()->GetCameraLocation()[1], OwningWorld->GetCamera()->GetCameraLocation()[2]);
-
 	glUniform3f(glGetUniformLocation(ShaderID, "LightDirection"), .5, -.5, .5);
 
 
 	std::string name = "texture";
 	for (unsigned int textureIndex = 0; textureIndex < textures.size(); ++textureIndex)
 	{
-
 		if (textures[textureIndex])
 		{
-
+			setInt(std::string("StaticTexture_") + std::to_string(textureIndex), textureIndex);
 			glUniform1i(glGetUniformLocation(ShaderID, (name + std::to_string(textureIndex)).c_str()), textureIndex);
 			glBindTexture(GL_TEXTURE_2D, textures[textureIndex]->GetTextureID());
 		}
 	}
-
 }
 
 void Material::setBool(const std::string &name, bool value) const

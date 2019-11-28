@@ -54,13 +54,12 @@ int main()
 	/* World generation                                                     */
 	/************************************************************************/
 
-
 	StaticMeshComponent* campusMeshComp = new StaticMeshComponent(WorldOne, AssetLibrary::FindAssetByName<StaticMesh>("CampusMesh"));
-	campusMeshComp->SetLocation(glm::vec3(0,-.7, 0));
+	campusMeshComp->SetLocation(glm::vec3(0, 0, 0));
 	campusMeshComp->SetScale3D(glm::vec3(10.f));
 
 	StaticMeshComponent* Comp2 = new StaticMeshComponent(WorldOne, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
-	Comp2->SetLocation(glm::vec3(0, -4.2, 0));
+	Comp2->SetLocation(glm::vec3(0, 0, 0));
 	Comp2->SetScale3D(glm::vec3(2000.f, 0.1f, 2000.f));
 
 	glEnable(GL_DEPTH_TEST);
