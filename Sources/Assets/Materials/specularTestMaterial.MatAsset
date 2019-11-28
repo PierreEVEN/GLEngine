@@ -1,0 +1,7 @@
+{
+	"AssetName" : "specularTestMaterial",
+	"VertexShaderPath" : "GLEngine/Sources/Shaders/specularTestVertexShader.vs",
+	"FragmentShaderPath" : "GLEngine/Sources/Shaders/specularTestFragmentShader.fs",
+	"Unlit" : false,
+	"Textures" : [ "WoodCrate-D", "WoodCrate-S" ]
+}

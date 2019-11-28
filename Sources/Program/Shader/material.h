@@ -24,7 +24,9 @@ public:
 	std::string fragmentShaderPath;
 	std::vector<Texture2D*> textures;
 
-	Material(std::string textAssetPath) : Asset(textAssetPath) { }
+	bool bIsUnlit;
+
+	Material(std::string textAssetPath);
 
 	Material(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures);
 

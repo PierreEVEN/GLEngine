@@ -1,5 +1,0 @@
-{
-	"AssetName" : "TransporterMesh",
-	"MeshObjectPath" : "GLEngine/Sources/Ressources/Mesh/Transporter.obj",
-	"Materials" : [ "SimpleSpecularMaterial" ]
-}

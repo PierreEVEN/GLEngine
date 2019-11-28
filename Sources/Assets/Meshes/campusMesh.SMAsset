@@ -1,5 +1,5 @@
 {
 	"AssetName" : "CampusMesh",
-	"MeshObjectPath" : "GLEngine/Sources/Ressources/Mesh/Campus2.obj",
-	"Materials" : [ "SimpleSpecularMaterial" ]
+	"MeshObjectPath" : "GLEngine/Sources/Ressources/Mesh/Campus2.",
+	"Materials" : [ "campusMaterial" ]
 }

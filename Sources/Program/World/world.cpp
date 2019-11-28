@@ -10,6 +10,8 @@
 #include "../Mesh/staticMesh.h"
 #include "../Mesh/staticMeshComponent.h"
 #include "../Asset/assetLibrary.h"
+#include "../Lighting/pointLight.h"
+#include "../Lighting/directionalLight.h"
 
 std::vector<World*> GWorlds;
 
@@ -115,6 +117,30 @@ void World::processInput() {
 		worldCamera->SetCameraSpeed(worldCamera->GetCameraSpeed() * 1.1f);
 	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
 		worldCamera->SetCameraSpeed(worldCamera->GetCameraSpeed() * .9f);
+
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+	{
+		if (glfwGetTime() - LastLightUseTime > 0.5f)
+		{
+			PointLight* newObj = new PointLight(this);
+			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("LightBulbMesh"));
+			newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
+			newObj->ambiant = glm::normalize(glm::vec3(rand() % 512 / 256.f, rand() % 512 / 256.f, rand() % 512 / 256.f));
+			lightMesh->SetLocation(newObj->GetLocation());
+			LastLightUseTime = glfwGetTime();
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+	{
+		if (glfwGetTime() - LastLightUseTime > 0.5f)
+		{
+			DirectionalLight* newObj = new DirectionalLight(this);
+			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("LightBulbMesh"));
+			newObj->direction = GetCamera()->GetCameraForwardVector();
+			LastLightUseTime = glfwGetTime();
+		}
+	}
 }
 
 void World::UpdateFramebufferSize(int width, int height)
@@ -186,6 +212,7 @@ void World::UpdateWorld(double deltaSecond)
 
 	glClearColor(50 / 256.0, 50 / 256.0, 50 / 256.0, 1.0f);
 	glClearColor(115 / 256.0, 243 / 256.0, 243 / 256.0, 1.0f);
+	glClearColor(0.f, 0.f, 0.f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	processInput();

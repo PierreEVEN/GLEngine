@@ -62,6 +62,12 @@ int main()
 	Comp2->SetLocation(glm::vec3(0, 0, 0));
 	Comp2->SetScale3D(glm::vec3(2000.f, 0.1f, 2000.f));
 
+	StaticMeshComponent* testCube = new StaticMeshComponent(WorldOne, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
+	testCube->SetLocation(glm::vec3(0, 3, 0));
+	testCube->SetScale3D(glm::vec3(1.f, 1.f, 1.f));
+
+	PointLight* testLight = new PointLight(WorldOne);
+
 	glEnable(GL_DEPTH_TEST);
 
 	// render loop
@@ -75,7 +81,11 @@ int main()
 			DeltaSecond = 1.0 / 10.f;
 		}
 		LastTime = glfwGetTime();
-		
+
+		testLight->ambiant = glm::vec3(sin(glfwGetTime() * 4.f) * .5f + .5f, sin(glfwGetTime() * 5.f) * .5f + .5f, sin(glfwGetTime() * 6.f) * .5f + .5f);
+		testLight->linear = 1.f;
+		testLight->SetLocation(glm::vec3(sin(glfwGetTime() * 2.f), 0.f, cos(glfwGetTime() * 2.f)) * 8.f);
+
 		World::UpdateWorlds(DeltaSecond);
 
 	}

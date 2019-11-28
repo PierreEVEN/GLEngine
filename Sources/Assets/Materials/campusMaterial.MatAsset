@@ -1,0 +1,7 @@
+{
+	"AssetName" : "campusMaterial",
+	"VertexShaderPath" : "GLEngine/Sources/Shaders/Campus/campusVertexShader.vs",
+	"FragmentShaderPath" : "GLEngine/Sources/Shaders/Campus/campusFragmentShader.fs",
+	"Unlit" : false,
+	"Textures" : [ ]
+}

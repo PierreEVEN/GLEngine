@@ -16,4 +16,9 @@ public:
 
 	virtual void MarkRenderStateDirty() override;
 
+	float constant;
+	float linear;
+	float quadratic;
+
+
 };

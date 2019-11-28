@@ -25,9 +25,9 @@ public:
 	{
 		LinearVelocity += glm::vec3(0.f, -(float)DeltaTime * 5.f, 0.f);
 		SetLocation(location + LinearVelocity * glm::vec3((float)DeltaTime));
-		if (location[1] < -3.f)
+		if (location[1] < 1.f)
 		{
-			location[1] = -2.99f;
+			location[1] = 1.01f;
 			LinearVelocity *= glm::vec3(1, -.9, 1);
 		}
 	}

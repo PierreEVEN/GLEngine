@@ -42,6 +42,7 @@ class World
 	int testWidth;
 	int testHeight;
 
+	double LastLightUseTime = 0.0;
 
 	glm::vec3 ambiantColor;
 
@@ -69,5 +70,20 @@ public:
 	static World* FindWorld(GLFWwindow* InWindows);
 
 	static void UpdateWorlds(double deltaSecond);
+
+	template<class T>
+	std::vector<T*> FindAssetByClass()
+	{
+		std::vector<T*> Elems = {};
+		for (auto& primitive : primitives)
+		{
+			if (T* foundElement = dynamic_cast<T*>(primitive))
+			{
+				Elems.push_back(foundElement);
+			}
+		}
+		return Elems;
+	}
+
 };
 #endif
