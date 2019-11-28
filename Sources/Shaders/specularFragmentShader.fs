@@ -17,6 +17,7 @@ in vec2 TexCoords;
 
 uniform vec3 viewPos;
 uniform Light light;
+uniform float Time;
 
 uniform sampler2D StaticTexture_0;
 uniform sampler2D DynamicTexture_0;

@@ -37,7 +37,7 @@ int main()
 #endif
 	   
 	double LastTime = 0.0;
-	double MaxFPS = 60.0;
+	double MaxFPS = 200.0;
 
 	/************************************************************************/
 	/* World initialization                                                 */
@@ -55,8 +55,8 @@ int main()
 	/************************************************************************/
 
 	StaticMeshComponent* campusMeshComp = new StaticMeshComponent(WorldOne, AssetLibrary::FindAssetByName<StaticMesh>("CampusMesh"));
-	campusMeshComp->SetLocation(glm::vec3(0, 0, 0));
-	campusMeshComp->SetScale3D(glm::vec3(10.f));
+	campusMeshComp->SetLocation(glm::vec3(0, 20, 0));
+	campusMeshComp->SetScale3D(glm::vec3(50.f));
 
 	StaticMeshComponent* Comp2 = new StaticMeshComponent(WorldOne, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
 	Comp2->SetLocation(glm::vec3(0, 0, 0));
@@ -68,11 +68,11 @@ int main()
 	// -----------
 	while (!glfwWindowShouldClose(WorldOne->GetWindow()))
 	{
-		if (glfwGetTime() - LastTime < 1 / MaxFPS) continue;
+		if (glfwGetTime() - LastTime < 1.0 / MaxFPS) continue;
 		DeltaSecond = glfwGetTime() - LastTime;
-		if (DeltaSecond > 1 / 10.f)
+		if (DeltaSecond > 1.0 / 10.0)
 		{
-			DeltaSecond = 1 / 10.f;
+			DeltaSecond = 1.0 / 10.f;
 		}
 		LastTime = glfwGetTime();
 		

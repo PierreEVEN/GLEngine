@@ -4,6 +4,7 @@
 #include "../Texture/texture.h"
 #include "../World/world.h"
 #include "../Camera/camera.h"
+#include <glfw3/glfw3.h>
 
 Material::Material(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures)
 {
@@ -34,7 +35,7 @@ void Material::use(World* OwningWorld) const
 
 	glUniform3f(glGetUniformLocation(ShaderID, "CameraPosition"), OwningWorld->GetCamera()->GetCameraLocation()[0], OwningWorld->GetCamera()->GetCameraLocation()[1], OwningWorld->GetCamera()->GetCameraLocation()[2]);
 	glUniform3f(glGetUniformLocation(ShaderID, "LightDirection"), .5, -.5, .5);
-
+	setFloat("Time", glfwGetTime());
 
 	std::string name = "texture";
 	for (unsigned int textureIndex = 0; textureIndex < textures.size(); ++textureIndex)
