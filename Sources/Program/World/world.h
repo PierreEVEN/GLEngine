@@ -13,6 +13,9 @@ class MeshSectionComponent;
 class SceneComponent;
 class StaticMesh;
 class Material;
+class PointLight;
+class DirectionalLight;
+class SpotLight;
 class Texture2D;
 
 class World
@@ -37,6 +40,9 @@ class World
 
 	void UpdateWorld(double DeltaSecond);
 
+	std::vector<PointLight*> pointLightSources;
+	std::vector<SpotLight*> spotLightSources;
+	std::vector<DirectionalLight*> directionalLightSources;
 	std::vector<SceneComponent*> primitives;
 
 	int testWidth;
@@ -55,7 +61,15 @@ public:
 	Camera* GetCamera() const { return worldCamera; }
 	glm::mat4 GetProjection() const;
 
-	void AddPrimitive(SceneComponent* newPrimitive);
+	void RegisterPrimitive(SceneComponent* newPrimitive);
+	void RegisterPointLight(PointLight* newPointLightSource);
+	void RegisterSpotLight(SpotLight* newSpotLightSource);
+	void RegisterDirectionalLight(DirectionalLight* newDirectionalLightSource);
+
+	std::vector<PointLight*> GetPointLightSources() const { return pointLightSources; }
+	std::vector<DirectionalLight*> GetDirectionalLightSources() const { return directionalLightSources; }
+	std::vector<SpotLight*> GetSpotLightSources() const { return spotLightSources; }
+
 
 	void processInput();
 

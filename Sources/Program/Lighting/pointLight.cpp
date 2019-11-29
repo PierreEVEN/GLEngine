@@ -8,7 +8,7 @@ PointLight::PointLight(World* newWorld)
 	linear = 0.09f;
 	quadratic = 0.032f;
 
-
+	newWorld->RegisterPointLight(this);
 }
 
 void PointLight::MarkRenderStateDirty()

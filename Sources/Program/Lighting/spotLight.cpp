@@ -1,4 +1,5 @@
 #include "spotLight.h"
+#include "../World/world.h"
 
 SpotLight::SpotLight(World* ParentWorld)
 	: Light(ParentWorld)
@@ -10,4 +11,5 @@ SpotLight::SpotLight(World* ParentWorld)
 	quadratic = 0.032f;
 	cutOff = glm::cos(glm::radians(12.5f));
 	outerCutOff = glm::cos(glm::radians(15.f));
+	ParentWorld->RegisterSpotLight(this);
 }

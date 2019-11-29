@@ -82,6 +82,9 @@ int main()
 		}
 		LastTime = glfwGetTime();
 
+
+		std::cout << "FPS : " << std::to_string(1.0 / DeltaSecond) << std::endl;
+
 		testLight->ambiant = glm::vec3(sin(glfwGetTime() * 4.f) * .5f + .5f, sin(glfwGetTime() * 5.f) * .5f + .5f, sin(glfwGetTime() * 6.f) * .5f + .5f);
 		testLight->linear = 1.f;
 		testLight->SetLocation(glm::vec3(sin(glfwGetTime() * 2.f), 0.f, cos(glfwGetTime() * 2.f)) * 8.f);

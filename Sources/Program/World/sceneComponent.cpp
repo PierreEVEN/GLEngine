@@ -8,7 +8,7 @@ SceneComponent::SceneComponent(World* inWorld)
 	angle = 0.f;
 	scale3D = glm::vec3(1);
 	OwningWorld = inWorld;
-	OwningWorld->AddPrimitive(this);
+	OwningWorld->RegisterPrimitive(this);
 }
 
 SceneComponent::~SceneComponent() { }

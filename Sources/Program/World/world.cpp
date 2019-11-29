@@ -12,6 +12,7 @@
 #include "../Asset/assetLibrary.h"
 #include "../Lighting/pointLight.h"
 #include "../Lighting/directionalLight.h"
+#include "../Lighting/spotLight.h"
 
 std::vector<World*> GWorlds;
 
@@ -65,9 +66,24 @@ glm::mat4 World::GetProjection() const
 	return projection;
 }
 
-void World::AddPrimitive(SceneComponent* newPrimitive)
+void World::RegisterPrimitive(SceneComponent* newPrimitive)
 {
 	primitives.push_back(newPrimitive);
+}
+
+void World::RegisterPointLight(PointLight* newPointLightSource)
+{
+	pointLightSources.push_back(newPointLightSource);
+}
+
+void World::RegisterSpotLight(SpotLight* newSpotLightSource)
+{
+	spotLightSources.push_back(newSpotLightSource);
+}
+
+void World::RegisterDirectionalLight(DirectionalLight* newDirectionalLightSource)
+{
+	directionalLightSources.push_back(newDirectionalLightSource);
 }
 
 void World::processInput() {
@@ -123,7 +139,7 @@ void World::processInput() {
 		if (glfwGetTime() - LastLightUseTime > 0.5f)
 		{
 			PointLight* newObj = new PointLight(this);
-			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("LightBulbMesh"));
+			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
 			newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
 			newObj->ambiant = glm::normalize(glm::vec3(rand() % 512 / 256.f, rand() % 512 / 256.f, rand() % 512 / 256.f));
 			lightMesh->SetLocation(newObj->GetLocation());
@@ -136,8 +152,20 @@ void World::processInput() {
 		if (glfwGetTime() - LastLightUseTime > 0.5f)
 		{
 			DirectionalLight* newObj = new DirectionalLight(this);
-			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("LightBulbMesh"));
 			newObj->direction = GetCamera()->GetCameraForwardVector();
+			LastLightUseTime = glfwGetTime();
+		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+	{
+		if (glfwGetTime() - LastLightUseTime > 0.5f)
+		{
+			SpotLight* newObj = new SpotLight(this);
+			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
+			newObj->direction = GetCamera()->GetCameraForwardVector();
+			newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
+			lightMesh->SetLocation(newObj->GetLocation());
 			LastLightUseTime = glfwGetTime();
 		}
 	}

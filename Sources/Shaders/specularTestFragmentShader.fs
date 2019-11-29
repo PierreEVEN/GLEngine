@@ -1,4 +1,3 @@
-
 #version 330 core
 
 #define MAX_DIRECTIONAL_LIGHTS 20

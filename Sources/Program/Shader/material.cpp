@@ -41,14 +41,14 @@ void Material::use(World* OwningWorld) const
 
 	glUniform3f(glGetUniformLocation(ShaderID, "CameraPosition"), OwningWorld->GetCamera()->GetCameraLocation()[0], OwningWorld->GetCamera()->GetCameraLocation()[1], OwningWorld->GetCamera()->GetCameraLocation()[2]);
 	setFloat("Time", (float)glfwGetTime());
-
 	setFloat("MaterialShininess", 1.f);
+
 	if (!bIsUnlit)
 	{
-		std::vector<PointLight*> pointLights = OwningWorld->FindAssetByClass<PointLight>();
-		std::vector<DirectionalLight*> directionalLights = OwningWorld->FindAssetByClass<DirectionalLight>();
-		std::vector<SpotLight*> spotLights = OwningWorld->FindAssetByClass<SpotLight>();
-		for (unsigned int i = 0; i < pointLights.size() && i < 100; ++i)
+		std::vector<PointLight*> pointLights = OwningWorld->GetPointLightSources();
+		std::vector<DirectionalLight*> directionalLights = OwningWorld->GetDirectionalLightSources();
+		std::vector<SpotLight*> spotLights = OwningWorld->GetSpotLightSources();
+		for (unsigned int i = 0; i < pointLights.size() && i < 16; ++i)
 		{
 			setVec3("pointLights[" + std::to_string(i) + "].position", pointLights[i]->GetLocation());
 			setVec3("pointLights[" + std::to_string(i) + "].ambient", pointLights[i]->ambiant[0], pointLights[i]->ambiant[1], pointLights[i]->ambiant[2]);
@@ -60,19 +60,18 @@ void Material::use(World* OwningWorld) const
 		}
 		for (unsigned int i = 0; i < directionalLights.size() && i < 2; ++i)
 		{
-			std::cout << " direc light : " << i << std::endl;
-			setVec3("dirLight[" + std::to_string(i) + "].ambient", directionalLights[i]->ambiant[0], pointLights[i]->ambiant[1], pointLights[i]->ambiant[2]);
-			setVec3("dirLight[" + std::to_string(i) + "].diffuse", directionalLights[i]->diffuse[0], pointLights[i]->diffuse[1], pointLights[i]->diffuse[2]);
-			setVec3("dirLight[" + std::to_string(i) + "].specular", directionalLights[i]->specular[0], pointLights[i]->specular[1], pointLights[i]->specular[2]);
+			setVec3("dirLight[" + std::to_string(i) + "].ambient", directionalLights[i]->ambiant[0], directionalLights[i]->ambiant[1], directionalLights[i]->ambiant[2]);
+			setVec3("dirLight[" + std::to_string(i) + "].diffuse", directionalLights[i]->diffuse[0], directionalLights[i]->diffuse[1], directionalLights[i]->diffuse[2]);
+			setVec3("dirLight[" + std::to_string(i) + "].specular", directionalLights[i]->specular[0], directionalLights[i]->specular[1], directionalLights[i]->specular[2]);
 			setVec3("dirLight[" + std::to_string(i) + "].direction", directionalLights[i]->direction);
 		}
 		for (unsigned int i = 0; i < spotLights.size() && i < 16; ++i)
 		{
 			setVec3("spotLight[" + std::to_string(i) + "].position", spotLights[i]->GetLocation());
 			setVec3("spotLight[" + std::to_string(i) + "].direction", spotLights[i]->direction);
-			setVec3("spotLight[" + std::to_string(i) + "].ambient", spotLights[i]->ambiant[0], pointLights[i]->ambiant[1], pointLights[i]->ambiant[2]);
-			setVec3("spotLight[" + std::to_string(i) + "].diffuse", spotLights[i]->diffuse[0], pointLights[i]->diffuse[1], pointLights[i]->diffuse[2]);
-			setVec3("spotLight[" + std::to_string(i) + "].specular", spotLights[i]->specular[0], pointLights[i]->specular[1], pointLights[i]->specular[2]);
+			setVec3("spotLight[" + std::to_string(i) + "].ambient", spotLights[i]->ambiant[0], spotLights[i]->ambiant[1], spotLights[i]->ambiant[2]);
+			setVec3("spotLight[" + std::to_string(i) + "].diffuse", spotLights[i]->diffuse[0], spotLights[i]->diffuse[1], spotLights[i]->diffuse[2]);
+			setVec3("spotLight[" + std::to_string(i) + "].specular", spotLights[i]->specular[0], spotLights[i]->specular[1], spotLights[i]->specular[2]);
 			setFloat("spotLight[" + std::to_string(i) + "].constant", spotLights[i]->constant);
 			setFloat("spotLight[" + std::to_string(i) + "].linear", spotLights[i]->linear);
 			setFloat("spotLight[" + std::to_string(i) + "].quadratic", spotLights[i]->quadratic);
