@@ -14,6 +14,9 @@
 #include "../Lighting/directionalLight.h"
 #include "../Lighting/spotLight.h"
 
+#include <bullet3D/btBulletDynamicsCommon.h>
+#include <bullet3D/LinearMath/btIDebugDraw.h>
+
 std::vector<World*> GWorlds;
 
 World::World(std::string worldName)
@@ -32,6 +35,23 @@ World::World(std::string worldName)
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	worldCamera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
+	/************************************************************************/
+	/* BULLET 3D                                                            */
+	/************************************************************************/
+
+	///collision configuration contains default setup for memory, collision setup
+	myCollisionConfiguration = new btDefaultCollisionConfiguration();
+	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
+	myDispatcher = new	btCollisionDispatcher(myCollisionConfiguration);
+	myBroadphase = new btDbvtBroadphase();
+	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
+	mySequentialImpulseConstraintSolver = new btSequentialImpulseConstraintSolver;
+
+	physicWorld = new btDiscreteDynamicsWorld(myDispatcher, myBroadphase, mySequentialImpulseConstraintSolver, myCollisionConfiguration);
+	// On définit la gravité, de façon à ce que les objets tombent vers le bas (-Y).
+	physicWorld->setGravity(btVector3(0, 0, -10));
+
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
@@ -110,10 +130,8 @@ void World::processInput() {
 
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-
 		PhysicPrimitiveComponent* newObj = new PhysicPrimitiveComponent(this, &AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh")->meshSections[0]);
 		newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
-		newObj->SetLinearVelocity(worldCamera->GetCameraForwardVector() * glm::vec3(10.f));
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -128,6 +146,11 @@ void World::processInput() {
 		worldCamera->ProcessKeyboard(UP, (float)worldDeltaSecond);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		worldCamera->ProcessKeyboard(DOWN, (float)worldDeltaSecond);
+
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
 		worldCamera->SetCameraSpeed(worldCamera->GetCameraSpeed() * 1.1f);
@@ -233,14 +256,25 @@ World* World::FindWorld(GLFWwindow* InWindows)
 void World::UpdateWorld(double deltaSecond)
 {
 	worldDeltaSecond = deltaSecond;
+
+
+
+	if (GetPhysicWorld())
+	{
+		GetPhysicWorld()->stepSimulation(deltaSecond);
+	}
+
+
 	// create transformations
 	glm::mat4 projection = glm::mat4(1.0f);
+	//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 	projection = glm::perspective(glm::radians(worldCamera->Zoom), (float)screenWidth / (float)screenHeight, 0.1f, 500.f);
-
+	
 	glClearColor(50 / 256.0, 50 / 256.0, 50 / 256.0, 1.0f);
 	glClearColor(115 / 256.0, 243 / 256.0, 243 / 256.0, 1.0f);
-	glClearColor(0.f, 0.f, 0.f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClearColor(0.f, 0.f, 0.f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	processInput();
 

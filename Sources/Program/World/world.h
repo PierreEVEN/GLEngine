@@ -7,6 +7,7 @@
 #include "../Asset/asset.h"
 #include <vector>
 
+
 class Camera;
 struct GLFWwindow;
 class MeshSectionComponent;
@@ -18,6 +19,12 @@ class DirectionalLight;
 class SpotLight;
 class Texture2D;
 
+class btDiscreteDynamicsWorld;
+class btBroadphaseInterface;
+class btCollisionDispatcher;
+class btDefaultCollisionConfiguration;
+class btSequentialImpulseConstraintSolver;
+
 class World
 {
 
@@ -25,6 +32,18 @@ class World
 	Material* defaultMaterial;
 	StaticMesh* cubeMesh;
 	
+	/************************************************************************/
+	/* Bullet 3D                                                            */
+	/************************************************************************/
+	btDiscreteDynamicsWorld* physicWorld;
+	// La classe btBroadphaseInterface fournit une interface pour détecter les objets où leurs AABB se chevauchent.
+	btBroadphaseInterface*	myBroadphase;
+	// btCollisionDispatcher supporte des algorithmes qui peuvent gérer des pairs de collisions ConvexConvex et ConvexConcave. Temps de l'impact, le point le plus proche et pénétration de profondeur.
+	btCollisionDispatcher*	myDispatcher;
+	// btCollisionConfiguration permet de configurer les allocataires de mémoire.
+	btDefaultCollisionConfiguration* myCollisionConfiguration;
+	// btSequentialImpulseConstraintSolver est une implémentation SIMD rapide de la méthode Projected Gauss Seidel (iterative LCP).
+	btSequentialImpulseConstraintSolver *mySequentialImpulseConstraintSolver;
 
 	Camera* worldCamera;
 	GLFWwindow* window;
@@ -70,6 +89,8 @@ public:
 	std::vector<DirectionalLight*> GetDirectionalLightSources() const { return directionalLightSources; }
 	std::vector<SpotLight*> GetSpotLightSources() const { return spotLightSources; }
 
+
+	btDiscreteDynamicsWorld* GetPhysicWorld() { return physicWorld; }
 
 	void processInput();
 

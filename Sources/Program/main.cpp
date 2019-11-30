@@ -21,6 +21,10 @@
 #include "Mesh/staticMeshComponent.h"
 #include "Asset/assetLibrary.h"
 
+
+
+#include <bullet3D/btBulletDynamicsCommon.h>
+
 double DeltaSecond;
 
 int main()
@@ -54,21 +58,45 @@ int main()
 	/* World generation                                                     */
 	/************************************************************************/
 
-	StaticMeshComponent* campusMeshComp = new StaticMeshComponent(WorldOne, AssetLibrary::FindAssetByName<StaticMesh>("CampusMesh"));
-	campusMeshComp->SetLocation(glm::vec3(0, 20, 0));
-	campusMeshComp->SetScale3D(glm::vec3(50.f));
+// 	StaticMeshComponent* campusMeshComp = new StaticMeshComponent(WorldOne, AssetLibrary::FindAssetByName<StaticMesh>("CampusMesh"));
+// 	campusMeshComp->SetLocation(glm::vec3(0, 20, 0));
+// 	campusMeshComp->SetScale3D(glm::vec3(50.f));
 
 	StaticMeshComponent* Comp2 = new StaticMeshComponent(WorldOne, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
 	Comp2->SetLocation(glm::vec3(0, 0, 0));
-	Comp2->SetScale3D(glm::vec3(2000.f, 0.1f, 2000.f));
+	Comp2->SetScale3D(glm::vec3(2000.f, 2000.f, 0.1f));
 
 	StaticMeshComponent* testCube = new StaticMeshComponent(WorldOne, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
-	testCube->SetLocation(glm::vec3(0, 3, 0));
+	testCube->SetLocation(glm::vec3(0, 0, 3));
+	testCube->SetScale3D(glm::vec3(1.f, 1.f, 1.f));
+
+	StaticMeshComponent* testCube2 = new StaticMeshComponent(WorldOne, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
+	testCube->SetLocation(glm::vec3(4, 0, 3));
 	testCube->SetScale3D(glm::vec3(1.f, 1.f, 1.f));
 
 	PointLight* testLight = new PointLight(WorldOne);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
+	glEnable(GL_CULL_FACE);
+
+	
+	btCollisionShape* shape = new btBoxShape(btVector3(100, 100, 1));
+
+	btTransform myTransform;
+	myTransform.setIdentity();
+	myTransform.setOrigin(btVector3(0, 0, -1));
+
+	btVector3 localInertia(0, 0, 0);
+	btScalar mass = 0;
+	shape->calculateLocalInertia(mass, localInertia);
+
+	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(myTransform);
+	btRigidBody::btRigidBodyConstructionInfo myBoxRigidBodyConstructionInfo(mass, myMotionState, shape, localInertia);
+	btRigidBody *body = new btRigidBody(myBoxRigidBodyConstructionInfo);
+
+	WorldOne->GetPhysicWorld()->addRigidBody(body);
 
 	// render loop
 	// -----------
@@ -83,11 +111,11 @@ int main()
 		LastTime = glfwGetTime();
 
 
-		std::cout << "FPS : " << std::to_string(1.0 / DeltaSecond) << std::endl;
+		//std::cout << "FPS : " << std::to_string(1.0 / DeltaSecond) << std::endl;
 
-		testLight->ambiant = glm::vec3(sin(glfwGetTime() * 4.f) * .5f + .5f, sin(glfwGetTime() * 5.f) * .5f + .5f, sin(glfwGetTime() * 6.f) * .5f + .5f);
+		testLight->ambiant = glm::vec3(sin(glfwGetTime() * 4.f) * .5f + .5f, sin(glfwGetTime() * 5.f) * .5f + .5f, sin(glfwGetTime() * 6.f) * .5f + .5f) * 10.f;
 		testLight->linear = 1.f;
-		testLight->SetLocation(glm::vec3(sin(glfwGetTime() * 2.f), 0.f, cos(glfwGetTime() * 2.f)) * 8.f);
+		testLight->SetLocation(glm::vec3(sin(glfwGetTime() * 2.f) * 8.0, cos(glfwGetTime() * 2.0) * 8.0, 0.f));
 
 		World::UpdateWorlds(DeltaSecond);
 

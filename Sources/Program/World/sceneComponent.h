@@ -32,10 +32,10 @@ public:
 	virtual void SetAngle(float newAngle);
 	virtual void SetScale3D(glm::vec3 newScale3D);
 
-	glm::vec3 GetLocation() const;
-	glm::vec3 GetForwardVector() const;
-	float GetAngle() const;
-	glm::vec3 GetScale3D() const;
+	virtual glm::vec3 GetLocation() const;
+	virtual glm::vec3 GetForwardVector() const;
+	virtual float GetAngle() const;
+	virtual glm::vec3 GetScale3D() const;
 
 	World* GetWorld();
 };

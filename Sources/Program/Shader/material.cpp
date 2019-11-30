@@ -43,6 +43,7 @@ void Material::use(World* OwningWorld) const
 	setFloat("Time", (float)glfwGetTime());
 	setFloat("MaterialShininess", 1.f);
 
+
 	if (!bIsUnlit)
 	{
 		std::vector<PointLight*> pointLights = OwningWorld->GetPointLightSources();
