@@ -235,7 +235,6 @@ void World::UpdateWorld(double deltaSecond)
 	worldDeltaSecond = deltaSecond;
 	// create transformations
 	glm::mat4 projection = glm::mat4(1.0f);
-	//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 	projection = glm::perspective(glm::radians(worldCamera->Zoom), (float)screenWidth / (float)screenHeight, 0.1f, 500.f);
 
 	glClearColor(50 / 256.0, 50 / 256.0, 50 / 256.0, 1.0f);
