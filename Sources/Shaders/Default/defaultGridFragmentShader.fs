@@ -15,6 +15,8 @@ uniform vec3 viewPos;
 uniform Material material;
 
 
+float LinearizeDepth(float depth);
+
 void main()
 {
     FragColor = vec4(normalize(Normal), 1.f);//texture(material.diffuse, FragPos.xz / vec2(10.f, -10.f));
@@ -52,6 +54,7 @@ void main()
         FragColor = texture(material.diffuse, TexCoords * CoordinatesOffset);
     }
 
-
     FragColor += vec4(Specular);
+
+
 }

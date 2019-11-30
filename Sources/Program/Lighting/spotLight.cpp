@@ -4,8 +4,6 @@
 SpotLight::SpotLight(World* ParentWorld)
 	: Light(ParentWorld)
 {
-	glm::vec3 direction;
-
 	constant = 1.f;
 	linear = 0.09f;
 	quadratic = 0.032f;

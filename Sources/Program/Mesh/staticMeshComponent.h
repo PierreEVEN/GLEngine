@@ -8,9 +8,11 @@ class StaticMesh;
 class Material;
 class MeshSectionComponent;
 
+
 class StaticMeshComponent : public SceneComponent
 {
 public:
+
 
 	StaticMesh* meshData;
 

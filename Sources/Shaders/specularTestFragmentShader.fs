@@ -1,8 +1,8 @@
 #version 330 core
 
-#define MAX_DIRECTIONAL_LIGHTS 20
-#define MAX_POINT_LIGHTS 100
-#define MAX_SPOTLIGHTS_LIGHTS 16
+#define MAX_DIRECTIONAL_LIGHTS 2
+#define MAX_POINT_LIGHTS 4
+#define MAX_SPOTLIGHTS_LIGHTS 4
 
 #define Material_Diffuse StaticTexture_0
 #define Material_Specular StaticTexture_1

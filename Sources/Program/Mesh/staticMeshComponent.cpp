@@ -3,12 +3,14 @@
 #include "meshSectionComponent.h"
 #include "../World/world.h"
 
+
 StaticMeshComponent::StaticMeshComponent(World* newWorld, StaticMesh* inMeshData, std::vector<Material*> newMaterialOverride /*= {}*/)
 	: SceneComponent(newWorld)
 {
 	materialOverride = newMaterialOverride;
 	meshData = inMeshData;
-	
+
+
 	for (auto& section : inMeshData->meshSections)
 	{
 		MeshSectionComponent* newSection = new MeshSectionComponent(newWorld, &section);

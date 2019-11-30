@@ -3,39 +3,31 @@
 
 #include "meshSectionComponent.h"
 
+#include <bullet3D/btBulletDynamicsCommon.h>
+
+
 class PhysicPrimitiveComponent : public MeshSectionComponent
 {
 
-	glm::vec3 LinearVelocity;
-	glm::vec3 AngularVelocity;
+
+	// btDefaultMotionState fournit une implémentation pour synchroniser les transformations.
+	btDefaultMotionState *myMotionState;
+	btRigidBody *body;
+
+
+	void Init(World* inWorld);
+
 	
 public:
 	PhysicPrimitiveComponent(World* inWorld);
 	PhysicPrimitiveComponent(World* inWorld, StaticMeshSection* inStaticMeshSection);
 
 
+	virtual void SetLocation(glm::vec3 newLocation) override;
+	virtual glm::vec3 GetLocation() const override;
+	virtual float GetAngle() const override;
+	virtual glm::vec3 GetForwardVector() const override;
 
-	void Init()
-	{
-		LinearVelocity = glm::vec3(0.f);
-		AngularVelocity = glm::vec3(0.f);
-	}
-
-	virtual void Update(double DeltaTime) override
-	{
-		LinearVelocity += glm::vec3(0.f, -(float)DeltaTime * 5.f, 0.f);
-		SetLocation(location + LinearVelocity * glm::vec3((float)DeltaTime));
-		if (location[1] < 1.f)
-		{
-			location[1] = 1.01f;
-			LinearVelocity *= glm::vec3(1, -.9, 1);
-		}
-	}
-
-	void SetLinearVelocity(glm::vec3 newVelocity)
-	{
-		LinearVelocity = newVelocity;
-	}
 protected:
 
 	void BounceCoordinate(double Coord, double& speed, float& RotSpeed, float posMax, float posMin, float restitution = 1.f)
@@ -53,6 +45,7 @@ protected:
 	{
 		Coord = Coord < posMin ? posMax : Coord > posMax ? posMin : Coord;
 	}
+
 
 
 };
