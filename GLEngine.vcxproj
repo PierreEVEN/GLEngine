@@ -22,32 +22,32 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{1255E73D-5858-41FB-88CF-5BD1E2512432}</ProjectGuid>
     <RootNamespace>GLEngine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -70,8 +70,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>E:\Dev\Cpp\GLEngine\GLEngine\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Dev\Cpp\GLEngine\GLEngine\Lib\assimp;E:\Dev\Cpp\GLEngine\GLEngine\Lib\glfw3;E:\Dev\Cpp\GLEngine\GLEngine\Lib\bullet3D;$(LibraryPath)</LibraryPath>
+    <IncludePath>Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>Lib\assimp;Lib\glfw3;Lib\bullet3D;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\Output\</OutDir>
+    <IntDir>..\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>GLEngine\Includes;$(IncludePath)</IncludePath>
@@ -134,68 +136,68 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GLEngine/Sources/Program/Asset/asset.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Asset/AssetImporter.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Asset/assetSerializer.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Asset/assetLibrary.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Texture/texture.h" />
-    <ClInclude Include="GLEngine/Sources/Program/World/world.h" />
-    <ClInclude Include="GLEngine/Sources/Program/World/worldAsset.h" />
-    <ClInclude Include="GLEngine/Sources/Program/World/sceneComponent.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Camera/camera.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Shader/material.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Shader/shaderLoader.h" />
-    <ClInclude Include="GLEngine/Sources/Program/ThirdParty/stb_image.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Mesh/meshSectionComponent.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Mesh/staticMeshComponent.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Mesh/staticMesh.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Mesh/PhysicPrimitiveComponent.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Lighting/directionalLight.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Lighting/spotLight.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Lighting/Light.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Lighting/pointLight.h" />
-    <ClInclude Include="GLEngine/Sources/Program/Physic/primitiveComponent.h" />
-    <ClInclude Include="GLEngine/Sources/Program/MathLibrary/vector3.h" />
-    <ClInclude Include="GLEngine/Sources/Program/ImGUI/imgui_impl_glfw.h" />
-    <ClInclude Include="GLEngine/Sources/Program/ImGUI/imgui_impl_opengl3.h" />
-    <ClInclude Include="GLEngine/Sources/Program/ImGUI/imconfig.h" />
-    <ClInclude Include="GLEngine/Sources/Program/ImGUI/imgui.h" />
-    <ClInclude Include="GLEngine/Sources/Program/ImGUI/imgui_internal.h" />
-    <ClInclude Include="GLEngine/Sources/Program/ImGUI/imstb_rectpack.h" />
-    <ClInclude Include="GLEngine/Sources/Program/ImGUI/imstb_textedit.h" />
-    <ClInclude Include="GLEngine/Sources/Program/ImGUI/imstb_truetype.h" />
-    <ClInclude Include="GLEngine/Sources/Program/UI/EditorWindow.h" />
+    <ClInclude Include="Sources/Program/Asset/asset.h" />
+    <ClInclude Include="Sources/Program/Asset/AssetImporter.h" />
+    <ClInclude Include="Sources/Program/Asset/assetSerializer.h" />
+    <ClInclude Include="ources/Program/Asset/assetLibrary.h" />
+    <ClInclude Include="Sources/Program/Texture/texture.h" />
+    <ClInclude Include="Sources/Program/World/world.h" />
+    <ClInclude Include="Sources/Program/World/worldAsset.h" />
+    <ClInclude Include="Sources/Program/World/sceneComponent.h" />
+    <ClInclude Include="Sources/Program/Camera/camera.h" />
+    <ClInclude Include="Sources/Program/Shader/material.h" />
+    <ClInclude Include="Sources/Program/Shader/shaderLoader.h" />
+    <ClInclude Include="Sources/Program/ThirdParty/stb_image.h" />
+    <ClInclude Include="Sources/Program/Mesh/meshSectionComponent.h" />
+    <ClInclude Include="Sources/Program/Mesh/staticMeshComponent.h" />
+    <ClInclude Include="Sources/Program/Mesh/staticMesh.h" />
+    <ClInclude Include="Sources/Program/Mesh/PhysicPrimitiveComponent.h" />
+    <ClInclude Include="Sources/Program/Lighting/directionalLight.h" />
+    <ClInclude Include="Sources/Program/Lighting/spotLight.h" />
+    <ClInclude Include="Sources/Program/Lighting/Light.h" />
+    <ClInclude Include="Sources/Program/Lighting/pointLight.h" />
+    <ClInclude Include="Sources/Program/Physic/primitiveComponent.h" />
+    <ClInclude Include="Sources/Program/MathLibrary/vector3.h" />
+    <ClInclude Include="Sources/Program/ImGUI/imgui_impl_glfw.h" />
+    <ClInclude Include="Sources/Program/ImGUI/imgui_impl_opengl3.h" />
+    <ClInclude Include="Sources/Program/ImGUI/imconfig.h" />
+    <ClInclude Include="Sources/Program/ImGUI/imgui.h" />
+    <ClInclude Include="Sources/Program/ImGUI/imgui_internal.h" />
+    <ClInclude Include="Sources/Program/ImGUI/imstb_rectpack.h" />
+    <ClInclude Include="Sources/Program/ImGUI/imstb_textedit.h" />
+    <ClInclude Include="Sources/Program/ImGUI/imstb_truetype.h" />
+    <ClInclude Include="Sources/Program/UI/EditorWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GLEngine/Sources/Program/Asset/asset.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Asset/AssetImporter.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Asset/assetSerializer.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Asset/assetLibrary.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Texture/texture.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/World/world.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/World/worldAsset.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/World/sceneComponent.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/main.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/ThirdParty/stb_image.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Shader/material.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Shader/shaderLoader.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/ThirdParty/glad.c" />
-    <ClCompile Include="GLEngine/Sources/Program/Mesh/staticMesh.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Mesh/meshSectionComponent.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Mesh/staticMeshComponent.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Mesh/PhysicPrimitiveComponent.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Camera/camera.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Lighting/directionalLight.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Lighting/spotLight.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Lighting/Light.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Lighting/pointLight.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/Physic/primitiveComponent.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/ImGUI/imgui_impl_glfw.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/ImGUI/imgui_impl_opengl3.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/ImGUI/imgui.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/ImGUI/imgui_draw.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/ImGUI/imgui_widgets.cpp" />
-    <ClCompile Include="GLEngine/Sources/Program/UI/EditorWindow.cpp" />
+    <ClCompile Include="Sources/Program/Asset/asset.cpp" />
+    <ClCompile Include="Sources/Program/Asset/AssetImporter.cpp" />
+    <ClCompile Include="Sources/Program/Asset/assetSerializer.cpp" />
+    <ClCompile Include="Sources/Program/Asset/assetLibrary.cpp" />
+    <ClCompile Include="Sources/Program/Texture/texture.cpp" />
+    <ClCompile Include="Sources/Program/World/world.cpp" />
+    <ClCompile Include="Sources/Program/World/worldAsset.cpp" />
+    <ClCompile Include="Sources/Program/World/sceneComponent.cpp" />
+    <ClCompile Include="Sources/Program/main.cpp" />
+    <ClCompile Include="Sources/Program/ThirdParty/stb_image.cpp" />
+    <ClCompile Include="Sources/Program/Shader/material.cpp" />
+    <ClCompile Include="Sources/Program/Shader/shaderLoader.cpp" />
+    <ClCompile Include="Sources/Program/ThirdParty/glad.c" />
+    <ClCompile Include="Sources/Program/Mesh/staticMesh.cpp" />
+    <ClCompile Include="Sources/Program/Mesh/meshSectionComponent.cpp" />
+    <ClCompile Include="Sources/Program/Mesh/staticMeshComponent.cpp" />
+    <ClCompile Include="Sources/Program/Mesh/PhysicPrimitiveComponent.cpp" />
+    <ClCompile Include="Sources/Program/Camera/camera.cpp" />
+    <ClCompile Include="Sources/Program/Lighting/directionalLight.cpp" />
+    <ClCompile Include="Sources/Program/Lighting/spotLight.cpp" />
+    <ClCompile Include="Sources/Program/Lighting/Light.cpp" />
+    <ClCompile Include="Sources/Program/Lighting/pointLight.cpp" />
+    <ClCompile Include="Sources/Program/Physic/primitiveComponent.cpp" />
+    <ClCompile Include="Sources/Program/ImGUI/imgui_impl_glfw.cpp" />
+    <ClCompile Include="Sources/Program/ImGUI/imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Sources/Program/ImGUI/imgui.cpp" />
+    <ClCompile Include="Sources/Program/ImGUI/imgui_draw.cpp" />
+    <ClCompile Include="Sources/Program/ImGUI/imgui_widgets.cpp" />
+    <ClCompile Include="Sources/Program/UI/EditorWindow.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

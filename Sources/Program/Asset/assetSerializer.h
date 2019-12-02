@@ -59,7 +59,7 @@ public:
 		SPropertyValue testValue;
 		ReadNextField<std::string>(testValue, iStream);
 
-		std::cout << testValue.propertyValue << std::endl;
+		std::cout << testValue.propertyName << " | " << testValue.propertyValue << std::endl;
 
 		EndRead(iStream);
 	}
@@ -78,14 +78,14 @@ public:
 template <class T>
 void AssetSerializer::AppendField(std::ofstream* outputFileStream, std::string fieldName, T value, unsigned int elements)
 {
-	fieldName += ":";
+	fieldName += "=";
 	outputFileStream->write((char*)fieldName.data(), sizeof(fieldName));
 
 	outputFileStream->write((char*)&elements, sizeof(unsigned int));
 
 	for (unsigned int i = 0; i < elements; ++i)
 	{
-		outputFileStream->write((char*)&value[0], sizeof(const char *));
+		outputFileStream->write((char*)&value[0], sizeof(std::string("XValueX")));
 	}
 }
 
@@ -97,11 +97,12 @@ bool AssetSerializer::ReadNextField(SPropertyValue& value, std::ifstream* output
 	const char* nextChar;
 	while (outputFileStream->read((char*)&nextChar, sizeof(const char*)) && nextChar != (const char*)'=')
 	{
+		std::cout << nextChar << std::endl;
 		value.propertyName += nextChar;
 	}
 	std::cout << "PropertyName : " << value.propertyName << std::endl;
 
-	outputFileStream->read((char *)&value.elements, sizeof(unsigned int));
+	outputFileStream->read((char*)&value.elements, sizeof(unsigned int));
 
 	std::cout << "Elements : " << std::to_string(value.elements) << std::endl;
 	value.propertyValue = nullptr;

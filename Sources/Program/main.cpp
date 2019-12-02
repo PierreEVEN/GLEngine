@@ -35,9 +35,9 @@ double DeltaSecond;
 
 int main()
 {
-	AssetSerializer::TestDebug();
-
-	while(true) {}
+// 	AssetSerializer::TestDebug();
+// 
+// 	while(true) {}
 
 
 
