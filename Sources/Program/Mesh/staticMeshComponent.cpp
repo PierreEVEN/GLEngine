@@ -5,7 +5,7 @@
 
 
 StaticMeshComponent::StaticMeshComponent(World* newWorld, StaticMesh* inMeshData, std::vector<Material*> newMaterialOverride /*= {}*/)
-	: SceneComponent(newWorld)
+	: PrimitiveComponent(newWorld)
 {
 	materialOverride = newMaterialOverride;
 	meshData = inMeshData;
@@ -19,7 +19,7 @@ StaticMeshComponent::StaticMeshComponent(World* newWorld, StaticMesh* inMeshData
 	}
 }
 
-void StaticMeshComponent::SetLocation(glm::vec3 newLocation)
+void StaticMeshComponent::SetLocation(SVector3 newLocation)
 {
 	SceneComponent::SetLocation(newLocation);
 	for (auto& section : sections)
@@ -46,7 +46,7 @@ void StaticMeshComponent::SetAngle(float newAngle)
 	}
 }
 
-void StaticMeshComponent::SetScale3D(glm::vec3 newScale3D)
+void StaticMeshComponent::SetScale3D(SVector3 newScale3D)
 {
 	SceneComponent::SetScale3D(newScale3D);
 	for (auto& section : sections)

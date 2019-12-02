@@ -23,8 +23,8 @@ public:
 	PhysicPrimitiveComponent(World* inWorld, StaticMeshSection* inStaticMeshSection);
 
 
-	virtual void SetLocation(glm::vec3 newLocation) override;
-	virtual glm::vec3 GetLocation() const override;
+	virtual void SetLocation(SVector3 newLocation) override;
+	virtual SVector3 GetLocation() const override;
 	virtual float GetAngle() const override;
 	virtual glm::vec3 GetForwardVector() const override;
 

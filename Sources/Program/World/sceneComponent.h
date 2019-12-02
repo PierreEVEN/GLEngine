@@ -2,6 +2,7 @@
 #define SCENECOMPONENT_H
 
 #include <glm/gtx/matrix_decompose.hpp>
+#include "../MathLibrary/vector3.h"
 
 class World;
 
@@ -16,10 +17,11 @@ protected:
 
 	World* OwningWorld;
 
-	glm::vec3 location;
+	SVector3 location;
+	SRotator rotation;
 	glm::vec3 forwardVector;
 	float angle;
-	glm::vec3 scale3D;
+	SVector3 scale3D;
 	
 public:
 
@@ -27,15 +29,17 @@ public:
 
 	virtual void Update(double DeltaTime) {	}
 
-	virtual void SetLocation(glm::vec3 newLocation);
+	virtual void SetLocation(SVector3 newLocation);
+	virtual void SetRotation(SRotator newRotation);
 	virtual void SetForwardVector(glm::vec3 newForwardVector);
 	virtual void SetAngle(float newAngle);
-	virtual void SetScale3D(glm::vec3 newScale3D);
+	virtual void SetScale3D(SVector3 newScale3D);
 
-	virtual glm::vec3 GetLocation() const;
+	virtual SVector3 GetLocation() const;
+	virtual SRotator GetRotation() const;
 	virtual glm::vec3 GetForwardVector() const;
 	virtual float GetAngle() const;
-	virtual glm::vec3 GetScale3D() const;
+	virtual SVector3 GetScale3D() const;
 
 	World* GetWorld();
 };

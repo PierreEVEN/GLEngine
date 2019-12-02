@@ -26,16 +26,10 @@ public:
 
 	bool bIsUnlit;
 
-	Material(std::string textAssetPath);
-
-	Material(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures);
+	Material(std::string textAssetPath) : Asset(textAssetPath) {}
 
 	void InitializeShader(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures);
-
-
-
-	virtual void Parse(const Document& data) override;
-
+	
 	void use(World* OwningWorld) const;
 
 	void setBool(const std::string &name, bool value) const;

@@ -38,19 +38,3 @@ void Texture2D::LoadFromPath(std::string textAssetPath)
 
 	stbi_image_free(data);
 }
-
-Texture2D::Texture2D(std::string texturePath, bool bIsDynamic)
-	: Asset()
-{
-	textureDataPath = texturePath;
-	LoadFromPath(texturePath);
-}
-
-void Texture2D::Parse(const Document& data)
-{
-	Asset::Parse(data);
-	assert(data.HasMember("TextureDataPath"));
-	assert(data["TextureDataPath"].IsString());
-	textureDataPath = data["TextureDataPath"].GetString();
-	LoadFromPath(textureDataPath);
-}

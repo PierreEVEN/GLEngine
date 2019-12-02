@@ -9,15 +9,7 @@
 #include "../Lighting/spotLight.h"
 #include "../Lighting/directionalLight.h"
 
-Material::Material(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures)
-{
-	bIsUnlit = true;
-	InitializeShader(vertexShaderPath, fragmentShaderPath, newTextures);
-}
 
-Material::Material(std::string textAssetPath) : Asset(textAssetPath)
-{
-}
 
 void Material::InitializeShader(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures)
 {
@@ -39,19 +31,19 @@ void Material::use(World* OwningWorld) const
 	glUseProgram(ShaderID);
 
 
-	glUniform3f(glGetUniformLocation(ShaderID, "CameraPosition"), OwningWorld->GetCamera()->GetCameraLocation()[0], OwningWorld->GetCamera()->GetCameraLocation()[1], OwningWorld->GetCamera()->GetCameraLocation()[2]);
+	glUniform3f(glGetUniformLocation(ShaderID, "CameraPosition"), (float)OwningWorld->GetCamera()->GetCameraLocation().X, (float)OwningWorld->GetCamera()->GetCameraLocation().Y, (float)OwningWorld->GetCamera()->GetCameraLocation().Z);
 	setFloat("Time", (float)glfwGetTime());
 	setFloat("MaterialShininess", 1.f);
 
 
-	if (!bIsUnlit)
+	if (!bIsUnlit && !OwningWorld->bSkipLightRendering)
 	{
 		std::vector<PointLight*> pointLights = OwningWorld->GetPointLightSources();
 		std::vector<DirectionalLight*> directionalLights = OwningWorld->GetDirectionalLightSources();
 		std::vector<SpotLight*> spotLights = OwningWorld->GetSpotLightSources();
 		for (unsigned int i = 0; i < pointLights.size() && i < 16; ++i)
 		{
-			setVec3("pointLights[" + std::to_string(i) + "].position", pointLights[i]->GetLocation());
+			setVec3("pointLights[" + std::to_string(i) + "].position", pointLights[i]->GetLocation().ToGLVector());
 			setVec3("pointLights[" + std::to_string(i) + "].ambient", pointLights[i]->ambiant[0], pointLights[i]->ambiant[1], pointLights[i]->ambiant[2]);
 			setVec3("pointLights[" + std::to_string(i) + "].diffuse", pointLights[i]->diffuse[0], pointLights[i]->diffuse[1], pointLights[i]->diffuse[2]);
 			setVec3("pointLights[" + std::to_string(i) + "].specular", pointLights[i]->specular[0], pointLights[i]->specular[1], pointLights[i]->specular[2]);
@@ -68,7 +60,7 @@ void Material::use(World* OwningWorld) const
 		}
 		for (unsigned int i = 0; i < spotLights.size() && i < 16; ++i)
 		{
-			setVec3("spotLight[" + std::to_string(i) + "].position", spotLights[i]->GetLocation());
+			setVec3("spotLight[" + std::to_string(i) + "].position", spotLights[i]->GetLocation().ToGLVector());
 			setVec3("spotLight[" + std::to_string(i) + "].direction", spotLights[i]->direction);
 			setVec3("spotLight[" + std::to_string(i) + "].ambient", spotLights[i]->ambiant[0], spotLights[i]->ambiant[1], spotLights[i]->ambiant[2]);
 			setVec3("spotLight[" + std::to_string(i) + "].diffuse", spotLights[i]->diffuse[0], spotLights[i]->diffuse[1], spotLights[i]->diffuse[2]);
@@ -155,42 +147,4 @@ void Material::setMat3(const std::string &name, const glm::mat3 &mat) const
 void Material::setMat4(const std::string &name, const glm::mat4 &mat) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-}
-
-void Material::Parse(const Document& data)
-{
-	Asset::Parse(data);
-	assert(data.HasMember("VertexShaderPath"));
-	assert(data["VertexShaderPath"].IsString());
-	vertexShaderPath = data["VertexShaderPath"].GetString();
-
-	assert(data.HasMember("FragmentShaderPath"));
-	assert(data["FragmentShaderPath"].IsString());
-	fragmentShaderPath = data["FragmentShaderPath"].GetString();
-
-	if (data.HasMember("Unlit"))
-	{
-		assert(data["Unlit"].IsBool());
-		bIsUnlit = data["Unlit"].GetBool();
-	}
-
-	textures = {};
-	if (data.HasMember("Textures"))
-	{
-		const Value& textureData = data["Textures"];
-		assert(textureData.IsArray());
-		for (SizeType textureIndex = 0; textureIndex < textureData.Size(); textureIndex++)
-		{
-			assert(textureData[textureIndex].IsString());
-			if (Texture2D* texture2DAsset = AssetLibrary::FindAssetByName<Texture2D>(textureData[textureIndex].GetString()))
-			{
-				textures.push_back(texture2DAsset);
-			}
-			else
-			{
-				std::cout << textureData[textureIndex].GetString() << " is not a valid texture file" << std::endl;
-			}
-		}
-	}
-	InitializeShader(vertexShaderPath.data(), fragmentShaderPath.data(), textures);
 }

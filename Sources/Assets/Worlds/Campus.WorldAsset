@@ -1,20 +1,5 @@
-{
-	"AssetName" : "MondeCampus",
-  "WorldComponents" : [
-    "{
-      "AssetName" : "CubeMesh",
-      "PositionX" : 0,
-      "PositionY" : 0,
-      "PositionZ" : 0,
-      "DirectionX" : 0,
-      "DirectionY" : 0,
-      "DirectionZ" : 0,
-      "Angle" : 0,
-      "ScaleX" : 1,
-      "ScaleY" : 1,
-      "ScaleZ" : 1,
-      "AssetProperties" : "{
-                          }"
-    }"
-  ]
-}
+####### GLEngineAsset = World #######
+/* Asset defaults */
+#assetName = CampusWorld
+
+/* Asset properties */

@@ -1,29 +1,35 @@
 
 #include "camera.h"
+#include <glfw3/glfw3.h>
+#include "../World/world.h"
 
-Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
-	: Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+Camera::Camera(World* inParentWorld, SVector3 position, SVector3 up, float yaw, float pitch)
+	: ParentWorld(inParentWorld), Front(SVector3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
 	Position = position;
 	WorldUp = up;
 	Yaw = yaw;
 	Pitch = pitch;
+	bDoesCaptureMouse = false;
+	LastMouseDisplayChangeTime = 0.0;
 	updateCameraVectors();
 }
 
-Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
-	: Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+Camera::Camera(World* inParentWorld, float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
+	: ParentWorld(inParentWorld), Front(SVector3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
-	Position = glm::vec3(posX, posY, posZ);
-	WorldUp = glm::vec3(upX, upY, upZ);
+	Position = SVector3(posX, posY, posZ);
+	WorldUp = SVector3(upX, upY, upZ);
 	Yaw = yaw;
 	Pitch = pitch;
+	bDoesCaptureMouse = false;
+	LastMouseDisplayChangeTime = 0.0;
 	updateCameraVectors();
 }
 
 glm::mat4 Camera::GetViewMatrix()
 {
-	return glm::lookAt(Position, Position + Front, Up);
+	return glm::lookAt(Position.ToGLVector(), Position.ToGLVector() + Front.ToGLVector(), Up.ToGLVector());
 }
 
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
@@ -45,6 +51,7 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
 
 void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch /*= true*/)
 {
+	if (!bDoesCaptureMouse) return;
 	xoffset *= MouseSensitivity;
 	yoffset *= MouseSensitivity;
 
@@ -66,12 +73,24 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
 
 void Camera::ProcessMouseScroll(float yoffset)
 {
-	if (Zoom >= 1.0f && Zoom <= 80.f)
-		Zoom -= yoffset;
-	if (Zoom <= 1.0f)
-		Zoom = 1.0f;
-	if (Zoom >= 80.f)
-		Zoom = 80.f;
+
+}
+
+void Camera::SwitchCaptureMouse()
+{
+	if (glfwGetTime() - LastMouseDisplayChangeTime > 0.5)
+	{
+		bDoesCaptureMouse = !bDoesCaptureMouse;
+		if (bDoesCaptureMouse)
+		{
+			glfwSetInputMode(ParentWorld->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+		else
+		{
+			glfwSetInputMode(ParentWorld->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+		LastMouseDisplayChangeTime = glfwGetTime();
+	}
 }
 
 void Camera::updateCameraVectors()
@@ -83,6 +102,6 @@ void Camera::updateCameraVectors()
 	front.y = sin(glm::radians(-Yaw)) * cos(glm::radians(Pitch));
 	Front = glm::normalize(front);
 	// Also re-calculate the Right and Up vector
-	Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-	Up = glm::normalize(glm::cross(Right, Front));
+	Right = glm::normalize(glm::cross(Front.ToGLVector(), WorldUp.ToGLVector()));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	Up = glm::normalize(glm::cross(Right.ToGLVector(), Front.ToGLVector()));
 }

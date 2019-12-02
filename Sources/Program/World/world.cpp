@@ -16,6 +16,10 @@
 
 #include <bullet3D/btBulletDynamicsCommon.h>
 #include <bullet3D/LinearMath/btIDebugDraw.h>
+#include "../ImGUI/imgui.h"
+#include "../ImGUI/imgui_impl_opengl3.h"
+#include "../ImGUI/imgui_impl_glfw.h"
+#include "../UI/EditorWindow.h"
 
 std::vector<World*> GWorlds;
 
@@ -34,7 +38,7 @@ World::World(std::string worldName)
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	worldCamera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+	worldCamera = new Camera(this, glm::vec3(0.0f, 0.0f, 3.0f));
 
 	/************************************************************************/
 	/* BULLET 3D                                                            */
@@ -53,14 +57,15 @@ World::World(std::string worldName)
 	physicWorld->setGravity(btVector3(0, 0, -10));
 
 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
 	defaultTexture = nullptr;
 	defaultMaterial = nullptr;
 	cubeMesh = nullptr;
-	ambiantColor = glm::vec3(0, 0, 0);
+
+
 }
 
 World::~World()
@@ -109,21 +114,10 @@ void World::RegisterDirectionalLight(DirectionalLight* newDirectionalLightSource
 void World::processInput() {
 	float cameraSpeed = 2.5f * (float)worldDeltaSecond;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-	if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		GetCamera()->SwitchCaptureMouse();
 
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-
 		StaticMeshComponent* newObj = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
 		newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(10.f));
 	}
@@ -146,16 +140,7 @@ void World::processInput() {
 		worldCamera->ProcessKeyboard(UP, (float)worldDeltaSecond);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		worldCamera->ProcessKeyboard(DOWN, (float)worldDeltaSecond);
-
-	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
-	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-		worldCamera->SetCameraSpeed(worldCamera->GetCameraSpeed() * 1.1f);
-	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-		worldCamera->SetCameraSpeed(worldCamera->GetCameraSpeed() * .9f);
+	
 
 	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
 	{
@@ -175,7 +160,7 @@ void World::processInput() {
 		if (glfwGetTime() - LastLightUseTime > 0.5f)
 		{
 			DirectionalLight* newObj = new DirectionalLight(this);
-			newObj->direction = GetCamera()->GetCameraForwardVector();
+			newObj->direction = GetCamera()->GetCameraForwardVector().ToGLVector();
 			LastLightUseTime = glfwGetTime();
 		}
 	}
@@ -186,7 +171,7 @@ void World::processInput() {
 		{
 			SpotLight* newObj = new SpotLight(this);
 			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
-			newObj->direction = GetCamera()->GetCameraForwardVector();
+			newObj->direction = GetCamera()->GetCameraForwardVector().ToGLVector();
 			newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
 			lightMesh->SetLocation(newObj->GetLocation());
 			LastLightUseTime = glfwGetTime();
@@ -259,9 +244,9 @@ void World::UpdateWorld(double deltaSecond)
 
 
 
-	if (GetPhysicWorld())
+	if (GetPhysicWorld() && bSimulatePhysics)
 	{
-		GetPhysicWorld()->stepSimulation(deltaSecond);
+		GetPhysicWorld()->stepSimulation((float)deltaSecond);
 	}
 
 
@@ -276,6 +261,13 @@ void World::UpdateWorld(double deltaSecond)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
+
+
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+
 	processInput();
 
 	for (unsigned int primIndex = 0; primIndex < primitives.size(); ++primIndex)
@@ -283,6 +275,11 @@ void World::UpdateWorld(double deltaSecond)
 		primitives[primIndex]->MarkRenderStateDirty();
 		primitives[primIndex]->Update(worldDeltaSecond);
 	}
+	
+	EditorWindow::DrawWindow(this);
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	glfwSwapBuffers(GetWindow());
 	glfwPollEvents();

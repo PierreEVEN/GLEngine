@@ -1,4 +1,5 @@
-{
-	"AssetName" : "GridTexture",
-	"TextureDataPath" : "GLEngine/Sources/Ressources/Textures/defaultGrid.png"
-}
+####### GLEngineAsset : Texture2D #######
+/* Asset defaults */
+#assetName = GridTexture
+
+/* Asset properties */

@@ -16,7 +16,7 @@ public:
 
 	static std::vector<std::string> CollectFilesUnderFolder(std::string folder);
 
-	static void LoadLibraryFiles(std::string RootFolder);
+	static void RegisterAssetFiles(std::string RootFolder);
 
 	static bool CheckExtension(const std::string& filePath, const std::string& extension);
 
@@ -44,7 +44,6 @@ public:
 	static T* LoadAsset(const std::string filePath)
 	{
 		T* Asset = new T(filePath);
-		Asset->LoadAsset();
 		return Asset;
 	}
 

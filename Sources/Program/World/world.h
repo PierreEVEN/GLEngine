@@ -63,18 +63,16 @@ class World
 	std::vector<SpotLight*> spotLightSources;
 	std::vector<DirectionalLight*> directionalLightSources;
 	std::vector<SceneComponent*> primitives;
-
-	int testWidth;
-	int testHeight;
-
+	
 	double LastLightUseTime = 0.0;
 
-	glm::vec3 ambiantColor;
 
 public:
 
 	World(std::string worldName);
 	~World();
+
+
 
 	GLFWwindow* GetWindow() const { return window; }
 	Camera* GetCamera() const { return worldCamera; }
@@ -85,15 +83,19 @@ public:
 	void RegisterSpotLight(SpotLight* newSpotLightSource);
 	void RegisterDirectionalLight(DirectionalLight* newDirectionalLightSource);
 
+	bool bSkipLightRendering = false;
+	bool bSimulatePhysics = true;
+
 	std::vector<PointLight*> GetPointLightSources() const { return pointLightSources; }
 	std::vector<DirectionalLight*> GetDirectionalLightSources() const { return directionalLightSources; }
 	std::vector<SpotLight*> GetSpotLightSources() const { return spotLightSources; }
+	std::vector<SceneComponent*> GetSceneComponents() const { return primitives; }
 
 
 	btDiscreteDynamicsWorld* GetPhysicWorld() { return physicWorld; }
 
 	void processInput();
-
+	double GetWorldDeltaSecond() const { return worldDeltaSecond; }
 	void UpdateFramebufferSize(int width, int height);
 	void UpdateMouseState(double xpos, double ypos);
 	void UpdateScrollState(double xoffset, double yoffset);

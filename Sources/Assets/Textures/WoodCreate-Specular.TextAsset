@@ -1,4 +1,5 @@
-{
-	"AssetName" : "WoodCrate-S",
-	"TextureDataPath" : "GLEngine/Sources/Ressources/Textures/WoodCrate-Spec.png"
-}
+####### GLEngineAsset : Texture2D #######
+/* Asset defaults */
+#assetName = WoodCrate-S
+
+/* Asset properties */

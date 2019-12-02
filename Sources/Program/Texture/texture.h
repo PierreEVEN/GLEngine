@@ -17,12 +17,8 @@ class Texture2D : public Asset
 public:
 
 	Texture2D(std::string textAssetPath) : Asset(textAssetPath) { }
-	Texture2D(std::string texturePath, bool bIsDynamic);
 
 	unsigned int GetTextureID() const { return textureID; }
 	
-	virtual void Parse(const Document& data) override;
-
-
 };
 #endif

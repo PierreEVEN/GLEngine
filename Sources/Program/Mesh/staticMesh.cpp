@@ -9,11 +9,6 @@
 #include "../ThirdParty/stb_image.h"
 #include <assimp/material.h>
 
-StaticMesh::StaticMesh(std::string newDataPath, std::vector<Material*> newUsedMaterials)
-{
-	usedMaterial = newUsedMaterials;
-	LoadData(newDataPath);
-}
 
 void StaticMesh::LoadData(std::string path)
 {
@@ -137,44 +132,9 @@ std::vector<Texture2D*> StaticMesh::loadMaterialTextures(aiMaterial *mat, aiText
 		aiString str;
 		mat->GetTexture(type, i, &str);
 
-		Texture2D* texture = new Texture2D("this->directory" + '/' + std::string(str.C_Str()), true);
+		//Texture2D* texture = new Texture2D("this->directory" + '/' + std::string(str.C_Str()), true);
 		std::cout << "Registered new dynamic texture " << mat->GetName().C_Str() << std::endl;
-		textures.push_back(texture);
+		//textures.push_back(texture);
 	}
 	return textures;
-}
-
-void StaticMesh::Parse(const Document& data)
-{
-	Asset::Parse(data);
-	assert(data.HasMember("MeshObjectPath"));
-	assert(data["MeshObjectPath"].IsString());
-	dataPath = data["MeshObjectPath"].GetString();
-
-	Asset::Parse(data);
-	assert(data.HasMember("MeshObjectPath"));
-	assert(data["MeshObjectPath"].IsString());
-	dataPath = data["MeshObjectPath"].GetString();
-
-	usedMaterial = {};
-	if (data.HasMember("Materials"))
-	{
-		const Value& textureData = data["Materials"];
-		assert(textureData.IsArray());
-		for (SizeType textureIndex = 0; textureIndex < textureData.Size(); textureIndex++)
-		{
-			assert(textureData[textureIndex].IsString());
-
-			if (Material* texture2DAsset = AssetLibrary::FindAssetByName<Material>(textureData[textureIndex].GetString()))
-			{
-				usedMaterial.push_back(texture2DAsset);
-			}
-			else
-			{
-				std::cout << textureData[textureIndex].GetString() << " is not a valid material file" << std::endl;
-			}
-		}
-	}
-
-	LoadData(dataPath);
 }

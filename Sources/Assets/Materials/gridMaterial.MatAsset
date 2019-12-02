@@ -1,7 +1,8 @@
-{
-	"AssetName" : "GridMaterial",
-	"VertexShaderPath" : "GLEngine/Sources/Shaders/Default/defaultGridVertexShader.vs",
-	"FragmentShaderPath" : "GLEngine/Sources/Shaders/Default/defaultGridFragmentShader.fs",
-	"Unlit" : true,
-	"Textures" : [ "GridTexture" ]
-}
+####### GLEngineAsset : Material #######
+/* Asset defaults */
+#assetName = GridMaterial
+
+/* Asset properties */
+#VarTwo = valueOne
+#VarOel = valueThree
+#testField2 = valueThree

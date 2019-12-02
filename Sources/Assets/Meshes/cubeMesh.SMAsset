@@ -1,5 +1,5 @@
-{
-	"AssetName" : "CubeMesh",
-	"MeshObjectPath" : "GLEngine/Sources/Ressources/Mesh/Cube1M.fbx",
-	"Materials" : [ "specularTestMaterial" ]
-}
+####### GLEngineAsset : StaticMesh #######
+/* Asset defaults */
+#assetName = CubeMesh
+
+/* Asset properties */

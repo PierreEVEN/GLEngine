@@ -1,5 +1,5 @@
-#ifndef PRIMITIVECOMPONENT_H
-#define PRIMITIVECOMPONENT_H
+#ifndef MESHSECTIONCOMPONENT_H
+#define MESHSECTIONCOMPONENT_H
 
 #include "../World/sceneComponent.h"
 

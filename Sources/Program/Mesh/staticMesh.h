@@ -45,7 +45,6 @@ public:
 	std::vector<Material*> usedMaterial;
 
 	StaticMesh(std::string dataAssetPath) : Asset(dataAssetPath) {}
-	StaticMesh(std::string newDataPath, std::vector<Material*> newUsedMaterials);
 
 	void LoadData(std::string path);
 	void processNode(aiNode *node, const aiScene *scene);
@@ -53,5 +52,4 @@ public:
 
 	std::vector<Texture2D*> loadMaterialTextures(aiMaterial *mat, aiTextureType type);
 
-	virtual void Parse(const Document& data) override;
 };

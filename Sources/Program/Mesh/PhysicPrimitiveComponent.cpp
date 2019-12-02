@@ -42,16 +42,16 @@ PhysicPrimitiveComponent::PhysicPrimitiveComponent(World* inWorld, StaticMeshSec
 	Init(inWorld);
 }
 
-void PhysicPrimitiveComponent::SetLocation(glm::vec3 newLocation)
+void PhysicPrimitiveComponent::SetLocation(SVector3 newLocation)
 {
 	MeshSectionComponent::SetLocation(newLocation);
 	btTransform newTransform;
 	newTransform.setIdentity();
-	newTransform.setOrigin(btVector3(newLocation[0], newLocation[1], newLocation[2]));
+	newTransform.setOrigin(newLocation.ToBulletVector());
 	body->setWorldTransform(newTransform);
 }
 
-glm::vec3 PhysicPrimitiveComponent::GetLocation() const
+SVector3 PhysicPrimitiveComponent::GetLocation() const
 {
 	btTransform objectTransform = body->getWorldTransform();	
 	return glm::vec3((float)objectTransform.getOrigin().getX(), (float)objectTransform.getOrigin().getY(), (float)objectTransform.getOrigin().getZ());

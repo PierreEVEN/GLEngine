@@ -7,57 +7,69 @@
 #include "assetLibrary.h"
 
 
-Asset::Asset()
-{
-	assetPath = "";
-	assetName = AssetLibrary::GenerateNonExistingAssetName();
-}
 
 Asset::Asset(std::string inAssetPath)
 {
+	Initialize(inAssetPath);
+}
+
+void Asset::Initialize(std::string inAssetPath)
+{
 	assetPath = inAssetPath;
+	assetName = AssetSerializer::ReadField(assetPath, "assetName", true);
+	std::cout << "loaded asset " << assetName << " ( " << assetPath << " ) " << std::endl;
 }
 
-void Asset::Parse(const Document& data)
+bool Asset::ChangeFilePath(std::string inNewPath)
 {
-	if (!data.IsObject())
+	bool bDoesReloadData = bAreDataLoaded;
+	if (bDoesReloadData) { UnloadData(); }
+	Initialize(inNewPath);
+	if (bDoesReloadData) { LoadData(); }
+	return true;
+}
+
+bool Asset::LoadData()
+{
+	if (bAreDataLoaded) return false;
+	for (const auto& propertyName : AssetSerializer::GetFilePropertyNames(assetPath))
 	{
-		std::cout << "ERROR : Failed to parse asset '" << assetPath << "' (wrong JSon format)" << std::endl;
-		assert(data.IsObject());
+// 		SPropertyValue* newValue = new SPropertyValue(propertyName, AssetSerializer::ReadField(assetPath, propertyName, false));
+// 		if (newValue)
+// 		{
+// 			assetProperties.push_back(newValue);
+// 		}
 	}
-	assert(data.HasMember("AssetName"));
-	assert(data["AssetName"].IsString());
-	assetName = data["AssetName"].GetString();
-
-	assert(data.HasMember("AssetName"));
-	assert(data["AssetName"].IsString());
-	assetName = data["AssetName"].GetString();
+	bAreDataLoaded = true;
+	return true;
 }
 
-void Asset::Serialize() { }
-
-void Asset::LoadAsset()
+bool Asset::UnloadData()
 {
-	std::string jSon;
-	std::string line;
-	std::ifstream myfile(assetPath);
-	if (myfile.is_open())
+	if (!bAreDataLoaded) return false;
+	for (const auto& propertyElem : assetProperties)
 	{
-		while (std::getline(myfile, line))
+		if (propertyElem) delete propertyElem;
+	}
+	assetProperties.clear();
+	bAreDataLoaded = false;
+	return true;
+}
+
+SPropertyValue* Asset::GetProperty(const std::string propertyName)
+{
+	LoadData();
+	for (const auto& prop : assetProperties)
+	{
+		if (prop)
 		{
-			jSon += line += "\n";
+			if (prop->propertyName == propertyName) return prop;
 		}
-		myfile.close();
 	}
-	else
-	{
-		std::cout << "FAILED TO LOAD : " << assetPath << std::endl;
-		return;
-	}
-	std::cout << "LOAD : " << assetPath << std::endl;
-
-	Document document;
-	document.Parse(jSon.data());
-	Parse(document);
+	return nullptr;
 }
 
+void Asset::SetProperty(const std::string propertyName, const SPropertyValue& property)
+{
+	LoadData();
+}

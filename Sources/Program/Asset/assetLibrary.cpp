@@ -37,36 +37,27 @@ std::vector<std::string> AssetLibrary::CollectFilesUnderFolder(std::string folde
 	return names;
 }
 
-void AssetLibrary::LoadLibraryFiles(std::string RootFolder)
+void AssetLibrary::RegisterAssetFiles(std::string RootFolder)
 {
 	std::vector<std::string> filesToLoad = CollectFilesUnderFolder(RootFolder);
 
 	for (auto& filePath : filesToLoad)
 	{
-		if (CheckExtension(filePath, ".TextAsset"))
+		std::string fileType;
+		if (AssetSerializer::GetFileTypeString(filePath, fileType))
 		{
-			AssetRegistry.push_back(LoadAsset<Texture2D>(filePath));
-		}
-	}
-	for (auto& filePath : filesToLoad)
-	{
-		if (CheckExtension(filePath, ".MatAsset"))
-		{
-			AssetRegistry.push_back(LoadAsset<Material>(filePath));
-		}
-	}
-	for (auto& filePath : filesToLoad)
-	{
-		if (CheckExtension(filePath, ".SMAsset"))
-		{
-			AssetRegistry.push_back(LoadAsset<StaticMesh>(filePath));
-		}
-	}
-	for (auto& filePath : filesToLoad)
-	{
-		if (CheckExtension(filePath, ".WorldAsset"))
-		{
-			AssetRegistry.push_back(LoadAsset<WorldAsset>(filePath));
+			if (fileType == "Texture2D")
+			{
+				AssetRegistry.push_back(LoadAsset<Texture2D>(filePath));
+			}
+			else if (fileType == "StaticMesh")
+			{
+				AssetRegistry.push_back(LoadAsset<StaticMesh>(filePath));
+			}
+			else if (fileType == "Material")
+			{
+				AssetRegistry.push_back(LoadAsset<Material>(filePath));
+			}
 		}
 	}
 }

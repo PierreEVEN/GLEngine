@@ -1,5 +1,5 @@
-{
-	"AssetName" : "LightBulbMesh",
-	"MeshObjectPath" : "GLEngine/Sources/Ressources/Mesh/LightBulb.obj",
-	"Materials" : [ "GridMaterial" ]
-}
+####### GLEngineAsset : StaticMesh #######
+/* Asset defaults */
+#assetName = LightBubleMesh
+
+/* Asset properties */

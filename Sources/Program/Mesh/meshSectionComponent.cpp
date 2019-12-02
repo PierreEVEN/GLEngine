@@ -75,9 +75,9 @@ void MeshSectionComponent::MarkRenderStateDirty()
 		staticMeshSection->material->use(GetWorld());
 
 		glm::mat4 model = glm::mat4(1.0f); 
-		model = glm::translate(model, GetLocation());
+		model = glm::translate(model, GetLocation().ToGLVector());
 		model = glm::rotate(model, glm::radians(GetAngle()), GetForwardVector());
-		model = glm::scale(model, GetScale3D());
+		model = glm::scale(model, GetScale3D().ToGLVector());
 		
 		/** Set materials commons */
 		staticMeshSection->material->setMat4("view", GetWorld()->GetCamera()->GetViewMatrix());

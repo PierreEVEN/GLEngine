@@ -1,28 +1,49 @@
 #ifndef ASSET_H
 #define ASSET_H
 
-#include "rapidjson/document.h"
-
-using namespace rapidjson;
+#include <vector>
+#include "assetSerializer.h"
 
 class Asset
 {
 
 private:
 
-	std::string assetName;
+	/************************************************************************/
+	/* ASSET BASES                                                          */
+	/************************************************************************/
 	std::string assetPath;
+	std::string assetName;
+	std::vector<SPropertyValue*> assetProperties;
 
 public:
 
-	Asset();
+	void Initialize(const std::string inAssetPath);
+	bool ChangeFilePath(const std::string inNewPath);
+
+	/************************************************************************/
+	/* ASSET DATAS                                                          */
+	/************************************************************************/
+
+private:
+
+	bool bAreDataLoaded;
+
+	bool LoadData();
+	bool UnloadData();
+
+public:
+	
+	SPropertyValue* GetProperty(const std::string propertyName);
+	void SetProperty(const std::string propertyName, const SPropertyValue& property);
+
+	virtual void ForceReimport() {}
+
+public:
+
 	Asset(std::string inAssetPath);
-
-	virtual void Parse(const Document& data);
-	virtual void Serialize();
-
-	void LoadAsset();
-
+		
 	std::string GetName() const { return assetName; }
+	std::string GetPath() const { return assetPath; }
 };
 #endif
