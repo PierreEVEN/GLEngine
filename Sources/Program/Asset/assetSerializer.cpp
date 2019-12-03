@@ -201,7 +201,7 @@ bool AssetSerializer::WriteField(const std::string filePath, const std::string f
 
 std::ifstream* AssetSerializer::BeginRead(std::string filePath)
 {
-	return new std::ifstream(filePath, std::ios::out | std::ios::binary);
+	return new std::ifstream(filePath, std::ios::in | std::ios::binary);
 }
 
 void AssetSerializer::EndRead(std::ifstream* filePath)

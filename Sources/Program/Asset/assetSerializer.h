@@ -52,16 +52,25 @@ public:
 	static void TestDebug()
 	{
 		std::ofstream* oStream = BeginWrite("./testFile.txt");
-		AppendField<std::string>(oStream, "testField", std::string("XValueX"));
+		AppendField<int>(oStream, "test45", 148, 10);
+		AppendField<int>(oStream, "second", 123, 14);
 		EndWrite(oStream);
+		if (!oStream->good()) {
+			std::cout << "Error occurred at writing time!" << std::endl;
+		}
 
 		std::ifstream* iStream = BeginRead("./testFile.txt");
 		SPropertyValue testValue;
-		ReadNextField<std::string>(testValue, iStream);
-
-		std::cout << testValue.propertyName << " | " << testValue.propertyValue << std::endl;
-
+		ReadNextField<int>(testValue, iStream);
+		ReadNextField<int>(testValue, iStream);
+		//std::cout << "Property name value : " << testValue.propertyName << std::endl;
+		while (true) {}
 		EndRead(iStream);
+		if (!iStream->good()) {
+			std::cout << "Error occurred at reading time!" << std::endl;
+		}
+
+		//std::cout << testValue.propertyName << " | " << testValue.propertyValue << std::endl;
 	}
 
 
@@ -78,42 +87,42 @@ public:
 template <class T>
 void AssetSerializer::AppendField(std::ofstream* outputFileStream, std::string fieldName, T value, unsigned int elements)
 {
-	fieldName += "=";
-	outputFileStream->write((char*)fieldName.data(), sizeof(fieldName));
+	unsigned int propertyNameSize = fieldName.length() + 1;
+	std::cout << "in data size : " << propertyNameSize << std::endl;
+	const char* propertyNameValue = fieldName.c_str();
 
-	outputFileStream->write((char*)&elements, sizeof(unsigned int));
 
-	for (unsigned int i = 0; i < elements; ++i)
+	for (int i = 0; i < 7; ++i)
 	{
-		outputFileStream->write((char*)&value[0], sizeof(std::string("XValueX")));
+		std::cout << "test : " << (int)propertyNameValue[i] << std::endl;
+
 	}
+
+	outputFileStream->write(reinterpret_cast<char*>(&propertyNameSize), sizeof(unsigned int));
+	outputFileStream->write(reinterpret_cast<char*>(&propertyNameValue), propertyNameSize);
+	outputFileStream->write(reinterpret_cast<char*>(&value), sizeof(T));
 }
 
 template <class T>
 bool AssetSerializer::ReadNextField(SPropertyValue& value, std::ifstream* outputFileStream)
-{
-	value.propertyName = "";
-	value.propertyValue;
-	const char* nextChar;
-	while (outputFileStream->read((char*)&nextChar, sizeof(const char*)) && nextChar != (const char*)'=')
+{	
+	const char* buffer;
+	unsigned int bufferSize;
+	T foundValue;
+	outputFileStream->read(reinterpret_cast<char*>(&bufferSize), sizeof(unsigned int));
+	std::cout << "found buffer size : " << bufferSize << std::endl;
+	outputFileStream->read(reinterpret_cast<char*>(&buffer), bufferSize);
+	outputFileStream->read(reinterpret_cast<char*>(&foundValue), sizeof(T));
+
+
+	for (int i = 0; i < 7; ++i)
 	{
-		std::cout << nextChar << std::endl;
-		value.propertyName += nextChar;
+		std::cout << "test : " << (int)buffer[i] << std::endl;
+
 	}
-	std::cout << "PropertyName : " << value.propertyName << std::endl;
 
-	outputFileStream->read((char*)&value.elements, sizeof(unsigned int));
-
-	std::cout << "Elements : " << std::to_string(value.elements) << std::endl;
-	value.propertyValue = nullptr;
-
-
-	std::vector<T> values(value.elements);
-
-	for (unsigned int i = 0; i < value.elements; ++i)
-	{
-		outputFileStream->read((char*)&values[i], sizeof(T));
-	}
+	std::cout << "Property name value : " << buffer << std::endl;
+	std::cout << "Property value value : " << std::to_string(foundValue) << std::endl;
 	return true;
 }
 
