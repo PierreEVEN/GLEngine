@@ -37,7 +37,7 @@ int main()
 {
 	AssetSerializer::TestDebug();
 
-	while(true) {}
+	//while(true) {}
 
 
 

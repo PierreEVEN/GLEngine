@@ -51,26 +51,50 @@ public:
 
 	static void TestDebug()
 	{
+		int arrayTest[] = { 1, 5, 56, 12, 28 };
+		char testChar[7] = "tototo";
+
+
+		/************************************************************************/
+		/* Write sequence                                                       */
+		/************************************************************************/
+		std::cout << "Begin write sequence..." << std::endl;
 		std::ofstream* oStream = BeginWrite("./testFile.txt");
-		AppendField<int>(oStream, "test45", 148, 10);
-		AppendField<int>(oStream, "second", 123, 14);
+		AppendField<int*>(oStream, "Property1", arrayTest, sizeof(arrayTest));
+		//AppendField<int>(oStream, "Property2", 89, sizeof(int));
 		EndWrite(oStream);
 		if (!oStream->good()) {
 			std::cout << "Error occurred at writing time!" << std::endl;
 		}
 
+		std::cout << "Begin read sequence..." << std::endl;
 		std::ifstream* iStream = BeginRead("./testFile.txt");
-		SPropertyValue testValue;
-		ReadNextField<int>(testValue, iStream);
-		ReadNextField<int>(testValue, iStream);
-		//std::cout << "Property name value : " << testValue.propertyName << std::endl;
-		while (true) {}
+		std::string propertyName = "Property1";
+		unsigned int readerPosition;
+		unsigned int valueBufferSize;		
+// 		ReadField<int>(iStream, propertyName, readerPosition, valueBufferSize);
+// 		ReadField<int>(iStream, propertyName, readerPosition, valueBufferSize);
+
+		/************************************************************************/
+		/* Read sequence                                                        */
+		/************************************************************************/
+		if (FindField(iStream, propertyName, readerPosition, valueBufferSize))
+		{
+			std::cout << "found property " << propertyName << " : readerPosition =" << readerPosition << " valueBufferSize=" << valueBufferSize << std::endl;
+			int* testFoundValue = (int*) malloc(20);
+			unsigned int bufferSizeCpy = valueBufferSize;
+			ReadFieldValue<int>(iStream, readerPosition, valueBufferSize, testFoundValue);
+//			std::cout << "RESULT : " << testFoundValue << std::endl;
+			for (unsigned int i = 0; i < bufferSizeCpy / 4; ++i)
+			{
+				std::cout << "RESULT : " << testFoundValue[i] << std::endl;
+			}
+		}
+		
 		EndRead(iStream);
 		if (!iStream->good()) {
 			std::cout << "Error occurred at reading time!" << std::endl;
 		}
-
-		//std::cout << testValue.propertyName << " | " << testValue.propertyValue << std::endl;
 	}
 
 
@@ -80,50 +104,52 @@ public:
 	static std::ofstream* BeginWrite(std::string filePath);
 	static void EndWrite(std::ofstream* filePath);
 
-	template <class T>	static void AppendField(std::ofstream* outputFileStream, std::string fieldName, T value, unsigned int elements = 1);
-	template <class T>  static bool ReadNextField(SPropertyValue& value, std::ifstream* outputFileStream);
+	template <class T>	static void AppendField(std::ofstream* outputFileStream, std::string fieldName, T value, unsigned int bufferSize);
+	static bool ReadField(std::ifstream* outputFileStream, std::string& propertyName, unsigned int& readerPosition, unsigned int& valueBufferSize);
+	static bool FindField(std::ifstream* outputFileStream, const std::string propertyName, unsigned int& readerPosition, unsigned int& valueBufferSize);
+	template <class T>  static bool ReadFieldValue(std::ifstream* outputFileStream, const unsigned int& position, const unsigned int& bufferSize, T* result);
 };
 
 template <class T>
-void AssetSerializer::AppendField(std::ofstream* outputFileStream, std::string fieldName, T value, unsigned int elements)
+bool AssetSerializer::ReadFieldValue(std::ifstream* outputFileStream, const unsigned int& position, const unsigned int& bufferSize, T* result)
 {
-	unsigned int propertyNameSize = fieldName.length() + 1;
-	std::cout << "in data size : " << propertyNameSize << std::endl;
-	const char* propertyNameValue = fieldName.c_str();
-
-
-	for (int i = 0; i < 7; ++i)
-	{
-		std::cout << "test : " << (int)propertyNameValue[i] << std::endl;
-
-	}
-
-	outputFileStream->write(reinterpret_cast<char*>(&propertyNameSize), sizeof(unsigned int));
-	outputFileStream->write(reinterpret_cast<char*>(&propertyNameValue), propertyNameSize);
-	outputFileStream->write(reinterpret_cast<char*>(&value), sizeof(T));
+	outputFileStream->seekg(position);
+	outputFileStream->read(reinterpret_cast<char*>(result), bufferSize);
+	return true;
 }
 
 template <class T>
-bool AssetSerializer::ReadNextField(SPropertyValue& value, std::ifstream* outputFileStream)
-{	
-	const char* buffer;
-	unsigned int bufferSize;
-	T foundValue;
-	outputFileStream->read(reinterpret_cast<char*>(&bufferSize), sizeof(unsigned int));
-	std::cout << "found buffer size : " << bufferSize << std::endl;
-	outputFileStream->read(reinterpret_cast<char*>(&buffer), bufferSize);
-	outputFileStream->read(reinterpret_cast<char*>(&foundValue), sizeof(T));
+void AssetSerializer::AppendField(std::ofstream* outputFileStream, std::string fieldName, T value, unsigned int bufferSize)
+{
 
 
-	for (int i = 0; i < 7; ++i)
+	unsigned int propertyNameSize = fieldName.length() + 1;
+	std::cout << "write property name buffer size : " << propertyNameSize << std::endl;
+	outputFileStream->write(reinterpret_cast<char*>(&propertyNameSize), sizeof(unsigned int));
+
+
+
+	const char* propertyNameValue = fieldName.c_str();
+	std::cout << "Write property name : " << propertyNameValue << std::endl;
+	for (unsigned int i = 0; i < propertyNameSize; ++i)
 	{
-		std::cout << "test : " << (int)buffer[i] << std::endl;
-
+		char val = propertyNameValue[i];
+		outputFileStream->write(reinterpret_cast<char*>(&val), 1);
 	}
 
-	std::cout << "Property name value : " << buffer << std::endl;
-	std::cout << "Property value value : " << std::to_string(foundValue) << std::endl;
-	return true;
+
+	std::cout << "write property value buffer size : " << bufferSize << std::endl;
+	outputFileStream->write(reinterpret_cast<char*>(&bufferSize), sizeof(unsigned int));
+	outputFileStream->write(reinterpret_cast<char*>(value), bufferSize);
+
+	for (unsigned int i = 0; i < bufferSize / 4; ++i)
+	{
+		std::cout << "Writing value : " << value[i] << std::endl;
+	}
+
 }
+
+
+
 
 #endif

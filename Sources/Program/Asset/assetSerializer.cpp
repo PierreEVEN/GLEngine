@@ -199,6 +199,37 @@ bool AssetSerializer::WriteField(const std::string filePath, const std::string f
 	return true;
 }
 
+
+
+bool AssetSerializer::ReadField(std::ifstream* outputFileStream, std::string& propertyName, unsigned int& valueReaderPosition, unsigned int& valueBufferSize)
+{
+	unsigned int nameBufferSize;
+	outputFileStream->read(reinterpret_cast<char*>(&nameBufferSize), sizeof(unsigned int));
+	std::cout << "Current property name buffer size : " << nameBufferSize << std::endl;
+	char valTest[10];
+	outputFileStream->read(reinterpret_cast<char*>(&valTest), nameBufferSize);
+	propertyName = std::string(valTest);
+	std::cout << "Current property name : " << valTest << std::endl;
+
+	outputFileStream->read(reinterpret_cast<char*>(&valueBufferSize), sizeof(unsigned int));
+	std::cout << "Read property value buffer size : " << valueBufferSize << std::endl;
+	valueReaderPosition = (int)outputFileStream->tellg();
+	outputFileStream->seekg((int)outputFileStream->tellg() + valueBufferSize);
+
+	return true;
+}
+bool AssetSerializer::FindField(std::ifstream* outputFileStream, const std::string propertyName, unsigned int& readerPosition, unsigned int& valueBufferSize)
+{
+	outputFileStream->seekg(0);
+	std::string currentPropertyName;
+	while (ReadField(outputFileStream, currentPropertyName, readerPosition, valueBufferSize) && propertyName != currentPropertyName)
+	{
+
+	}
+	if (propertyName != currentPropertyName) return false;
+	return true;
+}
+
 std::ifstream* AssetSerializer::BeginRead(std::string filePath)
 {
 	return new std::ifstream(filePath, std::ios::in | std::ios::binary);
