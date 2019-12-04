@@ -11,11 +11,37 @@
 struct SPropertyValue
 {
 	std::string propertyName;
-	unsigned int elements;
-	const char* propertyValue;
+	unsigned int bufferSize;
+	char* propertyValue;
 	SPropertyValue() {}
-	SPropertyValue(const std::string inPropertyName, const unsigned int inElements, const char* inPropertyValue)
-		: propertyName(inPropertyName), elements(inElements), propertyValue(inPropertyValue) {}
+	SPropertyValue(std::ifstream* fileStream, const std::string inPropertyName)
+		: propertyName(inPropertyName) 
+	{
+		unsigned int fieldCursorLocation;
+		unsigned int fieldBufferSize;
+		if (AssetSerializer::FindField(fileStream, propertyName, fieldCursorLocation, fieldBufferSize))
+		{
+			bufferSize = fieldBufferSize;
+			AssetSerializer::ReadFieldValue<char>(fileStream, fieldCursorLocation, fieldBufferSize, propertyValue);
+		}
+	}
+
+
+
+	template<class T> void SetValue(T* value)
+	{
+		SetValue<T>(value, sizeof(T));
+	}
+
+	template<class T> void SetValue(T* value, unsigned int inBufferSize)
+	{
+		propertyValue = (char*)value;
+	}
+
+	template<class T> T* GetValue() const
+	{
+		return (T*)propertyValue;
+	}
 
 	bool IsValid() const { return propertyName != "" && propertyValue != ""; }
 };
@@ -53,6 +79,7 @@ public:
 	{
 		int arrayTest[] = { 1, 5, 56, 12, 28 };
 		char testChar[7] = "tototo";
+		int testInt = 16;
 
 
 		/************************************************************************/
@@ -61,7 +88,7 @@ public:
 		std::cout << "Begin write sequence..." << std::endl;
 		std::ofstream* oStream = BeginWrite("./testFile.txt");
 		AppendField<int*>(oStream, "Property1", arrayTest, sizeof(arrayTest));
-		//AppendField<int>(oStream, "Property2", 89, sizeof(int));
+		AppendField<int*>(oStream, "Property2", &testInt, sizeof(int));
 		EndWrite(oStream);
 		if (!oStream->good()) {
 			std::cout << "Error occurred at writing time!" << std::endl;
@@ -69,21 +96,26 @@ public:
 
 		std::cout << "Begin read sequence..." << std::endl;
 		std::ifstream* iStream = BeginRead("./testFile.txt");
-		std::string propertyName = "Property1";
 		unsigned int readerPosition;
 		unsigned int valueBufferSize;		
-// 		ReadField<int>(iStream, propertyName, readerPosition, valueBufferSize);
-// 		ReadField<int>(iStream, propertyName, readerPosition, valueBufferSize);
 
 		/************************************************************************/
 		/* Read sequence                                                        */
 		/************************************************************************/
+		std::string propertyName = "Property2";
 		if (FindField(iStream, propertyName, readerPosition, valueBufferSize))
 		{
 			std::cout << "found property " << propertyName << " : readerPosition =" << readerPosition << " valueBufferSize=" << valueBufferSize << std::endl;
 			int* testFoundValue = (int*) malloc(20);
 			unsigned int bufferSizeCpy = valueBufferSize;
 			ReadFieldValue<int>(iStream, readerPosition, valueBufferSize, testFoundValue);
+
+			SPropertyValue testPropertyValue;
+			testPropertyValue.SetValue<int>(testFoundValue);
+
+			std::cout << *testPropertyValue.GetValue<int>() << std::endl;
+
+
 //			std::cout << "RESULT : " << testFoundValue << std::endl;
 			for (unsigned int i = 0; i < bufferSizeCpy / 4; ++i)
 			{
@@ -97,17 +129,16 @@ public:
 		}
 	}
 
-
 	static std::ifstream* BeginRead(std::string filePath);
 	static void EndRead(std::ifstream* filePath);
 
 	static std::ofstream* BeginWrite(std::string filePath);
 	static void EndWrite(std::ofstream* filePath);
 
-	template <class T>	static void AppendField(std::ofstream* outputFileStream, std::string fieldName, T value, unsigned int bufferSize);
+	template <class T> static void AppendField(std::ofstream* outputFileStream, std::string fieldName, T value, unsigned int bufferSize);
 	static bool ReadField(std::ifstream* outputFileStream, std::string& propertyName, unsigned int& readerPosition, unsigned int& valueBufferSize);
 	static bool FindField(std::ifstream* outputFileStream, const std::string propertyName, unsigned int& readerPosition, unsigned int& valueBufferSize);
-	template <class T>  static bool ReadFieldValue(std::ifstream* outputFileStream, const unsigned int& position, const unsigned int& bufferSize, T* result);
+	template <class T> static bool ReadFieldValue(std::ifstream* outputFileStream, const unsigned int& position, const unsigned int& bufferSize, T* result);
 };
 
 template <class T>
@@ -144,7 +175,7 @@ void AssetSerializer::AppendField(std::ofstream* outputFileStream, std::string f
 
 	for (unsigned int i = 0; i < bufferSize / 4; ++i)
 	{
-		std::cout << "Writing value : " << value[i] << std::endl;
+		//std::cout << "Writing value : " << value[i] << std::endl;
 	}
 
 }
