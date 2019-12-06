@@ -10,6 +10,7 @@
 #include "Mesh/staticMeshComponent.h"
 #include "Asset/AssetRegistry.h"
 #include "UI/FileExplorer/fileExplorer.h"
+#include "UI/EditorWindow.h"
 
 double DeltaSecond;
 
@@ -79,7 +80,7 @@ int main()
 	}
 
 
-	new FileExplorer(".");
+	new FileExplorer(".", {".png", ".jpg"}, true);
 
 	/************************************************************************/
 	/* RENDER loop                                                          */
@@ -87,7 +88,7 @@ int main()
 
 	while (!glfwWindowShouldClose(WorldOne->GetWindow()))
 	{
-		//if (glfwGetTime() - LastTime < 1.0 / MaxFPS) continue;
+		if (glfwGetTime() - LastTime < 1.0 / EditorWindow::GetMaxFramerate()) continue;
 		DeltaSecond = glfwGetTime() - LastTime;
 		if (DeltaSecond > 1.0 / 10.0)
 		{

@@ -20,6 +20,8 @@
 
 std::vector<UIWindowElement*> WindowManager::elementsArray;
 
+static float MAX_FRAMERATE = 60.f;
+
 void EditorWindow::DrawWindow(World* InWorld)
 {
 	DrawMainToolbar(InWorld);
@@ -43,6 +45,11 @@ void EditorWindow::DrawWindow(World* InWorld)
 	}
 	ImGui::EndGroup();
 	ImGui::End();
+}
+
+double EditorWindow::GetMaxFramerate()
+{
+	return MAX_FRAMERATE;
 }
 
 void EditorWindow::DrawMainToolbar(World* InWorld)
@@ -86,6 +93,7 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 		ImGui::Checkbox("Simulate physics", &InWorld->bSimulatePhysics);
 		ImGui::SliderFloat("Camera velocity", &InWorld->GetCamera()->MovementSpeed, 1, 2000, "%3.f", 4.f);
 		ImGui::SliderFloat("Field of view", &InWorld->GetCamera()->Zoom, 10, 140, "%3.f", 1.f);
+		ImGui::SliderFloat("Max framerate", &MAX_FRAMERATE, 20, 5000, "%3.f", 1.f);
 		ImGui::EndMenu();
 	}
 	if (ImGui::BeginMenu("Info"))

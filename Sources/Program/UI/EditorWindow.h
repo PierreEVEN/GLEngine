@@ -20,7 +20,7 @@ public:
 
 	static void DrawWindow(World* InWorld);
 
-
+	static double GetMaxFramerate();
 };
 
 class UIWindowElement
