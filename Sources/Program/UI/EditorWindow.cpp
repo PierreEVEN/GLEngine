@@ -13,19 +13,32 @@
 #include "../Asset/assetLibrary.h"
 #include <Windows.h>
 #include "../Asset/AssetImporter.h"
+#include "../Texture/texture.h"
+#include "../Asset/AssetRegistry.h"
+#include "../Mesh/staticMeshComponent.h"
+#include "../Shader/material.h"
+
+std::vector<UIWindowElement*> WindowManager::elementsArray;
 
 void EditorWindow::DrawWindow(World* InWorld)
 {
 	DrawMainToolbar(InWorld);
-
+	WindowManager::DrawElements(InWorld);
 
 	ImGui::Begin("Content browser");
 	ImGui::BeginGroup();
-	for (auto& asset : AssetLibrary::GetAssetRegistry())
+	for (auto& asset : AssetRegistry::GetAssets())
 	{
 		if (ImGui::Button(asset->GetName().data()))
 		{
-			std::cout << asset->GetProperty("TextureData")->propertyValue << std::endl;
+			if (StaticMesh* foundMesh = (StaticMesh*)asset)
+			{
+				new StaticMeshComponent(InWorld, foundMesh, {});
+			}
+		}
+		if (Texture2D* foundTexture2D = (Texture2D*)asset)
+		{
+			ImGui::Image((void*)(intptr_t)foundTexture2D->GetTextureID(), ImVec2(32, 32));
 		}
 	}
 	ImGui::EndGroup();
@@ -159,7 +172,8 @@ void EditorWindow::DrawContentBrowser(std::string directoryPath)
 			{
 				if (ImGui::Button(fd.cFileName))
 				{
-					AssetImporter::ImportTexture(directoryPath + "/" + fd.cFileName, "TestTexture", "GLEngine/Sources/Assets/Textures/TestTexture.GLAsset");
+					std::string textureName = AssetLibrary::GenerateNonExistingAssetName(AssetLibrary::RemoveExtension(fd.cFileName));
+					AssetImporter::ImportMesh(directoryPath + "/" + fd.cFileName, textureName, "Sources/Assets/Meshes/" + textureName + ".GLAsset");
 				}
 			}
 		} while (::FindNextFile(hFind, &fd));
@@ -170,4 +184,37 @@ void EditorWindow::DrawContentBrowser(std::string directoryPath)
 void EditorWindow::DrawTexture2DImporterWindow()
 {
 	DrawContentBrowser("./");
+}
+
+
+
+void WindowManager::DrawElements(World* inWorld)
+{
+	for (auto& element : WindowManager::elementsArray)
+	{
+		element->Draw(inWorld);
+	}
+}
+
+void WindowManager::AddWindow(UIWindowElement* inElement)
+{
+	WindowManager::elementsArray.push_back(inElement);
+}
+
+void WindowManager::CloseWindow(UIWindowElement* inElement)
+{
+	for (unsigned int i = 0; i < WindowManager::elementsArray.size(); ++i)
+	{
+		if (WindowManager::elementsArray[i] == inElement)
+		{
+			WindowManager::elementsArray.erase(WindowManager::elementsArray.begin() + 1);
+			delete inElement;
+			return;
+		}
+	}
+}
+
+UIWindowElement::UIWindowElement()
+{
+	WindowManager::AddWindow(this);
 }

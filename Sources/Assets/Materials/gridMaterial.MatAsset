@@ -1,8 +1,0 @@
-####### GLEngineAsset : Material #######
-/* Asset defaults */
-#assetName = GridMaterial
-
-/* Asset properties */
-#VarTwo = valueOne
-#VarOel = valueThree
-#testField2 = valueThree

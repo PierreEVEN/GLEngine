@@ -2,11 +2,10 @@
 #define ASSET_H
 
 #include <vector>
-#include "assetSerializer.h"
+#include "GLAssetIO.h"
 
 class Asset
 {
-
 private:
 
 	/************************************************************************/
@@ -15,6 +14,11 @@ private:
 	std::string assetPath;
 	std::string assetName;
 	std::vector<SPropertyValue*> assetProperties;
+
+	void RegisterProperty(SPropertyValue* inNewProperty)
+	{
+		assetProperties.push_back(inNewProperty);
+	}
 
 public:
 

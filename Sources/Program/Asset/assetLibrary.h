@@ -13,41 +13,13 @@ class AssetLibrary
 {
 public:
 
+	static std::vector<std::string> GetFilesInPath(std::string path);
+	static std::vector<std::string> GetFolderInPath(std::string path, bool returnBack = false);
 
 	static std::vector<std::string> CollectFilesUnderFolder(std::string folder);
-
-	static void RegisterAssetFiles(std::string RootFolder);
-
 	static bool CheckExtension(const std::string& filePath, const std::string& extension);
-
-	static std::string GenerateNonExistingAssetName();
-
-	static void RegisterDynamicAsset(Asset* newAsset);
-
-	template <class T>
-	static T* FindAssetByName(const std::string AssetName)
-	{
-		for (Asset* asset : GetAssetRegistry())
-		{
-			if (asset->GetName() == AssetName)
-			{
-				if (T* castedAsset = dynamic_cast<T*>(asset))
-				{
-					return castedAsset;
-				}
-			}
-		}
-		return nullptr;
-	}
-	
-	template <class T>
-	static T* LoadAsset(const std::string filePath)
-	{
-		T* Asset = new T(filePath);
-		return Asset;
-	}
-
-	static std::vector<Asset*> GetAssetRegistry();
+	static std::string RemoveExtension(const std::string& filePath);
+	static std::string GenerateNonExistingAssetName(std::string baseName = "NewAsset");
 };
 
 

@@ -1,9 +1,0 @@
-####### GLEngineAsset : Texture2D #######
-/* Asset body */
-#assetName = TestTexture
-
-/* Asset properties */
-#SizeWidth = 256
-#SizeHeight = 256
-#ChannelCount = 4
-#TextureData = 

@@ -5,10 +5,58 @@
 #include "../Shader/material.h"
 #include "../Mesh/staticMesh.h"
 #include "../World/worldAsset.h"
+#include "AssetRegistry.h"
 
 
 std::vector<Asset*> AssetRegistry;
 
+
+std::vector<std::string> AssetLibrary::GetFilesInPath(std::string path)
+{
+	std::vector<std::string> names = {};
+	std::string search_path = path + "/*.*";
+	WIN32_FIND_DATA fd;
+	HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
+	if (hFind != INVALID_HANDLE_VALUE) {
+		do {
+			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+				names.push_back(fd.cFileName);
+			}
+		} while (::FindNextFile(hFind, &fd));
+		::FindClose(hFind);
+	}
+	return names;
+}
+
+std::vector<std::string> AssetLibrary::GetFolderInPath(std::string path, bool returnBack /*= false*/)
+{
+	std::vector<std::string> names = {};
+	std::string search_path = path + "/*.*";
+	WIN32_FIND_DATA fd;
+	HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
+	if (hFind != INVALID_HANDLE_VALUE) {
+		do {
+			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+				if (std::string(fd.cFileName) != std::string("."))
+				{
+					if (!returnBack)
+					{
+						if (std::string(fd.cFileName) != std::string(".."))
+						{
+							names.push_back(fd.cFileName);
+						}
+					}
+					else
+					{
+						names.push_back(fd.cFileName);
+					}
+				}
+			}
+		} while (::FindNextFile(hFind, &fd));
+		::FindClose(hFind);
+	}
+	return names;
+}
 
 std::vector<std::string> AssetLibrary::CollectFilesUnderFolder(std::string folder)
 {
@@ -37,31 +85,6 @@ std::vector<std::string> AssetLibrary::CollectFilesUnderFolder(std::string folde
 	return names;
 }
 
-void AssetLibrary::RegisterAssetFiles(std::string RootFolder)
-{
-	std::vector<std::string> filesToLoad = CollectFilesUnderFolder(RootFolder);
-
-	for (auto& filePath : filesToLoad)
-	{
-		std::string fileType;
-		if (AssetSerializer::GetFileTypeString(filePath, fileType))
-		{
-			if (fileType == "Texture2D")
-			{
-				AssetRegistry.push_back(LoadAsset<Texture2D>(filePath));
-			}
-			else if (fileType == "StaticMesh")
-			{
-				AssetRegistry.push_back(LoadAsset<StaticMesh>(filePath));
-			}
-			else if (fileType == "Material")
-			{
-				AssetRegistry.push_back(LoadAsset<Material>(filePath));
-			}
-		}
-	}
-}
-
 bool AssetLibrary::CheckExtension(const std::string& filePath, const std::string& extension)
 {
 	int extensionLocation = extension.size() - 1;
@@ -75,19 +98,31 @@ bool AssetLibrary::CheckExtension(const std::string& filePath, const std::string
 	return false;
 }
 
-std::string AssetLibrary::GenerateNonExistingAssetName()
+std::string AssetLibrary::RemoveExtension(const std::string& filePath)
 {
-	int assetIndex;
-	do
+	std::string outString;
+	int i;
+	for (i = filePath.size() - 1; i >= 0 && filePath[i] != '.'; --i) { }
+	for (int j = 0; j < i; ++j)
 	{
-		assetIndex = std::rand();
-	} while (FindAssetByName<Asset>("DynamicAsset_" + std::to_string(assetIndex)));
-	return "DynamicAsset_" + std::to_string(assetIndex);
+		outString += filePath[j];
+	}
+	return outString;
 }
 
-void AssetLibrary::RegisterDynamicAsset(Asset* newAsset)
+std::string AssetLibrary::GenerateNonExistingAssetName(std::string baseName)
 {
-	AssetRegistry.push_back(newAsset);
+	if (AssetRegistry::FindAssetByName<Asset>(baseName))
+	{
+		int assetIndex = -1;
+		do
+		{
+			assetIndex++;
+		} while (AssetRegistry::FindAssetByName<Asset>(baseName + std::to_string(assetIndex)));
+		return baseName + std::to_string(assetIndex);
+	}
+	else
+	{
+		return baseName;
+	}
 }
-
-std::vector<Asset*> AssetLibrary::GetAssetRegistry() { return AssetRegistry; }

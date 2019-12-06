@@ -16,7 +16,7 @@ class Texture2D : public Asset
 
 public:
 
-	Texture2D(std::string textAssetPath) : Asset(textAssetPath) { }
+	Texture2D(std::string textAssetPath);
 
 	unsigned int GetTextureID() const { return textureID; }
 	

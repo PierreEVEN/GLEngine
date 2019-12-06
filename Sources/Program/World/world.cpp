@@ -20,6 +20,7 @@
 #include "../ImGUI/imgui_impl_opengl3.h"
 #include "../ImGUI/imgui_impl_glfw.h"
 #include "../UI/EditorWindow.h"
+#include "../Asset/AssetRegistry.h"
 
 std::vector<World*> GWorlds;
 
@@ -118,13 +119,13 @@ void World::processInput() {
 
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-		StaticMeshComponent* newObj = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
+		StaticMeshComponent* newObj = new StaticMeshComponent(this, AssetRegistry::FindAssetByName<StaticMesh>("CubeMesh"));
 		newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(10.f));
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		PhysicPrimitiveComponent* newObj = new PhysicPrimitiveComponent(this, &AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh")->meshSections[0]);
+		PhysicPrimitiveComponent* newObj = new PhysicPrimitiveComponent(this, &AssetRegistry::FindAssetByName<StaticMesh>("CubeMesh")->meshSections[0]);
 		newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
 	}
 
@@ -147,7 +148,7 @@ void World::processInput() {
 		if (glfwGetTime() - LastLightUseTime > 0.5f)
 		{
 			PointLight* newObj = new PointLight(this);
-			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
+			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetRegistry::FindAssetByName<StaticMesh>("CubeMesh"));
 			newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
 			newObj->ambiant = glm::normalize(glm::vec3(rand() % 512 / 256.f, rand() % 512 / 256.f, rand() % 512 / 256.f));
 			lightMesh->SetLocation(newObj->GetLocation());
@@ -170,7 +171,7 @@ void World::processInput() {
 		if (glfwGetTime() - LastLightUseTime > 0.5f)
 		{
 			SpotLight* newObj = new SpotLight(this);
-			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetLibrary::FindAssetByName<StaticMesh>("CubeMesh"));
+			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetRegistry::FindAssetByName<StaticMesh>("CubeMesh"));
 			newObj->direction = GetCamera()->GetCameraForwardVector().ToGLVector();
 			newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
 			lightMesh->SetLocation(newObj->GetLocation());

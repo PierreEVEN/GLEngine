@@ -22,13 +22,13 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{1255E73D-5858-41FB-88CF-5BD1E2512432}</ProjectGuid>
     <RootNamespace>GLEngine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -138,8 +138,9 @@
   <ItemGroup>
     <ClInclude Include="Sources/Program/Asset/asset.h" />
     <ClInclude Include="Sources/Program/Asset/AssetImporter.h" />
-    <ClInclude Include="Sources/Program/Asset/assetSerializer.h" />
-    <ClInclude Include="ources/Program/Asset/assetLibrary.h" />
+    <ClInclude Include="Sources/Program/Asset/GLAssetIO.h" />
+    <ClInclude Include="Sources/Program/Asset/assetLibrary.h" />
+    <ClInclude Include="Sources/Program/Asset/AssetRegistry.h" />
     <ClInclude Include="Sources/Program/Texture/texture.h" />
     <ClInclude Include="Sources/Program/World/world.h" />
     <ClInclude Include="Sources/Program/World/worldAsset.h" />
@@ -167,11 +168,15 @@
     <ClInclude Include="Sources/Program/ImGUI/imstb_textedit.h" />
     <ClInclude Include="Sources/Program/ImGUI/imstb_truetype.h" />
     <ClInclude Include="Sources/Program/UI/EditorWindow.h" />
+    <ClInclude Include="Sources/Program/UI/ContentBrowser/contentBrowser.h" />
+    <ClInclude Include="Sources/Program/UI/FileExplorer/fileExplorer.h" />
+    <ClInclude Include="Sources/Program/UI/Importers/importerWindows.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources/Program/Asset/asset.cpp" />
     <ClCompile Include="Sources/Program/Asset/AssetImporter.cpp" />
-    <ClCompile Include="Sources/Program/Asset/assetSerializer.cpp" />
+    <ClCompile Include="Sources/Program/Asset/GLAssetIO.cpp" />
+    <ClCompile Include="Sources/Program/Asset/AssetRegistry.cpp" />
     <ClCompile Include="Sources/Program/Asset/assetLibrary.cpp" />
     <ClCompile Include="Sources/Program/Texture/texture.cpp" />
     <ClCompile Include="Sources/Program/World/world.cpp" />
@@ -197,7 +202,11 @@
     <ClCompile Include="Sources/Program/ImGUI/imgui.cpp" />
     <ClCompile Include="Sources/Program/ImGUI/imgui_draw.cpp" />
     <ClCompile Include="Sources/Program/ImGUI/imgui_widgets.cpp" />
+    <ClCompile Include="Sources/Program/ImGUI/imgui_demo.cpp" />
     <ClCompile Include="Sources/Program/UI/EditorWindow.cpp" />
+    <ClCompile Include="Sources/Program/UI/ContentBrowser/contentBrowser.cpp" />
+    <ClCompile Include="Sources/Program/UI/FileExplorer/fileExplorer.cpp" />
+    <ClCompile Include="Sources/Program/UI/Importers/importerWindows.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

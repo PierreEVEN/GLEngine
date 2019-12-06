@@ -6,12 +6,22 @@
 void Texture2D::LoadFromPath(std::string textAssetPath)
 {
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load(textAssetPath.data(), &width, &height, &nrChannels, 0);
-	if (!data)
-	{
-		std::cout << "Failed to load texture " << textAssetPath << std::endl;
-		return;
-	}
+	stbi_uc *data;
+	SAssetReader reader(textAssetPath);
+	SPropertyValue sizeXData(reader.Get(), "TextureSizeX");
+	SPropertyValue sizeYData(reader.Get(), "TextureSizeY");
+	SPropertyValue channelCountData(reader.Get(), "TextureChannelsCount");
+	SPropertyValue textureData(reader.Get(), "TextureData");
+
+	if (!sizeXData.IsValid()) return;
+	if (!sizeYData.IsValid()) return;
+	if (!channelCountData.IsValid()) return;
+	if (!textureData.IsValid()) return;
+
+	width = *sizeXData.GetValue<int>();
+	height = *sizeYData.GetValue<int>();
+	nrChannels = *channelCountData.GetValue<int>();
+	data = textureData.GetValue<stbi_uc>();
 
 	GLenum format;
 	if (nrChannels == 1)
@@ -35,6 +45,10 @@ void Texture2D::LoadFromPath(std::string textAssetPath)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// load image, create texture and generate mipmaps
+}
 
-	stbi_image_free(data);
+Texture2D::Texture2D(std::string textAssetPath)
+	: Asset(textAssetPath)
+{
+	LoadFromPath(textAssetPath);
 }

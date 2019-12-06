@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include "assetLibrary.h"
+#include "AssetRegistry.h"
 
 
 
@@ -16,7 +17,19 @@ Asset::Asset(std::string inAssetPath)
 void Asset::Initialize(std::string inAssetPath)
 {
 	assetPath = inAssetPath;
-	assetName = AssetSerializer::ReadField(assetPath, "assetName", true);
+	SAssetReader assetRead(inAssetPath);
+	if (!assetRead.IsValid())
+	{
+		assetName = AssetLibrary::GenerateNonExistingAssetName("CorruptedAsset");
+		std::cout << "ERROR : failed to load asset " << assetName << " ( " << assetPath << " ) " << std::endl;
+	}
+
+	AssetRegistry::RegisterAsset(this);
+	if (!assetRead.IsValid()) return;
+	SPropertyValue assetNameProperty(assetRead.Get(), "AssetName");
+	assert(assetNameProperty.IsValid());
+	RegisterProperty(&assetNameProperty);
+	assetName = assetNameProperty.GetValue<const char>();
 	std::cout << "loaded asset " << assetName << " ( " << assetPath << " ) " << std::endl;
 }
 
@@ -32,14 +45,7 @@ bool Asset::ChangeFilePath(std::string inNewPath)
 bool Asset::LoadData()
 {
 	if (bAreDataLoaded) return false;
-	for (const auto& propertyName : AssetSerializer::GetFilePropertyNames(assetPath))
-	{
-// 		SPropertyValue* newValue = new SPropertyValue(propertyName, AssetSerializer::ReadField(assetPath, propertyName, false));
-// 		if (newValue)
-// 		{
-// 			assetProperties.push_back(newValue);
-// 		}
-	}
+
 	bAreDataLoaded = true;
 	return true;
 }

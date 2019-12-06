@@ -44,12 +44,8 @@ public:
 	std::vector<StaticMeshSection> meshSections;
 	std::vector<Material*> usedMaterial;
 
-	StaticMesh(std::string dataAssetPath) : Asset(dataAssetPath) {}
+	StaticMesh(std::string dataAssetPath);
 
 	void LoadData(std::string path);
-	void processNode(aiNode *node, const aiScene *scene);
-	StaticMeshSection processMesh(aiMesh *mesh, const aiScene *scene, unsigned int meshIndex);
-
-	std::vector<Texture2D*> loadMaterialTextures(aiMaterial *mat, aiTextureType type);
 
 };
