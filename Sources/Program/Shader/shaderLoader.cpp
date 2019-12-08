@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <vector>
 
 ShaderLoader::ShaderLoader(const char* vertexShaderPath, const char* fragmentShaderPath)
 {
@@ -41,6 +42,7 @@ int ShaderLoader::Get()
 	const char * fShaderCode = fragmentCode.c_str();
 
 	unsigned int vertex, fragment;
+
 
 	vertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex, 1, &vShaderCode, NULL);

@@ -3,19 +3,82 @@
 
 #include <fstream>
 #include <string>
+#include <iostream>
+
+enum SAssetPropertyType
+{
+	PropertyTypeNone = 0,
+	PropertyTypeString = 1,
+	PropertyTypeInt = 2,
+	PropertyTypeBool = 3,
+	PropertyTypeFloat = 4,
+};
 
 struct SPropertyValue
 {
+private:
 	std::string propertyName;
 	unsigned int bufferSize;
+protected:
+	SAssetPropertyType propertyType = PropertyTypeNone;
+public:
 	char* propertyValue;
 	SPropertyValue(std::ifstream* fileStream, const std::string inPropertyName);
-
 	bool IsValid() const { return propertyValue; }
-
-	template<class T> void SetValue(T* value) { SetValue<T>(value, sizeof(T)); }
 	template<class T> void SetValue(T* value, unsigned int inBufferSize) { propertyValue = (char*)value; }
 	template<class T> T* GetValue() const { return (T*)propertyValue; }
+	std::string GetPropertyName() const { return propertyName; }
+	unsigned int GetBufferSize() const { return bufferSize; }
+	SAssetPropertyType GetPropertyType() const { return propertyType; }
+};
+
+struct SBoolPropertyValue : public SPropertyValue
+{
+	SBoolPropertyValue(std::ifstream* fileStream, const std::string inPropertyName) 
+		: SPropertyValue(fileStream, inPropertyName) 
+	{
+		propertyType = PropertyTypeBool;
+	}
+	void SetBoolValue(bool inBoolValue) { SetValue<bool>(&inBoolValue, sizeof(bool)); }
+	bool GetBoolValue() const { return *GetValue<bool>(); }
+};
+
+struct SIntPropertyValue : public SPropertyValue
+{
+	SIntPropertyValue(std::ifstream* fileStream, const std::string inPropertyName)
+		: SPropertyValue(fileStream, inPropertyName)
+	{
+		propertyType = PropertyTypeInt;
+	}
+	void SetIntValue(int inIntValue) { SetValue<int>(&inIntValue, sizeof(int)); }
+	int GetIntValue() const { return *GetValue<int>(); }
+};
+
+struct SFloatPropertyValue : public SPropertyValue
+{
+	SFloatPropertyValue(std::ifstream* fileStream, const std::string inPropertyName)
+		: SPropertyValue(fileStream, inPropertyName)
+	{
+		propertyType = PropertyTypeFloat;
+	}
+	void SetFloatValue(float inFloatValue) { SetValue<float>(&inFloatValue, sizeof(float)); }
+	float GetFloatValue() const { return *GetValue<float>(); }
+};
+
+struct SStringPropertyValue : public SPropertyValue
+{
+	SStringPropertyValue(std::ifstream* fileStream, const std::string inPropertyName)
+		: SPropertyValue(fileStream, inPropertyName)
+	{
+		propertyType = PropertyTypeString;
+	}
+	void SetStringValue(std::string inStringValue)
+	{
+		memcpy(propertyValue, inStringValue.data(), inStringValue.size() + 1);
+	}
+	std::string GetStringValue() const {
+		return GetValue<const char>(); 
+	}
 };
 
 struct SAssetReader
@@ -40,6 +103,8 @@ public:
 	std::ofstream* Get() { return fileStream; }
 	SAssetWriter(std::string inAssetPath);
 	~SAssetWriter();
+
+	void ForceCloseFile();
 };
 
 class GLAssetIO

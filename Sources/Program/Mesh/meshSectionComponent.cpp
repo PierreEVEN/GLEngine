@@ -7,6 +7,15 @@
 #include "meshSectionComponent.h"
 #include "../Asset/assetLibrary.h"
 
+
+#include <bullet3D/BulletCollision/CollisionShapes/btTriangleMesh.h>
+#include <bullet3D/BulletCollision/CollisionShapes/btConvexShape.h>
+#include <bullet3D/BulletCollision/CollisionShapes/btShapeHull.h>
+#include <bullet3D/BulletCollision/CollisionShapes/btConvexTriangleMeshShape.h>
+#include <bullet3D/LinearMath/btDefaultMotionState.h>
+#include <bullet3D/BulletDynamics/Dynamics/btRigidBody.h>
+#include <bullet3D/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
+
 void MeshSectionComponent::BuildMesh()
 {
 	// create buffers/arrays
@@ -20,7 +29,7 @@ void MeshSectionComponent::BuildMesh()
 	// A great thing about structs is that their memory layout is sequential for all its items.
 	// The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
 	// again translates to 3/2 floats which translates to a byte array.
-	
+
 	glBufferData(GL_ARRAY_BUFFER, staticMeshSection->sectionVertices.size() * sizeof(Vertex), &staticMeshSection->sectionVertices[0], GL_STATIC_DRAW);
 
 	if (staticMeshSection->sectionIndices.size() > 0)
@@ -47,6 +56,40 @@ void MeshSectionComponent::BuildMesh()
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 
 	glBindVertexArray(0);
+
+// 	std::cout << "starting building collision mesh..." << std::endl;
+// 	btTriangleMesh* trimesh = new btTriangleMesh();
+// 	btVector3 vertex0;
+// 	btVector3 vertex1;
+// 	btVector3 vertex2;
+// 	for (unsigned int i = 0; i < staticMeshSection->sectionIndices.size(); ++i)
+// 	{
+// 		int index = staticMeshSection->sectionIndices[i];
+// 		if (i % 3 == 0)	vertex0 = btVector3(staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0]);
+// 		if (i % 3 == 0)	vertex1 = btVector3(staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0]);
+// 		if (i % 3 == 0)	vertex2 = btVector3(staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0]);
+// 
+// 		if (i % 3 == 0) trimesh->addTriangle(vertex0, vertex1, vertex2);
+// 	}
+// 	std::cout << "finnished gathering triangles..." << std::endl;
+// 	btConvexShape *tmpshape = new btConvexTriangleMeshShape(trimesh);
+// 	btShapeHull *hull = new btShapeHull(tmpshape);
+// 	btScalar margin = tmpshape->getMargin();
+// 	hull->buildHull(margin);
+// 	tmpshape->setUserPointer(hull);
+// 	std::cout << "collision generated" << std::endl;
+// 
+// 	btVector3 localInertia(0, 0, 0);
+// 	btScalar mass = 0;	
+// 	btTransform myTransform;
+// 	myTransform.setIdentity();
+// 	myTransform.setOrigin(btVector3(0, 0, -1));
+// 	tmpshape->calculateLocalInertia(mass, localInertia);
+// 	btDefaultMotionState* myMotionState = new btDefaultMotionState(myTransform);
+// 	btRigidBody::btRigidBodyConstructionInfo myBoxRigidBodyConstructionInfo(mass, myMotionState, tmpshape, localInertia);
+// 	btRigidBody *body = new btRigidBody(myBoxRigidBodyConstructionInfo);
+// 
+// 	GetWorld()->GetPhysicWorld()->addRigidBody(body);
 }
 
 MeshSectionComponent::MeshSectionComponent(World* inWorld)

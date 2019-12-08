@@ -16,11 +16,11 @@ subject to the following restrictions:
 #ifndef BT_PERSISTENT_MANIFOLD_H
 #define BT_PERSISTENT_MANIFOLD_H
 
-#include "LinearMath/btVector3.h"
-#include "LinearMath/btTransform.h"
+#include "../../LinearMath/btVector3.h"
+#include "../../LinearMath/btTransform.h"
 #include "btManifoldPoint.h"
 class btCollisionObject;
-#include "LinearMath/btAlignedAllocator.h"
+#include "../../LinearMath/btAlignedAllocator.h"
 
 struct btCollisionResult;
 struct btCollisionObjectDoubleData;

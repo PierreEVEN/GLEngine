@@ -12,9 +12,7 @@ private:
 
 	static void DrawMainToolbar(World* InWorld);
 
-	static void DrawContentBrowser(std::string directoryPath);
 
-	static void DrawTexture2DImporterWindow();
 
 public:
 
@@ -29,6 +27,9 @@ class UIWindowElement
 public:
 
 	UIWindowElement();
+
+	bool bKeepOpen = true;
+	bool bCancel = true;
 
 	virtual void Draw(World* inWorld) {}
 };

@@ -15,9 +15,16 @@ private:
 	std::string assetName;
 	std::vector<SPropertyValue*> assetProperties;
 
-	void RegisterProperty(SPropertyValue* inNewProperty)
+protected:
+
+	bool RegisterProperty(SPropertyValue* inNewProperty)
 	{
-		assetProperties.push_back(inNewProperty);
+		if (inNewProperty && inNewProperty->IsValid())
+		{
+			assetProperties.push_back(inNewProperty);
+			return true;
+		}
+		return false;
 	}
 
 public:
@@ -29,7 +36,7 @@ public:
 	/* ASSET DATAS                                                          */
 	/************************************************************************/
 
-private:
+protected:
 
 	bool bAreDataLoaded;
 
@@ -40,8 +47,13 @@ public:
 	
 	SPropertyValue* GetProperty(const std::string propertyName);
 	void SetProperty(const std::string propertyName, const SPropertyValue& property);
+	std::vector<SPropertyValue*> GetAssetProperties() 
+	{
+		LoadData();
+		return assetProperties; 
+	}
 
-	virtual void ForceReimport() {}
+	virtual void ImportData();
 
 public:
 
@@ -49,5 +61,6 @@ public:
 		
 	std::string GetName() const { return assetName; }
 	std::string GetPath() const { return assetPath; }
+	bool HasValidPath() const { return assetPath != ""; }
 };
 #endif

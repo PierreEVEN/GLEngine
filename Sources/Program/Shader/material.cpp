@@ -8,26 +8,73 @@
 #include "../Lighting/pointLight.h"
 #include "../Lighting/spotLight.h"
 #include "../Lighting/directionalLight.h"
+#include "../Asset/AssetRegistry.h"
 
 
 
-void Material::InitializeShader(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures)
+Material::Material(std::string textAssetPath)
+	: Asset(textAssetPath)
 {
-	ShaderLoader* compiler = new ShaderLoader(vertexShaderPath, fragmentShaderPath);
-	ShaderID = compiler->Get();
-	textures = newTextures;
+	SAssetReader reader(textAssetPath);
+	if (!reader.IsValid()) return;
 
-	for (unsigned int textureIndex = 0; textureIndex < newTextures.size(); ++textureIndex)
+	SPropertyValue vertexShader(reader.Get(), "VertexShaderFilePath");
+	SPropertyValue fragmentShader(reader.Get(), "FragmentShaderFilePath");
+	SPropertyValue textureCount(reader.Get(), "TextureCount");
+
+	if (!vertexShader.IsValid()) return;
+	if (!fragmentShader.IsValid()) return;
+	if (!textureCount.IsValid()) return;
+
+	vertexShaderPath = vertexShader.GetValue<const char>();
+	fragmentShaderPath = fragmentShader.GetValue<const char>();
+	unsigned int texturesCount = *textureCount.GetValue<unsigned int>();
+
+	for (unsigned int i = 0; i < texturesCount; ++i)
 	{
-		if (newTextures[textureIndex])
+		SPropertyValue textureName(reader.Get(), "Texture_" + std::to_string(i));
+		if (!textureName.IsValid()) continue;
+		linkedTexturesName.push_back(textureName.GetValue<const char>());
+	}
+}
+
+void Material::InitializeShader(const char* inVertexShaderPath, const char* inFragmentShaderPath, std::vector<std::string> newTextures)
+{
+	ShaderLoader* compiler = new ShaderLoader(inVertexShaderPath, inFragmentShaderPath);
+	ShaderID = compiler->Get();
+
+	for (const auto& texture : newTextures)
+	{
+		if (Texture2D* foundTexture = AssetRegistry::FindAssetByName<Texture2D>(texture))
 		{
-			setInt("texture" + textureIndex, newTextures[textureIndex]->GetTextureID());
+			textures.push_back(foundTexture);
+			std::cout << "\t\t Found texture " << texture << " for material " << GetName() << std::endl;
+		}
+		else
+		{
+			std::cout << "failed to find texture " << texture << " for material " << GetName() << std::endl;
+		}
+	}
+
+	for (unsigned int textureIndex = 0; textureIndex < textures.size(); ++textureIndex)
+	{
+		if (textures[textureIndex])
+		{
+			setInt("texture" + textureIndex, textures[textureIndex]->GetTextureID());
 		}
 	}
 }
 
-void Material::use(World* OwningWorld) const
+void Material::ImportData()
 {
+	Asset::ImportData();
+	InitializeShader(vertexShaderPath.data(), fragmentShaderPath.data(), linkedTexturesName);
+
+}
+
+void Material::use(World* OwningWorld)
+{
+	LoadData();
 	glUseProgram(ShaderID);
 
 

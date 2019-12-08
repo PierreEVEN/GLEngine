@@ -15,25 +15,31 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <assimp/material.h>
+#include "../Shader/shaderLoader.h"
 
 void AssetImporter::ImportTexture(std::string textureFilePath, std::string newTextureName, std::string newFilePath)
 {
 	int x, y, nbrChannels;
 	if (stbi_uc *data = stbi_load(textureFilePath.data(), &x, &y, &nbrChannels, 0))
 	{
-		std::cout << "import texture" << textureFilePath << std::endl;
-		SAssetWriter writer(newFilePath);
+		std::cout << "Importing texture from " << textureFilePath << std::endl;
+		SAssetWriter writer(newFilePath + ".glAsset");
 		GLAssetIO::GenerateFileBody(writer.Get(), newTextureName, "Texture2D");
 		GLAssetIO::AppendField<int*>(writer.Get(), "TextureSizeX", &x, sizeof(x));
 		GLAssetIO::AppendField<int*>(writer.Get(), "TextureSizeY", &y, sizeof(y));
 		GLAssetIO::AppendField<int*>(writer.Get(), "TextureChannelsCount", &nbrChannels, sizeof(nbrChannels));
 		GLAssetIO::AppendField<stbi_uc*>(writer.Get(), "TextureData", data, x*y*nbrChannels);
+		writer.ForceCloseFile();
 		new Texture2D(newFilePath);
 		stbi_image_free(data);
 	}
+	else
+	{
+		std::cout << "failed to find texture " << textureFilePath << std::endl;
+	}
 }
 
-void AssetImporter::ImportMesh(std::string meshFilePath, std::string newMeshName, std::string newFilePath)
+void AssetImporter::ImportMesh(std::string meshFilePath, std::string newMeshName, std::string newFilePath, bool importMaterials)
 {
 	Assimp::Importer assimpImporter;
 	const aiScene *scene = assimpImporter.ReadFile(meshFilePath, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -44,36 +50,38 @@ void AssetImporter::ImportMesh(std::string meshFilePath, std::string newMeshName
 		return;
 	}
 
-	SAssetWriter writer(newFilePath);
+	SAssetWriter writer(newFilePath + ".glAsset");
 	GLAssetIO::GenerateFileBody(writer.Get(), newMeshName, "StaticMesh");
 	unsigned int sectionCount = 0;
-	processNode(scene->mRootNode, scene, writer.Get(), sectionCount);
+	processNode(scene->mRootNode, scene, writer.Get(), sectionCount, importMaterials, newMeshName);
 	GLAssetIO::AppendField<unsigned int*>(writer.Get(), "SectionCount", &sectionCount, sizeof(sectionCount));
+	writer.ForceCloseFile();
 	new StaticMesh(newFilePath);
 }
 
-void AssetImporter::processNode(aiNode *node, const aiScene *scene, std::ofstream* writer, unsigned int& currentSectionIndex)
+void AssetImporter::processNode(aiNode *node, const aiScene *scene, std::ofstream* writer, unsigned int& currentSectionIndex, bool importMaterials, std::string meshName)
 {
 	if (!node) return;
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		if (aiMesh* mesh = scene->mMeshes[node->mMeshes[i]])
 		{
-			processMesh(mesh, scene, i, writer, i);
+			processMesh(mesh, scene, currentSectionIndex, writer, importMaterials, meshName);
 			currentSectionIndex++;
 		}
 	}
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
 	{
-		processNode(node->mChildren[i], scene, writer, currentSectionIndex);
+		processNode(node->mChildren[i], scene, writer, currentSectionIndex, importMaterials, meshName);
 	}
 }
 
-void AssetImporter::processMesh(aiMesh *mesh, const aiScene *scene, unsigned int meshIndex, std::ofstream* writer, const unsigned int& SectionIndex)
+void AssetImporter::processMesh(aiMesh *mesh, const aiScene *scene, unsigned int meshIndex, std::ofstream* writer, bool importMaterials, std::string meshName)
 {
 	// data to fill
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
+
 
 	/** Get vertices */
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -105,17 +113,10 @@ void AssetImporter::processMesh(aiMesh *mesh, const aiScene *scene, unsigned int
 
 		/** Get or generate texture coordinates */
 		{
-			if (mesh->HasTextureCoords(i))
-			{
-				glm::vec2 vec;
-				vec.x = mesh->mTextureCoords[0][i].x;
-				vec.y = mesh->mTextureCoords[0][i].y;
-				vertex.TexCoords = vec;
-			}
-			else
-			{
-				vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-			}
+			glm::vec2 vec;
+			vec.x = mesh->mTextureCoords[0][i].x;
+			vec.y = mesh->mTextureCoords[0][i].y;
+			vertex.TexCoords = vec;
 		}
 		
 		/** Get or generate tangent and biTangents */
@@ -153,34 +154,63 @@ void AssetImporter::processMesh(aiMesh *mesh, const aiScene *scene, unsigned int
 		}
 	}
 	
-	GLAssetIO::AppendField<Vertex*>(writer, "Section" + std::to_string(SectionIndex) + "_Vertices", vertices.data(), vertices.size() * sizeof(Vertex));
-	GLAssetIO::AppendField<unsigned int*>(writer, "Section" + std::to_string(SectionIndex) + "_Indices", indices.data(), indices.size() * sizeof(unsigned int));
+	GLAssetIO::AppendField<Vertex*>(writer, "Section" + std::to_string((int)meshIndex) + "_Vertices", vertices.data(), vertices.size() * sizeof(Vertex));
+	GLAssetIO::AppendField<unsigned int*>(writer, "Section" + std::to_string((int)meshIndex) + "_Indices", indices.data(), indices.size() * sizeof(unsigned int));
 
 
-// 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-// 	std::vector<Texture2D*> materialTextures = loadMaterialTextures(material, aiTextureType_DIFFUSE);
-// 
-// 
-// 	// return a mesh object created from the extracted mesh data
-// 	Material* sectionMaterial = nullptr;
-// 	if (usedMaterial.size() > meshIndex)
-// 	{
-// 		sectionMaterial = usedMaterial[meshIndex];
-// 	}
+	/** Get materials */
+	if (importMaterials)
+	{
+		std::cout << "Importing additional materials..." << std::endl;
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		std::string newMaterial = loadMaterialTextures(material, aiTextureType_DIFFUSE, meshName, (int)meshIndex);
+		GLAssetIO::AppendField<char*>(writer, "Material_" + std::to_string(meshIndex), (char*)newMaterial.data(), newMaterial.size() + 1);
+	}
 }
 
 
-std::vector<Texture2D*> AssetImporter::loadMaterialTextures(aiMaterial *mat, aiTextureType type)
+std::string AssetImporter::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string meshName, int meshIndex)
 {
-	std::vector<Texture2D*> textures = {};
-	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+	std::vector<std::string> textures = {};
+	if (mat)
 	{
-		aiString str;
-		mat->GetTexture(type, i, &str);
+		for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+		{
+			aiString str;
+			mat->GetTexture(type, i, &str);
 
-		//Texture2D* texture = new Texture2D("this->directory" + '/' + std::string(str.C_Str()), true);
-		std::cout << "Registered new dynamic texture " << mat->GetName().C_Str() << std::endl;
-		//textures.push_back(texture);
+			std::string newTextureName = AssetLibrary::GenerateNonExistingAssetName("Texture_" + meshName + std::to_string(meshIndex));
+			std::cout << "std : " << str.C_Str() << std::endl;
+			std::cout << "total : " << "this->directory" + '/' + std::string(str.C_Str()) << std::endl;
+			textures.push_back(newTextureName);
+			AssetImporter::ImportTexture(str.C_Str(), newTextureName, "./Sources/Assets/Textures/" + newTextureName);
+		}
 	}
-	return textures;
+	std::string newMaterialName = AssetLibrary::GenerateNonExistingAssetName("Material_" + meshName + std::to_string(meshIndex));
+	AssetImporter::ImportShader("Sources/Shaders/Campus/campusVertexShader.vs", "Sources/Shaders/Campus/campusFragmentShader.fs", newMaterialName, "./Sources/Assets/Materials/" + newMaterialName, textures);
+	return newMaterialName;
+}
+
+
+
+
+
+void AssetImporter::ImportShader(std::string vertexShaderFilePath, std::string fragmentShaderFilePath, std::string newShaderName, std::string newFilePath, std::vector<std::string> linkedTextures)
+{
+	ShaderLoader* compiler = new ShaderLoader(vertexShaderFilePath.data(), fragmentShaderFilePath.data());
+
+	SAssetWriter writer(newFilePath + ".glAsset");
+
+	GLAssetIO::GenerateFileBody(writer.Get(), newShaderName, "Material");
+	GLAssetIO::AppendField<char*>(writer.Get(), "VertexShaderFilePath", (char*)(vertexShaderFilePath.data()), vertexShaderFilePath.size() + 1);
+	GLAssetIO::AppendField<char*>(writer.Get(), "FragmentShaderFilePath", (char*)(fragmentShaderFilePath.data()), fragmentShaderFilePath.size() + 1);
+	unsigned int textureCount = linkedTextures.size();
+	GLAssetIO::AppendField<unsigned int*>(writer.Get(), "TextureCount", &textureCount, sizeof(unsigned int));
+	
+	for (unsigned int i = 0; i < linkedTextures.size(); ++i)
+	{
+		GLAssetIO::AppendField<char*>(writer.Get(), "Texture_" + std::to_string(i), (char*)(linkedTextures[i].data()), linkedTextures[i].size() + 1);
+	}
+	writer.ForceCloseFile();
+	new Material(newFilePath);
 }

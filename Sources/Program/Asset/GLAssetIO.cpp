@@ -54,12 +54,18 @@ SAssetWriter::SAssetWriter(std::string inAssetPath)
 
 SAssetWriter::~SAssetWriter()
 {
+	ForceCloseFile();
+}
+
+void SAssetWriter::ForceCloseFile()
+{
 	if (fileStream)
 	{
 		fileStream->close();
 		if (!fileStream->good()) {
 			std::cout << "Failed to close file '" << assetPath << "'" << std::endl;
 		}
+		fileStream = nullptr;
 	}
 }
 
@@ -96,4 +102,6 @@ void GLAssetIO::GenerateFileBody(std::ofstream* newFileStream, std::string newAs
 {
 	GLAssetIO::AppendField<char*>(newFileStream, "AssetType", (char*)(assetType.data()), assetType.size() + 1);
 	GLAssetIO::AppendField<char*>(newFileStream, "AssetName", (char*)(newAssetName.data()), newAssetName.size() + 1);
+	std::cout << "asset name : " << (char*)(newAssetName.data())  << std::endl;
 }
+

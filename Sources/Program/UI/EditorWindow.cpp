@@ -17,8 +17,15 @@
 #include "../Asset/AssetRegistry.h"
 #include "../Mesh/staticMeshComponent.h"
 #include "../Shader/material.h"
+#include "Importers/importerWindows.h"
+#include "EditorWindows/assetEditor.h"
+#include "../Mesh/staticMesh.h"
 
 std::vector<UIWindowElement*> WindowManager::elementsArray;
+
+static bool bShowTextures = false;
+static bool bShowMaterials = false;
+static bool bShowMesh = true;
 
 static float MAX_FRAMERATE = 60.f;
 
@@ -29,18 +36,39 @@ void EditorWindow::DrawWindow(World* InWorld)
 
 	ImGui::Begin("Content browser");
 	ImGui::BeginGroup();
+
+	ImGui::Checkbox("show materials ", &bShowMaterials);
+	ImGui::Checkbox("show meshes ", &bShowMesh);
+	ImGui::Checkbox("show textures ", &bShowTextures);
+
 	for (auto& asset : AssetRegistry::GetAssets())
 	{
-		if (ImGui::Button(asset->GetName().data()))
+		if (bShowMaterials)
 		{
-			if (StaticMesh* foundMesh = (StaticMesh*)asset)
+			if (Material* foundMat = dynamic_cast<Material*>(asset))
 			{
-				new StaticMeshComponent(InWorld, foundMesh, {});
+				ImGui::Button(asset->GetName().data());
 			}
 		}
-		if (Texture2D* foundTexture2D = (Texture2D*)asset)
+		if (bShowTextures)
 		{
-			ImGui::Image((void*)(intptr_t)foundTexture2D->GetTextureID(), ImVec2(32, 32));
+			if (Texture2D* foundText = dynamic_cast<Texture2D*>(asset))
+			{
+				ImGui::Button(asset->GetName().data());
+			}
+		}
+		if (bShowMesh)
+		{
+			if (StaticMesh* foundMesh = dynamic_cast<StaticMesh*>(asset))
+			{
+				if (ImGui::Button(asset->GetName().data()))
+				{
+					new StaticMeshEditorWindows(foundMesh);
+					StaticMeshComponent* newComp = new StaticMeshComponent(InWorld, foundMesh, {});
+					newComp->SetAngle(90.f);
+					newComp->SetScale3D(SVector3(10.f));
+				}
+			}
 		}
 	}
 	ImGui::EndGroup();
@@ -71,13 +99,18 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 	}
 	if (ImGui::BeginMenu("Import"))
 	{
-		if (ImGui::BeginMenu("Import texture"))
+		if (ImGui::Button("Import Texture"))
 		{
-			DrawTexture2DImporterWindow();
-			ImGui::EndMenu();
+			new TextureImporterWindow();
 		}
-		ImGui::Button("Import material");
-		ImGui::Button("Import mesh");
+		if (ImGui::Button("Import material"))
+		{
+			new ShaderImporterWindow();
+		}
+		if (ImGui::Button("Import mesh"))
+		{
+			new MeshImporterWindow();
+		}
 		ImGui::EndMenu();
 	}
 	if (ImGui::BeginMenu("View"))
@@ -159,48 +192,16 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 	ImGui::EndMainMenuBar();
 }
 
-void EditorWindow::DrawContentBrowser(std::string directoryPath)
-{
-	std::string search_path = directoryPath + "/*.*";
-	WIN32_FIND_DATA fd;
-	HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
-	if (hFind != INVALID_HANDLE_VALUE) {
-		do {
-			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				if (std::string(fd.cFileName) != std::string("."))
-				{
-					if (ImGui::BeginMenu(fd.cFileName))
-					{
-						DrawContentBrowser(directoryPath + "/" + fd.cFileName);
-						ImGui::EndMenu();
-					}
-				}
-			}
-			else
-			{
-				if (ImGui::Button(fd.cFileName))
-				{
-					std::string textureName = AssetLibrary::GenerateNonExistingAssetName(AssetLibrary::RemoveExtension(fd.cFileName));
-					AssetImporter::ImportMesh(directoryPath + "/" + fd.cFileName, textureName, "Sources/Assets/Meshes/" + textureName + ".GLAsset");
-				}
-			}
-		} while (::FindNextFile(hFind, &fd));
-		::FindClose(hFind);
-	}
-}
-
-void EditorWindow::DrawTexture2DImporterWindow()
-{
-	DrawContentBrowser("./");
-}
-
-
 
 void WindowManager::DrawElements(World* inWorld)
 {
-	for (auto& element : WindowManager::elementsArray)
+	for (int i = WindowManager::elementsArray.size() - 1; i >= 0; --i)
 	{
-		element->Draw(inWorld);
+		WindowManager::elementsArray[i]->Draw(inWorld);
+		if (!WindowManager::elementsArray[i]->bKeepOpen)
+		{
+			CloseWindow(elementsArray[i]);
+		}
 	}
 }
 
@@ -215,8 +216,8 @@ void WindowManager::CloseWindow(UIWindowElement* inElement)
 	{
 		if (WindowManager::elementsArray[i] == inElement)
 		{
-			WindowManager::elementsArray.erase(WindowManager::elementsArray.begin() + 1);
 			delete inElement;
+			WindowManager::elementsArray.erase(WindowManager::elementsArray.begin() + i);
 			return;
 		}
 	}

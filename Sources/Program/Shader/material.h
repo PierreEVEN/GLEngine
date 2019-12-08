@@ -22,15 +22,18 @@ public:
 
 	std::string vertexShaderPath;
 	std::string fragmentShaderPath;
+	std::vector<std::string> linkedTexturesName;
 	std::vector<Texture2D*> textures;
 
 	bool bIsUnlit;
 
-	Material(std::string textAssetPath) : Asset(textAssetPath) {}
+	Material(std::string textAssetPath);
 
-	void InitializeShader(const char* vertexShaderPath, const char* fragmentShaderPath, std::vector<Texture2D*> newTextures);
-	
-	void use(World* OwningWorld) const;
+	void InitializeShader(const char* inVertexShaderPath, const char* inFragmentShaderPath, std::vector<std::string> newTextures);
+
+	virtual void ImportData() override;
+
+	void use(World* OwningWorld);
 
 	void setBool(const std::string &name, bool value) const;
 	void setInt(const std::string &name, int value) const;

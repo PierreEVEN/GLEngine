@@ -3,25 +3,28 @@
 #include "../ThirdParty/stb_image.h"
 #include <glad/glad.h>
 
+Texture2D::Texture2D(std::string textAssetPath)
+	: Asset(textAssetPath) {}
+
 void Texture2D::LoadFromPath(std::string textAssetPath)
 {
 	int width, height, nrChannels;
 	stbi_uc *data;
 	SAssetReader reader(textAssetPath);
-	SPropertyValue sizeXData(reader.Get(), "TextureSizeX");
-	SPropertyValue sizeYData(reader.Get(), "TextureSizeY");
-	SPropertyValue channelCountData(reader.Get(), "TextureChannelsCount");
-	SPropertyValue textureData(reader.Get(), "TextureData");
+	SIntPropertyValue* sizeXData = new SIntPropertyValue(reader.Get(), "TextureSizeX");
+	SIntPropertyValue* sizeYData = new SIntPropertyValue(reader.Get(), "TextureSizeY");
+	SIntPropertyValue* channelCountData = new SIntPropertyValue(reader.Get(), "TextureChannelsCount");
+	SPropertyValue* textureData = new SPropertyValue(reader.Get(), "TextureData");
+	
+	if (!RegisterProperty(sizeXData)) return;
+	if (!RegisterProperty(sizeYData)) return;
+	if (!RegisterProperty(channelCountData)) return;
+	if (!RegisterProperty(textureData)) return;
 
-	if (!sizeXData.IsValid()) return;
-	if (!sizeYData.IsValid()) return;
-	if (!channelCountData.IsValid()) return;
-	if (!textureData.IsValid()) return;
-
-	width = *sizeXData.GetValue<int>();
-	height = *sizeYData.GetValue<int>();
-	nrChannels = *channelCountData.GetValue<int>();
-	data = textureData.GetValue<stbi_uc>();
+	width = *sizeXData->GetValue<int>();
+	height = *sizeYData->GetValue<int>();
+	nrChannels = *channelCountData->GetValue<int>();
+	data = textureData->GetValue<stbi_uc>();
 
 	GLenum format;
 	if (nrChannels == 1)
@@ -47,8 +50,15 @@ void Texture2D::LoadFromPath(std::string textAssetPath)
 	// load image, create texture and generate mipmaps
 }
 
-Texture2D::Texture2D(std::string textAssetPath)
-	: Asset(textAssetPath)
+
+unsigned int Texture2D::GetTextureID()
 {
-	LoadFromPath(textAssetPath);
+	LoadData();
+	return textureID;
+}
+
+void Texture2D::ImportData()
+{
+	Asset::ImportData();
+	LoadFromPath(GetPath());
 }

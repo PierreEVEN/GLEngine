@@ -22,13 +22,13 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{1255E73D-5858-41FB-88CF-5BD1E2512432}</ProjectGuid>
     <RootNamespace>GLEngine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -71,7 +71,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>Lib\assimp;Lib\glfw3;Lib\bullet3D;$(LibraryPath)</LibraryPath>
+    <LibraryPath>Lib\assimp;Lib\glfw3;Lib\bullet3D;Lib\glslangd;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\Output\</OutDir>
     <IntDir>..\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -92,7 +92,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc141-mt.lib;assimp-vc141-mtd.lib;IrrXMLd.lib;zlibd.lib;zlibstaticd.lib;Bullet2FileLoader_Debug.lib;Bullet3Collision_Debug.lib;Bullet3Common_Debug.lib;Bullet3Dynamics_Debug.lib;Bullet3Geometry_Debug.lib;Bullet3OpenCL_clew_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;BulletFileLoader_Debug.lib;BulletInverseDynamics_Debug.lib;BulletInverseDynamicsUtils_Debug.lib;BulletWorldImporter_Debug.lib;BulletXmlWorldImporter_Debug.lib;LinearMath_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc141-mt.lib;assimp-vc141-mtd.lib;IrrXMLd.lib;zlibd.lib;zlibstaticd.lib;Bullet2FileLoader_Debug.lib;Bullet3Collision_Debug.lib;Bullet3Common_Debug.lib;Bullet3Dynamics_Debug.lib;Bullet3Geometry_Debug.lib;Bullet3OpenCL_clew_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;BulletFileLoader_Debug.lib;BulletInverseDynamics_Debug.lib;BulletInverseDynamicsUtils_Debug.lib;BulletWorldImporter_Debug.lib;BulletXmlWorldImporter_Debug.lib;LinearMath_Debug.lib;glslangd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -169,7 +169,9 @@
     <ClInclude Include="Sources/Program/ImGUI/imstb_truetype.h" />
     <ClInclude Include="Sources/Program/UI/EditorWindow.h" />
     <ClInclude Include="Sources/Program/UI/ContentBrowser/contentBrowser.h" />
-    <ClInclude Include="Sources/Program/UI/FileExplorer/fileExplorer.h" />
+    <ClInclude Include="Sources/Program/UI/EditorWindows/fileExplorer.h" />
+    <ClInclude Include="Sources/Program/UI/EditorWindows/assetSelector.h" />
+    <ClInclude Include="Sources/Program/UI/EditorWindows/assetEditor.h" />
     <ClInclude Include="Sources/Program/UI/Importers/importerWindows.h" />
   </ItemGroup>
   <ItemGroup>
@@ -205,7 +207,9 @@
     <ClCompile Include="Sources/Program/ImGUI/imgui_demo.cpp" />
     <ClCompile Include="Sources/Program/UI/EditorWindow.cpp" />
     <ClCompile Include="Sources/Program/UI/ContentBrowser/contentBrowser.cpp" />
-    <ClCompile Include="Sources/Program/UI/FileExplorer/fileExplorer.cpp" />
+    <ClCompile Include="Sources/Program/UI/EditorWindows/fileExplorer.cpp" />
+    <ClCompile Include="Sources/Program/UI/EditorWindows/assetSelector.cpp" />
+    <ClCompile Include="Sources/Program/UI/EditorWindows/assetEditor.cpp" />
     <ClCompile Include="Sources/Program/UI/Importers/importerWindows.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

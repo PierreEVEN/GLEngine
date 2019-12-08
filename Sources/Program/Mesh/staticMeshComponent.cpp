@@ -11,7 +11,7 @@ StaticMeshComponent::StaticMeshComponent(World* newWorld, StaticMesh* inMeshData
 	meshData = inMeshData;
 
 
-	for (auto& section : inMeshData->meshSections)
+	for (auto& section : *inMeshData->GetSections())
 	{
 		MeshSectionComponent* newSection = new MeshSectionComponent(newWorld, &section);
 		newSection->SetLocation(GetLocation());

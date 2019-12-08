@@ -38,14 +38,31 @@ struct StaticMeshSection
 
 class StaticMesh : public Asset
 {
+private:
+
+	std::vector<Material*> usedMaterial;
+
 public:
 
-	std::string dataPath;
 	std::vector<StaticMeshSection> meshSections;
-	std::vector<Material*> usedMaterial;
 
 	StaticMesh(std::string dataAssetPath);
 
-	void LoadData(std::string path);
+	std::vector<StaticMeshSection>* GetSections()
+	{
+		LoadData();
+		return &meshSections;
+	}
 
+	std::vector<Material*> GetMaterials()
+	{
+		LoadData();
+		return usedMaterial;
+	}
+
+	void LoadMesh(std::string path);
+
+protected:
+
+	virtual void ImportData() override;
 };

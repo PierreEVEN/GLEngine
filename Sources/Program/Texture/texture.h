@@ -18,7 +18,8 @@ public:
 
 	Texture2D(std::string textAssetPath);
 
-	unsigned int GetTextureID() const { return textureID; }
-	
+	unsigned int GetTextureID();
+
+	virtual void ImportData() override;
 };
 #endif

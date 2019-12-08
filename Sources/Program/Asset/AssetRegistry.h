@@ -17,6 +17,19 @@ private:
 	static std::vector<Asset*> registeredAssets;
 
 public:
+	template <class T>
+	static std::vector<T*> GetAssetsByClass()
+	{
+		std::vector<T*> outArray;
+		for (Asset* asset : GetAssets())
+		{
+			if (T* castedAsset = dynamic_cast<T*>(asset))
+			{
+				outArray.push_back(castedAsset);
+			}
+		}
+		return outArray;
+	}
 
 	template <class T>
 	static T* FindAssetByName(const std::string AssetName)

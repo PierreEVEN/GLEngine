@@ -53,9 +53,9 @@ void PhysicPrimitiveComponent::SetLocation(SVector3 newLocation)
 
 SVector3 PhysicPrimitiveComponent::GetLocation() const
 {
-	btTransform objectTransform = body->getWorldTransform();	
+	MeshSectionComponent::GetLocation();
+	btTransform objectTransform = body->getWorldTransform();
 	return glm::vec3((float)objectTransform.getOrigin().getX(), (float)objectTransform.getOrigin().getY(), (float)objectTransform.getOrigin().getZ());
-	return MeshSectionComponent::GetLocation();
 }
 
 float PhysicPrimitiveComponent::GetAngle() const

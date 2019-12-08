@@ -25,12 +25,15 @@ void Asset::Initialize(std::string inAssetPath)
 	}
 
 	AssetRegistry::RegisterAsset(this);
-	if (!assetRead.IsValid()) return;
-	SPropertyValue assetNameProperty(assetRead.Get(), "AssetName");
-	assert(assetNameProperty.IsValid());
-	RegisterProperty(&assetNameProperty);
-	assetName = assetNameProperty.GetValue<const char>();
-	std::cout << "loaded asset " << assetName << " ( " << assetPath << " ) " << std::endl;
+	if (!assetRead.IsValid())
+	{
+		std::cout << "Error : failed to open path " << inAssetPath << std::endl;
+		return;
+	}
+	SStringPropertyValue* assetNameProperty = new SStringPropertyValue(assetRead.Get(), "AssetName");
+	assert(RegisterProperty(assetNameProperty));
+	assetName = assetNameProperty->GetStringValue();
+	std::cout << "Initialized asset " << assetName << " ( " << assetPath << " ) " << std::endl;
 }
 
 bool Asset::ChangeFilePath(std::string inNewPath)
@@ -45,7 +48,7 @@ bool Asset::ChangeFilePath(std::string inNewPath)
 bool Asset::LoadData()
 {
 	if (bAreDataLoaded) return false;
-
+	ImportData();
 	bAreDataLoaded = true;
 	return true;
 }
@@ -69,7 +72,7 @@ SPropertyValue* Asset::GetProperty(const std::string propertyName)
 	{
 		if (prop)
 		{
-			if (prop->propertyName == propertyName) return prop;
+			if (prop->GetPropertyName() == propertyName) return prop;
 		}
 	}
 	return nullptr;
@@ -78,4 +81,9 @@ SPropertyValue* Asset::GetProperty(const std::string propertyName)
 void Asset::SetProperty(const std::string propertyName, const SPropertyValue& property)
 {
 	LoadData();
+}
+
+void Asset::ImportData()
+{
+	std::cout << "Imported asset " << assetName << " ( " << assetPath << " ) " << std::endl;
 }

@@ -9,11 +9,14 @@
 #include "Mesh/staticMesh.h"
 #include "Mesh/staticMeshComponent.h"
 #include "Asset/AssetRegistry.h"
-#include "UI/FileExplorer/fileExplorer.h"
 #include "UI/EditorWindow.h"
 
 double DeltaSecond;
 
+void Test(std::string path)
+{
+	std::cout << path << std::endl;
+}
 int main()
 {
 	glfwInit();
@@ -49,7 +52,7 @@ int main()
 	btCollisionShape* shape = new btBoxShape(btVector3(100, 100, 1));
 	btTransform myTransform;
 	myTransform.setIdentity();
-	myTransform.setOrigin(btVector3(0, 0, -1));
+	myTransform.setOrigin(btVector3(0, 0, 2));
 	btVector3 localInertia(0, 0, 0);
 	btScalar mass = 0;
 	shape->calculateLocalInertia(mass, localInertia);
@@ -70,18 +73,6 @@ int main()
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
 
-	if (StaticMesh* foundMesh = AssetRegistry::FindAssetByName<StaticMesh>("Cube1M"))
-	{
-		StaticMeshComponent* newComp0 = new StaticMeshComponent(WorldOne, foundMesh);
-	}
-	else
-	{
-		std::cout << "ERROR : failed to find mesh " << std::endl;
-	}
-
-
-	new FileExplorer(".", {".png", ".jpg"}, true);
-
 	/************************************************************************/
 	/* RENDER loop                                                          */
 	/************************************************************************/
@@ -98,7 +89,6 @@ int main()
 
 		World::UpdateWorlds(DeltaSecond);
 	}
-
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
