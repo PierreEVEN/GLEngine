@@ -50,7 +50,9 @@ void AssetImporter::ImportMesh(std::string meshFilePath, std::string newMeshName
 		return;
 	}
 
-	SAssetWriter writer(newFilePath + ".glAsset");
+	newFilePath += ".glAsset";
+
+	SAssetWriter writer(newFilePath);
 	GLAssetIO::GenerateFileBody(writer.Get(), newMeshName, "StaticMesh");
 	unsigned int sectionCount = 0;
 	processNode(scene->mRootNode, scene, writer.Get(), sectionCount, importMaterials, newMeshName);

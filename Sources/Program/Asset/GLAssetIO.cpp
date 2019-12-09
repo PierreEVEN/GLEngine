@@ -24,7 +24,7 @@ SAssetReader::SAssetReader(std::string inAssetPath)
 	fileStream = new std::ifstream(assetPath, std::ios::in | std::ios::binary);
 	if (!fileStream || !fileStream->is_open())
 	{
-		std::cout << "Failed to open file '" << assetPath << "'" << std::endl;
+		std::cout << "Failed to open file '" << assetPath << "' : " << (fileStream ? " invalid path " : " cannot open file ") << std::endl;
 		delete fileStream;
 		fileStream = nullptr;
 	}
@@ -102,6 +102,5 @@ void GLAssetIO::GenerateFileBody(std::ofstream* newFileStream, std::string newAs
 {
 	GLAssetIO::AppendField<char*>(newFileStream, "AssetType", (char*)(assetType.data()), assetType.size() + 1);
 	GLAssetIO::AppendField<char*>(newFileStream, "AssetName", (char*)(newAssetName.data()), newAssetName.size() + 1);
-	std::cout << "asset name : " << (char*)(newAssetName.data())  << std::endl;
 }
 
