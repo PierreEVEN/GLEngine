@@ -17,7 +17,7 @@ private:
 	Asset* linkedAsset;
 public:
 
-	AssetEditorWindow(Asset* inAsset);
+	AssetEditorWindow(std::string inWindowName, Asset* inAsset);
 
 	Asset* GetAsset() const { return linkedAsset; }
 
@@ -35,7 +35,7 @@ class StaticMeshEditorWindows : public AssetEditorWindow
 
 public:
 
-	StaticMeshEditorWindows(Asset* inAsset) : AssetEditorWindow(inAsset) {}
+	StaticMeshEditorWindows(std::string inWorld, Asset* inAsset) : AssetEditorWindow(inWorld, inAsset) {}
 
 	virtual void Draw(World* inWorld) override;
 

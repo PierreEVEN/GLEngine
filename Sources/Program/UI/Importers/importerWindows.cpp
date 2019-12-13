@@ -15,7 +15,7 @@ void MeshImporterWindow::Draw(World* inWorld)
 		if (ImGui::Button("Source file"))
 		{
 			std::string testString = "invalid value";
-			new FileExplorer(".", nullptr, &sourceFilePath, { ".obj", ".fbx" }, true);
+			new FileExplorer("File explorer", ".", nullptr, &sourceFilePath, { ".obj", ".fbx" }, true);
 		}
 		ImGui::NextColumn();
 
@@ -23,7 +23,7 @@ void MeshImporterWindow::Draw(World* inWorld)
 		ImGui::NextColumn();
 		if (ImGui::Button("output path"))
 		{
-			new FileExplorer(".", nullptr, &outputFilePath, {}, false, true);
+			new FileExplorer("File explorer", ".", nullptr, &outputFilePath, {}, false, true);
 		}
 		ImGui::NextColumn();
 		ImGui::Text(outputFilePath.data());
@@ -89,7 +89,7 @@ void TextureImporterWindow::Draw(World* inWorld)
 		if (ImGui::Button("Source file"))
 		{
 			std::string testString = "invalid value";
-			new FileExplorer(".", nullptr, &sourceFilePath, { ".png", ".jpg", ".bmp", ".tif" }, true);
+			new FileExplorer("File explorer", ".", nullptr, &sourceFilePath, { ".png", ".jpg", ".bmp", ".tif" }, true);
 		}
 		ImGui::NextColumn();
 		ImGui::Text(sourceFilePath.data());
@@ -97,7 +97,7 @@ void TextureImporterWindow::Draw(World* inWorld)
 
 		if (ImGui::Button("output path"))
 		{
-			new FileExplorer(".", nullptr, &outputFilePath, {}, false, true);
+			new FileExplorer("File explorer", ".", nullptr, &outputFilePath, {}, false, true);
 		}
 		ImGui::NextColumn();
 		ImGui::Text(outputFilePath.data());
@@ -131,7 +131,7 @@ void ShaderImporterWindow::Draw(World* inWorld)
 		if (ImGui::Button("vertex shader"))
 		{
 			std::string testString = "invalid value";
-			new FileExplorer(".", nullptr, &vertexShadersPath, { ".vs" }, true);
+			new FileExplorer("File explorer", ".", nullptr, &vertexShadersPath, { ".vs" }, true);
 		}
 		ImGui::NextColumn();
 		ImGui::Text(vertexShadersPath.data());
@@ -140,7 +140,7 @@ void ShaderImporterWindow::Draw(World* inWorld)
 		if (ImGui::Button("fragment shader"))
 		{
 			std::string testString = "invalid value";
-			new FileExplorer(".", nullptr, &fragmentShadersPath, { ".fs" }, true);
+			new FileExplorer("File explorer", ".", nullptr, &fragmentShadersPath, { ".fs" }, true);
 		}
 		ImGui::NextColumn();
 		ImGui::Text(fragmentShadersPath.data());
@@ -148,7 +148,7 @@ void ShaderImporterWindow::Draw(World* inWorld)
 
 		if (ImGui::Button("output path"))
 		{
-			new FileExplorer(".", nullptr, &outputFilePath, {}, false, true);
+			new FileExplorer("File explorer", ".", nullptr, &outputFilePath, {}, false, true);
 		}
 		ImGui::NextColumn();
 		ImGui::Text(outputFilePath.data());

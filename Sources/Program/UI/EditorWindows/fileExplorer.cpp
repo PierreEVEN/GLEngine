@@ -1,10 +1,10 @@
 #include "fileExplorer.h"
 #include "../../ImGUI/imgui.h"
-#include <iostream>
 #include "../../Asset/assetLibrary.h"
+#include <iostream>
 
-FileExplorer::FileExplorer(std::string inPath, std::function<void()> inConfirmCallback, std::string* inReturnPath, std::vector<std::string> inExtensions /*= {}*/, bool bInCheckExtension /*= false*/, bool bInOnlyReturnPath)
-	: UIWindowElement()
+FileExplorer::FileExplorer(std::string inWindowName, std::string inPath, std::function<void()> inConfirmCallback, std::string* inReturnPath, std::vector<std::string> inExtensions /*= {}*/, bool bInCheckExtension /*= false*/, bool bInOnlyReturnPath)
+	: UIWindowElement(inWindowName)
 {
 	currentPath = inPath;
 	selectedPath = inPath;
