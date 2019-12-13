@@ -4,8 +4,8 @@
 #include <iostream>
 #include "../../Asset/GLAssetIO.h"
 
-AssetEditorWindow::AssetEditorWindow(Asset* inAsset)
- : UIWindowElement()
+AssetEditorWindow::AssetEditorWindow(std::string inWindowName, Asset* inAsset)
+ : UIWindowElement(inWindowName)
 {
 	linkedAsset = inAsset;
 }

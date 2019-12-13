@@ -13,7 +13,7 @@ class FileExplorer : public UIWindowElement
 {
 public:
 
-	FileExplorer(std::string inPath, std::function<void()> inConfirmCallback, std::string* inReturnPath, std::vector<std::string> inExtensions = {}, bool bInCheckExtension = false, bool bInOnlyReturnPath = false);
+	FileExplorer(std::string inWindowName, std::string inPath, std::function<void()> inConfirmCallback, std::string* inReturnPath, std::vector<std::string> inExtensions = {}, bool bInCheckExtension = false, bool bInOnlyReturnPath = false);
 	
 	std::string currentPath;
 	std::string selectedPath;
@@ -28,6 +28,5 @@ public:
 	virtual void Draw(World* inWorld) override;
 
 	void DrawSubFolderTreeNodeElement(std::string inPath);
-
 };
 #endif

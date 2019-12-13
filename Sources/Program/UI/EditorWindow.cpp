@@ -20,59 +20,22 @@
 #include "Importers/importerWindows.h"
 #include "EditorWindows/assetEditor.h"
 #include "../Mesh/staticMesh.h"
+#include "ContentBrowser/contentBrowser.h"
 
 std::vector<UIWindowElement*> WindowManager::elementsArray;
 
-static bool bShowTextures = false;
-static bool bShowMaterials = false;
-static bool bShowMesh = true;
+bool bShowDemoWindow;
 
 static float MAX_FRAMERATE = 60.f;
 
 void EditorWindow::DrawWindow(World* InWorld)
 {
+	if (bShowDemoWindow)
+	{
+		ImGui::ShowDemoWindow(&bShowDemoWindow);
+	}
 	DrawMainToolbar(InWorld);
 	WindowManager::DrawElements(InWorld);
-
-	ImGui::Begin("Content browser");
-	ImGui::BeginGroup();
-
-	ImGui::Checkbox("show materials ", &bShowMaterials);
-	ImGui::Checkbox("show meshes ", &bShowMesh);
-	ImGui::Checkbox("show textures ", &bShowTextures);
-
-	for (auto& asset : AssetRegistry::GetAssets())
-	{
-		if (bShowMaterials)
-		{
-			if (Material* foundMat = dynamic_cast<Material*>(asset))
-			{
-				ImGui::Button(asset->GetName().data());
-			}
-		}
-		if (bShowTextures)
-		{
-			if (Texture2D* foundText = dynamic_cast<Texture2D*>(asset))
-			{
-				ImGui::Button(asset->GetName().data());
-			}
-		}
-		if (bShowMesh)
-		{
-			if (StaticMesh* foundMesh = dynamic_cast<StaticMesh*>(asset))
-			{
-				if (ImGui::Button(asset->GetName().data()))
-				{
-					new StaticMeshEditorWindows(foundMesh);
-					StaticMeshComponent* newComp = new StaticMeshComponent(InWorld, foundMesh, {});
-					newComp->SetAngle(90.f);
-					newComp->SetScale3D(SVector3(10.f));
-				}
-			}
-		}
-	}
-	ImGui::EndGroup();
-	ImGui::End();
 }
 
 double EditorWindow::GetMaxFramerate()
@@ -97,19 +60,31 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 		ImGui::Button("Edit mesh");
 		ImGui::EndMenu();
 	}
+	if (ImGui::BeginMenu("Window"))
+	{
+		if (ImGui::Button("New content browser"))
+		{
+			new ContentBrowser("Content browser");
+		}
+		if (ImGui::Button("Open demo window"))
+		{
+			bShowDemoWindow = true;
+		}
+		ImGui::EndMenu();
+	}
 	if (ImGui::BeginMenu("Import"))
 	{
 		if (ImGui::Button("Import Texture"))
 		{
-			new TextureImporterWindow();
+			new TextureImporterWindow("Texture importer");
 		}
 		if (ImGui::Button("Import material"))
 		{
-			new ShaderImporterWindow();
+			new ShaderImporterWindow("Material importer");
 		}
 		if (ImGui::Button("Import mesh"))
 		{
-			new MeshImporterWindow();
+			new MeshImporterWindow("Mesh importer");
 		}
 		ImGui::EndMenu();
 	}
@@ -192,6 +167,21 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 	ImGui::EndMainMenuBar();
 }
 
+std::string WindowManager::GetUnexistingWindowName(std::string inWindowName)
+{
+	int currentIndex = 0;
+	bool bFoundItem = false;
+	for (const auto& element : elementsArray)
+	{
+		std::string CurrentWindowName = inWindowName + (bFoundItem ? std::to_string(currentIndex) : "");
+		if (element->windowTitle == CurrentWindowName)
+		{
+			bFoundItem = true;
+			currentIndex++;
+		}
+	}
+	return bFoundItem ? inWindowName + std::to_string(currentIndex) : inWindowName;
+}
 
 void WindowManager::DrawElements(World* inWorld)
 {
@@ -223,7 +213,8 @@ void WindowManager::CloseWindow(UIWindowElement* inElement)
 	}
 }
 
-UIWindowElement::UIWindowElement()
+UIWindowElement::UIWindowElement(std::string inWindowTitle)
 {
+	windowTitle = WindowManager::GetUnexistingWindowName(inWindowTitle);
 	WindowManager::AddWindow(this);
 }
