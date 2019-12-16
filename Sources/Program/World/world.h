@@ -18,6 +18,7 @@ class PointLight;
 class DirectionalLight;
 class SpotLight;
 class Texture2D;
+class StaticMeshComponent;
 
 class btDiscreteDynamicsWorld;
 class btBroadphaseInterface;
@@ -26,12 +27,7 @@ class btDefaultCollisionConfiguration;
 class btSequentialImpulseConstraintSolver;
 
 class World
-{
-
-	Texture2D* defaultTexture;
-	Material* defaultMaterial;
-	StaticMesh* cubeMesh;
-	
+{	
 	/************************************************************************/
 	/* Bullet 3D                                                            */
 	/************************************************************************/
@@ -48,8 +44,8 @@ class World
 	Camera* worldCamera;
 	GLFWwindow* window;
 
-	unsigned int screenWidth = 800;
-	unsigned int screenHeight = 600;
+	unsigned int screenWidth = 1600;
+	unsigned int screenHeight = 900;
 
 	double worldDeltaSecond;
 
@@ -66,6 +62,19 @@ class World
 	
 	double LastLightUseTime = 0.0;
 
+	StaticMeshComponent* TestCube = nullptr;
+	float lastViewportPosX;
+	float lastViewportPosY;
+public:
+
+	unsigned int framebuffer;
+	unsigned int textureColorbuffer;
+	unsigned int rbo;
+	bool bIsFramebufferValid;
+	void GenerateFrameBuffer();
+
+	unsigned int GetScreenWidth() const { return screenWidth; }
+	unsigned int GetScreenHeight() const { return screenHeight; }
 
 public:
 
@@ -107,6 +116,8 @@ public:
 	static World* FindWorld(GLFWwindow* InWindows);
 
 	static void UpdateWorlds(double deltaSecond);
+
+	static std::vector<World*> GetWorlds();
 
 	template<class T>
 	std::vector<T*> FindAssetByClass()

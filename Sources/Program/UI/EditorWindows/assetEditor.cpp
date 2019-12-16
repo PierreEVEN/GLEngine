@@ -56,10 +56,7 @@ void AssetEditorWindow::DisplayStringProperty(SStringPropertyValue* inProperty)
 	{
 		std::string testVal = std::string(propertySize);
 		inProperty->SetStringValue(testVal);
-		//std::cout << " new text : " << testVal << " safe : " << inProperty->GetStringValue() << std::endl;
 	}
-
-	//delete propertySize;
 }
 
 void AssetEditorWindow::DisplayIntProperty(SIntPropertyValue* inProperty)

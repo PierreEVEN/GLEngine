@@ -1,5 +1,6 @@
 #include "GLAssetIO.h"
 #include <iostream>
+#include "../EngineLog/engineLog.h"
 
 SPropertyValue::SPropertyValue(std::ifstream* fileStream, const std::string inPropertyName)
 	: propertyName(inPropertyName)
@@ -24,7 +25,7 @@ SAssetReader::SAssetReader(std::string inAssetPath)
 	fileStream = new std::ifstream(assetPath, std::ios::in | std::ios::binary);
 	if (!fileStream || !fileStream->is_open())
 	{
-		std::cout << "Failed to open file '" << assetPath << "' : " << (fileStream ? " invalid path " : " cannot open file ") << std::endl;
+		GLog(LogVerbosity::Error, "AssetLoading", "Failed to open file '" + assetPath + "' : " + (fileStream ? " invalid path " : " cannot open file "));
 		delete fileStream;
 		fileStream = nullptr;
 	}
@@ -36,7 +37,7 @@ SAssetReader::~SAssetReader()
 	{
 		fileStream->close();
 		if (!fileStream->good()) {
-			std::cout << "Failed to close file '" << assetPath << "'" << std::endl;
+			GLog(LogVerbosity::Error, "AssetLoading", "Failed to close file '" + assetPath + "'");
 		}
 	}
 }
@@ -46,7 +47,7 @@ SAssetWriter::SAssetWriter(std::string inAssetPath)
 	assetPath = inAssetPath;
 	fileStream = new std::ofstream(assetPath, std::ios::out | std::ios::binary);
 	if (!fileStream || !fileStream->is_open()) {
-		std::cout << "Failed to open file '" << assetPath << "'" << std::endl;
+		GLog(LogVerbosity::Error, "AssetLoading", "Failed to open file '" + assetPath + "' : " + (fileStream ? " invalid path " : " cannot open file "));
 		delete fileStream;
 		fileStream = nullptr;
 	}
@@ -63,7 +64,7 @@ void SAssetWriter::ForceCloseFile()
 	{
 		fileStream->close();
 		if (!fileStream->good()) {
-			std::cout << "Failed to close file '" << assetPath << "'" << std::endl;
+			GLog(LogVerbosity::Error, "AssetLoading", "Failed to close file '" + assetPath + "'");
 		}
 		fileStream = nullptr;
 	}

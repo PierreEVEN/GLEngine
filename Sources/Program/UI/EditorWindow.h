@@ -9,8 +9,9 @@ class EditorWindow
 {
 private:
 	static void DrawMainToolbar(World* InWorld);
+	static void DrawBackgroundDockspace(World* InWorld);
 public:
-	static void DrawWindow(World* InWorld);
+	static void DrawWindow(World* InWorld, float& ViewportLocationX, float& ViewportLocationY);
 	static double GetMaxFramerate();
 };
 

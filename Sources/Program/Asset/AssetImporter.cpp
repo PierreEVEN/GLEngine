@@ -16,13 +16,14 @@
 #include <assimp/postprocess.h>
 #include <assimp/material.h>
 #include "../Shader/shaderLoader.h"
+#include "../EngineLog/engineLog.h"
 
 void AssetImporter::ImportTexture(std::string textureFilePath, std::string newTextureName, std::string newFilePath)
 {
 	int x, y, nbrChannels;
 	if (stbi_uc *data = stbi_load(textureFilePath.data(), &x, &y, &nbrChannels, 0))
 	{
-		std::cout << "Importing texture from " << textureFilePath << std::endl;
+		GLog(LogVerbosity::Display, "AssetImporter", "Importing texture from " + textureFilePath);
 		SAssetWriter writer(newFilePath + ".glAsset");
 		GLAssetIO::GenerateFileBody(writer.Get(), newTextureName, "Texture2D");
 		GLAssetIO::AppendField<int*>(writer.Get(), "TextureSizeX", &x, sizeof(x));
@@ -35,7 +36,7 @@ void AssetImporter::ImportTexture(std::string textureFilePath, std::string newTe
 	}
 	else
 	{
-		std::cout << "failed to find texture " << textureFilePath << std::endl;
+		GLog(LogVerbosity::Error, "AssetImporter", "failed to find texture " + textureFilePath);
 	}
 }
 
@@ -46,7 +47,7 @@ void AssetImporter::ImportMesh(std::string meshFilePath, std::string newMeshName
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		std::cout << "ERROR::ASSIMP::" << assimpImporter.GetErrorString() << std::endl;
+		GLog(LogVerbosity::Error, "AssetImporter", "ERROR::ASSIMP::" + std::string(assimpImporter.GetErrorString()));
 		return;
 	}
 
@@ -163,7 +164,6 @@ void AssetImporter::processMesh(aiMesh *mesh, const aiScene *scene, unsigned int
 	/** Get materials */
 	if (importMaterials)
 	{
-		std::cout << "Importing additional materials..." << std::endl;
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		std::string newMaterial = loadMaterialTextures(material, aiTextureType_DIFFUSE, meshName, (int)meshIndex);
 		GLAssetIO::AppendField<char*>(writer, "Material_" + std::to_string(meshIndex), (char*)newMaterial.data(), newMaterial.size() + 1);
@@ -182,8 +182,6 @@ std::string AssetImporter::loadMaterialTextures(aiMaterial *mat, aiTextureType t
 			mat->GetTexture(type, i, &str);
 
 			std::string newTextureName = AssetLibrary::GenerateNonExistingAssetName("Texture_" + meshName + std::to_string(meshIndex));
-			std::cout << "std : " << str.C_Str() << std::endl;
-			std::cout << "total : " << "this->directory" + '/' + std::string(str.C_Str()) << std::endl;
 			textures.push_back(newTextureName);
 			AssetImporter::ImportTexture(str.C_Str(), newTextureName, "./Sources/Assets/Textures/" + newTextureName);
 		}

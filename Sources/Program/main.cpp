@@ -10,13 +10,12 @@
 #include "Mesh/staticMeshComponent.h"
 #include "Asset/AssetRegistry.h"
 #include "UI/EditorWindow.h"
+#include "EngineLog/engineLog.h"
+#include "UI/EditorWindows/engineLogWindow.h"
+#include "UI/ContentBrowser/contentBrowser.h"
 
 double DeltaSecond;
 
-void Test(std::string path)
-{
-	std::cout << path << std::endl;
-}
 int main()
 {
 	glfwInit();
@@ -27,7 +26,9 @@ int main()
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 #endif
-	   
+
+	GLog(LogVerbosity::Display, "EngineStartup", "###################   initialized openGL");
+
 	double LastTime = 0.0;
 	double MaxFPS = 20000.0;
 
@@ -40,9 +41,13 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_STENCIL_TEST);
 	glEnable(GL_CULL_FACE);
+	GLog(LogVerbosity::Display, "EngineStartup", "###################   initialized primary world");
+	WorldOne->GenerateFrameBuffer();
 
+	AssetRegistry::ImportAssetFromDirectory("Sources/EngineContent");
 	AssetRegistry::ImportAssetFromDirectory("Sources/Assets");
 
+	GLog(LogVerbosity::Display, "EngineStartup", "###################   primary asset import complete");
 
 	/************************************************************************/
 	/* PHYSIC generation                                                    */
@@ -61,6 +66,7 @@ int main()
 	btRigidBody *body = new btRigidBody(myBoxRigidBodyConstructionInfo);
 	WorldOne->GetPhysicWorld()->addRigidBody(body);
 
+	GLog(LogVerbosity::Display, "EngineStartup", "###################   initialized bullet3D");
 
 	/************************************************************************/
 	/* IMGUI Initialization                                                 */
@@ -68,15 +74,26 @@ int main()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO &io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	ImGui_ImplGlfw_InitForOpenGL(WorldOne->GetWindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 130");
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
 
+	new ContentBrowser("Content browser");
+	new EngineLogWindow("Console");
+
+	GLog(LogVerbosity::Display, "EngineStartup", "###################   initialized ImGUI");
+
 	/************************************************************************/
 	/* RENDER loop                                                          */
 	/************************************************************************/
 
+
+	GLog(LogVerbosity::Display, "EngineStartup", "###################   starting Render loop");
 	while (!glfwWindowShouldClose(WorldOne->GetWindow()))
 	{
 		if (glfwGetTime() - LastTime < 1.0 / EditorWindow::GetMaxFramerate()) continue;
@@ -86,7 +103,6 @@ int main()
 			DeltaSecond = 1.0 / 10.f;
 		}
 		LastTime = glfwGetTime();
-
 		World::UpdateWorlds(DeltaSecond);
 	}
 	ImGui_ImplOpenGL3_Shutdown();

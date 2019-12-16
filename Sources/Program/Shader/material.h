@@ -51,5 +51,18 @@ public:
 	void setMat2(const std::string &name, const glm::mat2 &mat) const;
 	void setMat3(const std::string &name, const glm::mat3 &mat) const;
 	void setMat4(const std::string &name, const glm::mat4 &mat) const;
+
+	virtual Texture2D* GetAssetThumbnail() override;
+	virtual ImColor GetAssetColor() { return ImColor(0.3f, 0.6f, 0.3f, 1.f); }
 };
+
+class MaterialEditorDebuger
+{
+public:
+	static Material* GetDebugMaterial();
+	static Material* GetGridMaterial();
+};
+
+
+
 #endif

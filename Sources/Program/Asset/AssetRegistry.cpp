@@ -4,6 +4,7 @@
 #include "../Texture/texture.h"
 #include "../Mesh/staticMesh.h"
 #include "../Shader/material.h"
+#include "../EngineLog/engineLog.h"
 
 std::vector<Asset*> AssetRegistry::registeredAssets;
 
@@ -35,7 +36,7 @@ void AssetRegistry::ImportAssetFromDirectory(std::string RootFolder)
 		}
 		else
 		{
-			std::cout << "ERROR : failed to read asset type for " << filePath << std::endl;
+			GLog(LogVerbosity::Error, "AssetRegistry", "failed to read asset type for " + filePath);
 		}
 	}
 }

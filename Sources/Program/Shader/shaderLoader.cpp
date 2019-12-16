@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include "../EngineLog/engineLog.h"
 
 ShaderLoader::ShaderLoader(const char* vertexShaderPath, const char* fragmentShaderPath)
 {
@@ -32,7 +33,7 @@ ShaderLoader::ShaderLoader(const char* vertexShaderPath, const char* fragmentSha
 	}
 	catch (std::ifstream::failure e)
 	{
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ : '" << vertexShaderPath << "' | '" << fragmentShaderPath << "'" << std::endl;
+		GLog(LogVerbosity::Error, "AssetRegistry", "Failed to read shader file '" + std::string(vertexShaderPath) + "' | '" + fragmentShaderPath + "'");
 	}
 }
 
@@ -77,7 +78,7 @@ void ShaderLoader::checkCompileErrors(GLuint shader, std::string type)
 		if (!success)
 		{
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			GLog(LogVerbosity::Error, "AssetRegistry", "Failed to compile shader " + std::string(type) + " : " + std::string(infoLog));
 		}
 	}
 	else
@@ -86,7 +87,7 @@ void ShaderLoader::checkCompileErrors(GLuint shader, std::string type)
 		if (!success)
 		{
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			GLog(LogVerbosity::Error, "AssetRegistry", "Failed to compile shader " + std::string(type) + " : " + std::string(infoLog));
 		}
 	}
 }

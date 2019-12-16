@@ -3,6 +3,10 @@
 
 #include <vector>
 #include "GLAssetIO.h"
+#include "../ImGUI/imgui.h"
+
+class Texture2D;
+struct SPropertyValue;
 
 class Asset
 {
@@ -13,6 +17,7 @@ private:
 	/************************************************************************/
 	std::string assetPath;
 	std::string assetName;
+	unsigned long assetDynamicID;
 	std::vector<SPropertyValue*> assetProperties;
 
 protected:
@@ -61,6 +66,17 @@ public:
 		
 	std::string GetName() const { return assetName; }
 	std::string GetPath() const { return assetPath; }
+	unsigned long GetDynamicID() const { return assetDynamicID; }
 	bool HasValidPath() const { return assetPath != ""; }
+
+	/************************************************************************/
+	/* Editor widgets                                                       */
+	/************************************************************************/
+
+	virtual Texture2D* GetAssetThumbnail() { return nullptr; }
+	virtual ImColor GetAssetColor() { return ImColor(0.5, 0.5, 0.5, 1.f); }
+	virtual void OnAssetClicked() {}
+
+	virtual void DrawContentBrowserIcon();
 };
 #endif

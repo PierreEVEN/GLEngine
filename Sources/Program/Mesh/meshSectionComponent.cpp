@@ -56,40 +56,6 @@ void MeshSectionComponent::BuildMesh()
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 
 	glBindVertexArray(0);
-
-// 	std::cout << "starting building collision mesh..." << std::endl;
-// 	btTriangleMesh* trimesh = new btTriangleMesh();
-// 	btVector3 vertex0;
-// 	btVector3 vertex1;
-// 	btVector3 vertex2;
-// 	for (unsigned int i = 0; i < staticMeshSection->sectionIndices.size(); ++i)
-// 	{
-// 		int index = staticMeshSection->sectionIndices[i];
-// 		if (i % 3 == 0)	vertex0 = btVector3(staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0]);
-// 		if (i % 3 == 0)	vertex1 = btVector3(staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0]);
-// 		if (i % 3 == 0)	vertex2 = btVector3(staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0], staticMeshSection->sectionVertices[index].Position[0]);
-// 
-// 		if (i % 3 == 0) trimesh->addTriangle(vertex0, vertex1, vertex2);
-// 	}
-// 	std::cout << "finnished gathering triangles..." << std::endl;
-// 	btConvexShape *tmpshape = new btConvexTriangleMeshShape(trimesh);
-// 	btShapeHull *hull = new btShapeHull(tmpshape);
-// 	btScalar margin = tmpshape->getMargin();
-// 	hull->buildHull(margin);
-// 	tmpshape->setUserPointer(hull);
-// 	std::cout << "collision generated" << std::endl;
-// 
-// 	btVector3 localInertia(0, 0, 0);
-// 	btScalar mass = 0;	
-// 	btTransform myTransform;
-// 	myTransform.setIdentity();
-// 	myTransform.setOrigin(btVector3(0, 0, -1));
-// 	tmpshape->calculateLocalInertia(mass, localInertia);
-// 	btDefaultMotionState* myMotionState = new btDefaultMotionState(myTransform);
-// 	btRigidBody::btRigidBodyConstructionInfo myBoxRigidBodyConstructionInfo(mass, myMotionState, tmpshape, localInertia);
-// 	btRigidBody *body = new btRigidBody(myBoxRigidBodyConstructionInfo);
-// 
-// 	GetWorld()->GetPhysicWorld()->addRigidBody(body);
 }
 
 MeshSectionComponent::MeshSectionComponent(World* inWorld)
@@ -113,14 +79,14 @@ MeshSectionComponent::~MeshSectionComponent()
 
 void MeshSectionComponent::MarkRenderStateDirty()
 {
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, GetLocation().ToGLVector());
+	model = glm::rotate(model, glm::radians(GetAngle()), GetForwardVector());
+	model = glm::scale(model, GetScale3D().ToGLVector());
+
 	if (staticMeshSection->material)
 	{
 		staticMeshSection->material->use(GetWorld());
-
-		glm::mat4 model = glm::mat4(1.0f); 
-		model = glm::translate(model, GetLocation().ToGLVector());
-		model = glm::rotate(model, glm::radians(GetAngle()), GetForwardVector());
-		model = glm::scale(model, GetScale3D().ToGLVector());
 		
 		/** Set materials commons */
 		staticMeshSection->material->setMat4("view", GetWorld()->GetCamera()->GetViewMatrix());
@@ -135,6 +101,15 @@ void MeshSectionComponent::MarkRenderStateDirty()
 			glActiveTexture(GL_TEXTURE0 + i + staticMeshSection->material->textures.size());
 			glBindTexture(GL_TEXTURE_2D, staticMeshSection->textures[i]->GetTextureID());
 		}
+	}
+	else
+	{
+		MaterialEditorDebuger::GetGridMaterial()->use(GetWorld());
+		/** Set materials commons */
+		MaterialEditorDebuger::GetGridMaterial()->setMat4("view", GetWorld()->GetCamera()->GetViewMatrix());
+		MaterialEditorDebuger::GetGridMaterial()->setMat4("projection", GetWorld()->GetProjection());
+		MaterialEditorDebuger::GetGridMaterial()->setMat4("model", model);
+		MaterialEditorDebuger::GetGridMaterial()->setMat4("ambient", model);
 	}
 
 	/** Draw vertices */

@@ -21,5 +21,8 @@ public:
 	unsigned int GetTextureID();
 
 	virtual void ImportData() override;
+
+	virtual Texture2D* GetAssetThumbnail() override { return this; }
+	virtual ImColor GetAssetColor() { return ImColor(0.3f, 0.3f, 0.7f, 1.f); }
 };
 #endif

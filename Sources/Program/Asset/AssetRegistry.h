@@ -47,6 +47,22 @@ public:
 		return nullptr;
 	}
 
+	template <class T>
+	static T* FindAssetByID(unsigned long inID)
+	{
+		for (Asset* asset : GetAssets())
+		{
+			if (asset->GetDynamicID() == inID)
+			{
+				if (T* castedAsset = dynamic_cast<T*>(asset))
+				{
+					return castedAsset;
+				}
+			}
+		}
+		return nullptr;
+	}
+
 	static void ImportAssetFromDirectory(std::string RootFolder);
 	static void RegisterAsset(Asset* newAsset);
 

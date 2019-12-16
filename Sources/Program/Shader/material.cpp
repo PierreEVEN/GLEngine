@@ -9,8 +9,7 @@
 #include "../Lighting/spotLight.h"
 #include "../Lighting/directionalLight.h"
 #include "../Asset/AssetRegistry.h"
-
-
+#include "../EngineLog/engineLog.h"
 
 Material::Material(std::string textAssetPath)
 	: Asset(textAssetPath)
@@ -48,11 +47,10 @@ void Material::InitializeShader(const char* inVertexShaderPath, const char* inFr
 		if (Texture2D* foundTexture = AssetRegistry::FindAssetByName<Texture2D>(texture))
 		{
 			textures.push_back(foundTexture);
-			std::cout << "\t\t Found texture " << texture << " for material " << GetName() << std::endl;
 		}
 		else
 		{
-			std::cout << "failed to find texture " << texture << " for material " << GetName() << std::endl;
+			GLog(LogVerbosity::Error, "Material", "failed to find texture " + texture + " for material " + GetName());
 		}
 	}
 
@@ -194,4 +192,37 @@ void Material::setMat3(const std::string &name, const glm::mat3 &mat) const
 void Material::setMat4(const std::string &name, const glm::mat4 &mat) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+Texture2D* Material::GetAssetThumbnail()
+{
+	LoadData();
+	if (textures.size() > 0)
+	{
+		return textures[0];
+	}
+	return nullptr;
+}
+
+Material* debugMaterial = nullptr;
+Material* gridMaterial = nullptr;
+
+Material* MaterialEditorDebuger::GetDebugMaterial()
+{
+	if (!debugMaterial)
+	{
+		debugMaterial = AssetRegistry::FindAssetByName<Material>("DebugViewMaterial");
+		assert(debugMaterial);
+	}
+	return debugMaterial;
+}
+
+Material* MaterialEditorDebuger::GetGridMaterial()
+{
+	if (!gridMaterial)
+	{
+		gridMaterial = AssetRegistry::FindAssetByName<Material>("DebugGridMaterial");
+		assert(gridMaterial);
+	}
+	return gridMaterial;
 }

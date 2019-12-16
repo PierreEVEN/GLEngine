@@ -9,6 +9,8 @@
 #include "../ThirdParty/stb_image.h"
 #include <assimp/material.h>
 #include "../Asset/AssetRegistry.h"
+#include "../World/world.h"
+#include "staticMeshComponent.h"
 
 
 StaticMesh::StaticMesh(std::string dataAssetPath)
@@ -49,4 +51,8 @@ void StaticMesh::ImportData()
 {
 	Asset::ImportData();
 	LoadMesh(GetPath());
+}
+
+void StaticMesh::OnAssetClicked()
+{
 }

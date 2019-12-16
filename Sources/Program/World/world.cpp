@@ -21,6 +21,8 @@
 #include "../ImGUI/imgui_impl_glfw.h"
 #include "../UI/EditorWindow.h"
 #include "../Asset/AssetRegistry.h"
+#include "../EngineLog/engineLog.h"
+#include "../Physic/physicDebugViewer.h"
 
 std::vector<World*> GWorlds;
 
@@ -32,8 +34,8 @@ World::World(std::string worldName)
 	window = glfwCreateWindow(screenWidth, screenHeight, viewportName.data(), NULL, NULL);
 	if (window == NULL)
 	{
-		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
+		GLog(LogVerbosity::Assert, "[]", "Failed to create GLFW window");
 		return;
 	}
 	glfwMakeContextCurrent(window);
@@ -57,16 +59,16 @@ World::World(std::string worldName)
 	// On définit la gravité, de façon à ce que les objets tombent vers le bas (-Y).
 	physicWorld->setGravity(btVector3(0, 0, -10));
 
+	GLDebugDrawer* WorldDebugDrawer = new GLDebugDrawer(this);
+	//WorldDebugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+	physicWorld->setDebugDrawer(WorldDebugDrawer);
+	
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
-
-	defaultTexture = nullptr;
-	defaultMaterial = nullptr;
-	cubeMesh = nullptr;
-
-
+	
+	bIsFramebufferValid = false;
 }
 
 World::~World()
@@ -116,6 +118,8 @@ void World::processInput() {
 	float cameraSpeed = 2.5f * (float)worldDeltaSecond;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		GetCamera()->SwitchCaptureMouse();
+
+	if (!GetCamera()->bDoesCaptureMouse) return;
 
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
@@ -192,7 +196,7 @@ void World::UpdateFramebufferSize(int width, int height)
 	glViewport(0, 0, width, height);
 	screenWidth = width;
 	screenHeight = height;
-
+	GenerateFrameBuffer();
 }
 
 void World::UpdateMouseState(double xpos, double ypos)
@@ -250,6 +254,7 @@ void World::UpdateWorld(double deltaSecond)
 {
 	worldDeltaSecond = deltaSecond;
 
+	processInput();
 
 
 	if (GetPhysicWorld() && bSimulatePhysics)
@@ -258,38 +263,83 @@ void World::UpdateWorld(double deltaSecond)
 	}
 
 
-	// create transformations
-	glm::mat4 projection = glm::mat4(1.0f);
-	//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-	projection = glm::perspective(glm::radians(worldCamera->Zoom), (float)screenWidth / (float)screenHeight, 0.1f, 500.f);
-	
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	glClearColor(180 / 256.0, 250 / 256.0, 250 / 256.0, 1.0f);
-	//glClearColor(0.f, 0.f, 0.f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-
-
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-
-	processInput();
-
 	for (unsigned int primIndex = 0; primIndex < primitives.size(); ++primIndex)
 	{
 		primitives[primIndex]->MarkRenderStateDirty();
 		primitives[primIndex]->Update(worldDeltaSecond);
 	}
-	
-	EditorWindow::DrawWindow(this);
 
+	
+
+	physicWorld->getDebugDrawer()->drawLine(btVector3(-2, 0, 0), btVector3(10, 50, 10), btVector3(1, 0, 1), btVector3(0, 1, 0));
+
+	physicWorld->debugDrawWorld();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+	EditorWindow::DrawWindow(this, lastViewportPosX, lastViewportPosY);
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	glfwSwapBuffers(GetWindow());
 	glfwPollEvents();
+
+
+
+
+
+
+
+
+
+
+
+}
+
+void World::GenerateFrameBuffer()
+{
+	if (!bIsFramebufferValid)
+	{
+		glGenFramebuffers(1, &framebuffer);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	// create a color attachment texture
+	if (!bIsFramebufferValid) glGenTextures(1, &textureColorbuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+	if (!bIsFramebufferValid) glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight); // use a single renderbuffer object for both a depth AND stencil buffer.
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	bIsFramebufferValid = true;
 }
 
 void World::UpdateWorlds(double deltaSecond)
@@ -298,4 +348,9 @@ void World::UpdateWorlds(double deltaSecond)
 	{
 		GWorlds[worldIndex]->UpdateWorld(deltaSecond);
 	}
+}
+
+std::vector<World*> World::GetWorlds()
+{
+	return GWorlds;
 }

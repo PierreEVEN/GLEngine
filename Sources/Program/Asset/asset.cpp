@@ -6,12 +6,17 @@
 #include <string>
 #include "assetLibrary.h"
 #include "AssetRegistry.h"
+#include "../ImGUI/imgui.h"
+#include "../Texture/texture.h"
+#include "../EngineLog/engineLog.h"
 
-
+unsigned long AssetCount = 0;
 
 Asset::Asset(std::string inAssetPath)
 {
 	Initialize(inAssetPath);
+	assetDynamicID = AssetCount;
+	AssetCount++;
 }
 
 void Asset::Initialize(std::string inAssetPath)
@@ -21,19 +26,19 @@ void Asset::Initialize(std::string inAssetPath)
 	if (!assetRead.IsValid())
 	{
 		assetName = AssetLibrary::GenerateNonExistingAssetName("CorruptedAsset");
-		std::cout << "ERROR : failed to load asset " << assetName << " ( " << assetPath << " ) " << std::endl;
+		GLog(LogVerbosity::Error, "AssetLoading", "failed to load asset " + assetName + " ( " + assetPath + " ) ");
 	}
 
 	AssetRegistry::RegisterAsset(this);
 	if (!assetRead.IsValid())
 	{
-		std::cout << "Error : failed to open path " << inAssetPath << std::endl;
+		GLog(LogVerbosity::Error, "AssetLoading", "failed to open path " + inAssetPath);
 		return;
 	}
 	SStringPropertyValue* assetNameProperty = new SStringPropertyValue(assetRead.Get(), "AssetName");
 	assert(RegisterProperty(assetNameProperty));
 	assetName = assetNameProperty->GetStringValue();
-	std::cout << "Initialized asset " << assetName << " ( " << assetPath << " ) " << std::endl;
+	GLog(LogVerbosity::Display, "AssetLoading", "Initialized asset " + assetName + " ( " + assetPath + " ) ");
 }
 
 bool Asset::ChangeFilePath(std::string inNewPath)
@@ -85,5 +90,44 @@ void Asset::SetProperty(const std::string propertyName, const SPropertyValue& pr
 
 void Asset::ImportData()
 {
-	std::cout << "Imported asset " << assetName << " ( " << assetPath << " ) " << std::endl;
+	GLog(LogVerbosity::Display, "AssetLoading", "Imported asset " + assetName + " ( " + assetPath + " ) ");
+}
+
+
+
+/************************************************************************/
+/* Editor widgets                                                       */
+/************************************************************************/
+
+
+
+void Asset::DrawContentBrowserIcon()
+{
+	ImGui::BeginGroup();
+	ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)GetAssetColor());
+	if (GetAssetThumbnail())
+	{
+		if (ImGui::ImageButton((ImTextureID)GetAssetThumbnail()->GetTextureID(), ImVec2(80, 80)))
+		{
+			OnAssetClicked();
+		}
+	}
+	else
+	{
+		if (ImGui::Button(("#" + GetName()).data(), ImVec2(80, 80)))
+		{
+			OnAssetClicked();
+		}
+	}
+	ImGui::PopStyleColor(1);
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+	{
+ 		ImGui::SetDragDropPayload("DDOP_ASSET", &assetDynamicID, sizeof(unsigned long));
+		DrawContentBrowserIcon();
+		ImGui::EndDragDropSource();
+	}
+
+	ImGui::TextWrapped(GetName().data());
+
+	ImGui::EndGroup();
 }

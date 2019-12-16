@@ -65,4 +65,10 @@ public:
 protected:
 
 	virtual void ImportData() override;
+
+public:
+
+	virtual ImColor GetAssetColor() { return ImColor(0.7f, 0.6f, 0.4f, 1.f); }
+	virtual void OnAssetClicked() override;
+
 };
