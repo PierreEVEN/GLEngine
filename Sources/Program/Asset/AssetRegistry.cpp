@@ -18,6 +18,11 @@ void AssetRegistry::ImportAssetFromDirectory(std::string RootFolder)
 
 		SAssetReader reader(filePath);
 		SPropertyValue assetTypeValue(reader.Get(), "AssetType");
+		if (!AssetLibrary::CheckExtension(filePath, ".glAsset"))
+		{
+			GLog(LogVerbosity::Warning, "AssetRegistry", "wrong file extension for " + filePath + " (must be .glAsset)");
+		}
+
 		if (assetTypeValue.IsValid())
 		{
 			std::string assetTypeText = assetTypeValue.GetValue<const char>();
