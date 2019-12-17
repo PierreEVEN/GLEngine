@@ -1,10 +1,6 @@
 #version 330 core
 out vec4 FragColor;
 
-struct Material {
-    sampler2D diffuse;
-};
-
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
@@ -12,13 +8,13 @@ uniform vec3 CameraPosition;
 uniform vec3 LightDirection;
 
 uniform vec3 viewPos;
-uniform Material material;
 
 
 float LinearizeDepth(float depth);
 
 void main()
 {
+  /*
     FragColor = vec4(normalize(Normal), 1.f);//texture(material.diffuse, FragPos.xz / vec2(10.f, -10.f));
     float CameraDistance = max(max(abs((FragPos - CameraPosition).x), abs((FragPos - CameraPosition).y)), abs((FragPos - CameraPosition).z));
     float ScaleMultiplier = max(1.f, trunc(pow(CameraDistance, .75f) / 10) * 10.f);
@@ -55,6 +51,6 @@ void main()
     }
 
     FragColor += vec4(Specular);
-
-
+*/
+    FragColor = Vec4(TexCoords, 0.f, 1.f);
 }

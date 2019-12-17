@@ -14,47 +14,15 @@ uniform vec3 LightDirection;
 uniform vec3 viewPos;
 uniform Material material;
 
+uniform mat4 view;
+uniform mat4 projection;
 
-float LinearizeDepth(float depth);
+float largeLineSize = 0.05f;
 
 void main()
 {
-    FragColor = vec4(normalize(Normal), 1.f);//texture(material.diffuse, FragPos.xz / vec2(10.f, -10.f));
-    float CameraDistance = max(max(abs((FragPos - CameraPosition).x), abs((FragPos - CameraPosition).y)), abs((FragPos - CameraPosition).z));
-    float ScaleMultiplier = max(1.f, trunc(pow(CameraDistance, .75f) / 10) * 10.f);
-    vec3 NormalizedNormal = normalize(Normal);
+  vec3 res = FragPos.xyz;
+  res = ceil(mod(abs(res), 1.f) - 1 + largeLineSize);
 
-
-    //Compute specular
-    vec3 lightDir = normalize(LightDirection);//normalize(LightPosition - FragPos);
-    vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, NormalizedNormal);
-    float Specular = pow(max(dot(viewDir, reflectDir), 0.0), 5.f);
-
-
-    vec2 CoordinatesOffset = vec2(1.f, 1.f);
-
-    if (CameraDistance < 100)
-    {
-      if (abs(NormalizedNormal.y) > .5f)
-      {
-          FragColor = texture(material.diffuse, FragPos.xz / ScaleMultiplier * CoordinatesOffset);
-      }
-      else if (abs(NormalizedNormal.x) > .5f)
-      {
-          FragColor = texture(material.diffuse, FragPos.yz / ScaleMultiplier * CoordinatesOffset) * vec4(0.8f, 0.8f, 1.f, 0.f);
-      }
-      else
-      {
-          FragColor = texture(material.diffuse, FragPos.xy / ScaleMultiplier * CoordinatesOffset) * vec4(1.f, 0.8f, .8f, 0.f);
-      }
-    }
-    else
-    {
-        FragColor = texture(material.diffuse, TexCoords * CoordinatesOffset);
-    }
-
-    FragColor += vec4(Specular);
-
-
+  FragColor = vec4(1 - res, 1.f);
 }
