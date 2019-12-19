@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Sources/Program/Engine/debugerTool.h" />
     <ClInclude Include="Sources/Program/Asset/asset.h" />
     <ClInclude Include="Sources/Program/Asset/AssetImporter.h" />
     <ClInclude Include="Sources/Program/Asset/GLAssetIO.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Sources/Program/UI/Importers/importerWindows.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Sources/Program/Engine/debugerTool.cpp" />
     <ClCompile Include="Sources/Program/Asset/asset.cpp" />
     <ClCompile Include="Sources/Program/Asset/AssetImporter.cpp" />
     <ClCompile Include="Sources/Program/Asset/GLAssetIO.cpp" />

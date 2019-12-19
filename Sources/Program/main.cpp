@@ -13,6 +13,7 @@
 #include "EngineLog/engineLog.h"
 #include "UI/EditorWindows/engineLogWindow.h"
 #include "UI/ContentBrowser/contentBrowser.h"
+#include "Engine/debugerTool.h"
 
 double DeltaSecond;
 
@@ -104,6 +105,7 @@ int main()
 		}
 		LastTime = glfwGetTime();
 		World::UpdateWorlds(DeltaSecond);
+		StatViewer::FlushStats();
 	}
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

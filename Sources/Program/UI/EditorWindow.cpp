@@ -23,10 +23,14 @@
 #include "ContentBrowser/contentBrowser.h"
 #include "EditorWindows/engineLogWindow.h"
 #include "../EngineLog/engineLog.h"
+#include <bullet3D/LinearMath/btIDebugDraw.h>
+#include <bullet3D/btBulletDynamicsCommon.h>
+#include "../Engine/debugerTool.h"
 
 std::vector<UIWindowElement*> WindowManager::elementsArray;
 
 bool bShowDemoWindow;
+bool bDebugPhysics = false;
 
 static float MAX_FRAMERATE = 60.f;
 
@@ -104,6 +108,10 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 		{
 			new EngineLogWindow("Console");
 		}
+		if (ImGui::Button("Debuger"))
+		{
+			new StatWindow("Debuger");
+		}
 		if (ImGui::Button("Open demo window"))
 		{
 			bShowDemoWindow = true;
@@ -137,6 +145,8 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 		}
 		ImGui::Checkbox("Skip light rendering", &InWorld->bSkipLightRendering);
 		ImGui::Checkbox("Simulate physics", &InWorld->bSimulatePhysics);
+		ImGui::Checkbox("Debug physics", &bDebugPhysics);
+		InWorld->GetPhysicWorld()->getDebugDrawer()->setDebugMode(bDebugPhysics ? btIDebugDraw::DBG_DrawWireframe : btIDebugDraw::DBG_NoDebug);
 		ImGui::SliderFloat("Camera velocity", &InWorld->GetCamera()->MovementSpeed, 1, 2000, "%3.f", 4.f);
 		ImGui::SliderFloat("Field of view", &InWorld->GetCamera()->Zoom, 10, 140, "%3.f", 1.f);
 		ImGui::SliderFloat("Max framerate", &MAX_FRAMERATE, 20, 5000, "%3.f", 1.f);

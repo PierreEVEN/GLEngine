@@ -23,6 +23,7 @@
 #include "../Asset/AssetRegistry.h"
 #include "../EngineLog/engineLog.h"
 #include "../Physic/physicDebugViewer.h"
+#include "../Engine/debugerTool.h"
 
 std::vector<World*> GWorlds;
 
@@ -60,7 +61,7 @@ World::World(std::string worldName)
 	physicWorld->setGravity(btVector3(0, 0, -10));
 
 	GLDebugDrawer* WorldDebugDrawer = new GLDebugDrawer(this);
-	//WorldDebugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+	WorldDebugDrawer->setDebugMode(btIDebugDraw::DBG_NoDebug);
 	physicWorld->setDebugDrawer(WorldDebugDrawer);
 	
 
@@ -253,67 +254,49 @@ World* World::FindWorld(GLFWwindow* InWindows)
 void World::UpdateWorld(double deltaSecond)
 {
 	worldDeltaSecond = deltaSecond;
-
-	processInput();
-
-
-	if (GetPhysicWorld() && bSimulatePhysics)
 	{
-		GetPhysicWorld()->stepSimulation((float)deltaSecond);
+		ProfileStat("Stat Inputs");
+		processInput();
 	}
 
-
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	glClearColor(180 / 256.0, 250 / 256.0, 250 / 256.0, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	for (unsigned int primIndex = 0; primIndex < primitives.size(); ++primIndex)
 	{
-		primitives[primIndex]->MarkRenderStateDirty();
-		primitives[primIndex]->Update(worldDeltaSecond);
+		ProfileStat("Stat Physics");
+		if (GetPhysicWorld() && bSimulatePhysics)
+		{
+			GetPhysicWorld()->stepSimulation((float)deltaSecond);
+		}
 	}
 
-	
+	{
+		ProfileStat("Scene Rendering");
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		glClearColor(180 / 256.0, 250 / 256.0, 250 / 256.0, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		for (unsigned int primIndex = 0; primIndex < primitives.size(); ++primIndex)
+		{
+			primitives[primIndex]->MarkRenderStateDirty();
+			primitives[primIndex]->Update(worldDeltaSecond);
+		}
+		physicWorld->getDebugDrawer()->drawLine(btVector3(-2, 0, 0), btVector3(10, 50, 10), btVector3(1, 0, 1), btVector3(0, 1, 0));
+		physicWorld->getDebugDrawer()->drawLine(btVector3(-2, 5, 8), btVector3(10, 50, 10), btVector3(1, 0, 1), btVector3(0, 1, 0));
 
-	physicWorld->getDebugDrawer()->drawLine(btVector3(-2, 0, 0), btVector3(10, 50, 10), btVector3(1, 0, 1), btVector3(0, 1, 0));
+		physicWorld->debugDrawWorld();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 
-	physicWorld->debugDrawWorld();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-	EditorWindow::DrawWindow(this, lastViewportPosX, lastViewportPosY);
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	{
+		ProfileStat("Stat ImGui");
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+		EditorWindow::DrawWindow(this, lastViewportPosX, lastViewportPosY);
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
 
 	glfwSwapBuffers(GetWindow());
 	glfwPollEvents();
-
-
-
-
-
-
-
-
-
-
-
 }
 
 void World::GenerateFrameBuffer()
