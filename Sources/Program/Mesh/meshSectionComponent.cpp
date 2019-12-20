@@ -15,6 +15,7 @@
 #include <bullet3D/LinearMath/btDefaultMotionState.h>
 #include <bullet3D/BulletDynamics/Dynamics/btRigidBody.h>
 #include <bullet3D/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
+#include "../Engine/debugerTool.h"
 
 void MeshSectionComponent::BuildMesh()
 {
@@ -84,34 +85,39 @@ void MeshSectionComponent::MarkRenderStateDirty()
 	model = glm::rotate(model, glm::radians(GetAngle()), GetForwardVector());
 	model = glm::scale(model, GetScale3D().ToGLVector());
 
-	if (staticMeshSection->material)
 	{
-		staticMeshSection->material->use(GetWorld());
-		
-		/** Set materials commons */
-		staticMeshSection->material->setMat4("view", GetWorld()->GetCamera()->GetViewMatrix());
-		staticMeshSection->material->setMat4("projection", GetWorld()->GetProjection());
-		staticMeshSection->material->setMat4("model", model);
-		staticMeshSection->material->setMat4("ambient", model);
-
-		/** Load additional textures */
-		for (unsigned int i = 0; i < staticMeshSection->textures.size(); ++i)
+		ProfileStat("Texture Rendering");
+		if (staticMeshSection->material)
 		{
-			staticMeshSection->material->setInt(std::string("DynamicTexture_") + std::to_string(i), i + staticMeshSection->material->textures.size());
-			glActiveTexture(GL_TEXTURE0 + i + staticMeshSection->material->textures.size());
-			glBindTexture(GL_TEXTURE_2D, staticMeshSection->textures[i]->GetTextureID());
+			ProfileStat("Mesh material rendering");
+			staticMeshSection->material->use(GetWorld());
+
+			/** Set materials commons */
+			//staticMeshSection->material->setMat4("view", GetWorld()->GetCamera()->GetViewMatrix());
+			//staticMeshSection->material->setMat4("projection", GetWorld()->GetProjection());
+			staticMeshSection->material->setMat4("model", model);
+			//staticMeshSection->material->setMat4("ambient", model);
+
+			/** Load additional textures */
+			for (unsigned int i = 0; i < staticMeshSection->textures.size(); ++i)
+			{
+				staticMeshSection->material->setInt(std::string("DynamicTexture_") + std::to_string(i), i + staticMeshSection->material->textures.size());
+				glActiveTexture(GL_TEXTURE0 + i + staticMeshSection->material->textures.size());
+				glBindTexture(GL_TEXTURE_2D, staticMeshSection->textures[i]->GetTextureID());
+			}
+		}
+		else
+		{
+			MaterialEditorDebuger::GetGridMaterial()->use(GetWorld());
+			/** Set materials commons */
+			MaterialEditorDebuger::GetGridMaterial()->setMat4("view", GetWorld()->GetCamera()->GetViewMatrix());
+			MaterialEditorDebuger::GetGridMaterial()->setMat4("projection", GetWorld()->GetProjection());
+			MaterialEditorDebuger::GetGridMaterial()->setMat4("model", model);
+			MaterialEditorDebuger::GetGridMaterial()->setMat4("ambient", model);
 		}
 	}
-	else
-	{
-		MaterialEditorDebuger::GetGridMaterial()->use(GetWorld());
-		/** Set materials commons */
-		MaterialEditorDebuger::GetGridMaterial()->setMat4("view", GetWorld()->GetCamera()->GetViewMatrix());
-		MaterialEditorDebuger::GetGridMaterial()->setMat4("projection", GetWorld()->GetProjection());
-		MaterialEditorDebuger::GetGridMaterial()->setMat4("model", model);
-		MaterialEditorDebuger::GetGridMaterial()->setMat4("ambient", model);
-	}
 
+	ProfileStat("vertex rendering");
 	/** Draw vertices */
 	glBindVertexArray(VAO);
 	if (staticMeshSection->sectionIndices.size() > 0)

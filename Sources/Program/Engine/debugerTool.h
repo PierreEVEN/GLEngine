@@ -4,11 +4,18 @@
 
 #define ProfileStat(StatName) StatViewer newViewer = StatViewer(StatName)
 
+#define ReadCurrentStat() (newViewer.GetCurrentDelay())
+
 struct StatHistory
 {
 	StatHistory(const char* inStatName, double inStatDelay) : statName(inStatName), statDelay(inStatDelay) {}
 	const char* statName = "";
 	double statDelay = 0.0;
+
+	bool operator==(const char* inStatName)
+	{
+		return inStatName == statName;
+	}
 };
 
 struct StatViewer
@@ -17,7 +24,7 @@ struct StatViewer
 	const char* statName;
 	StatViewer(const char* inStatName);
 	~StatViewer();
-
+	double GetCurrentDelay() const;
 	static void FlushStats();
 };
 

@@ -273,14 +273,11 @@ void World::UpdateWorld(double deltaSecond)
 		glClearColor(180 / 256.0, 250 / 256.0, 250 / 256.0, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		Material::UpdateMaterialDefaults(this);
 		for (unsigned int primIndex = 0; primIndex < primitives.size(); ++primIndex)
 		{
 			primitives[primIndex]->MarkRenderStateDirty();
-			primitives[primIndex]->Update(worldDeltaSecond);
 		}
-		physicWorld->getDebugDrawer()->drawLine(btVector3(-2, 0, 0), btVector3(10, 50, 10), btVector3(1, 0, 1), btVector3(0, 1, 0));
-		physicWorld->getDebugDrawer()->drawLine(btVector3(-2, 5, 8), btVector3(10, 50, 10), btVector3(1, 0, 1), btVector3(0, 1, 0));
-
 		physicWorld->debugDrawWorld();
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -297,6 +294,11 @@ void World::UpdateWorld(double deltaSecond)
 
 	glfwSwapBuffers(GetWindow());
 	glfwPollEvents();
+}
+
+void World::UpdateRenderDefaults()
+{
+
 }
 
 void World::GenerateFrameBuffer()

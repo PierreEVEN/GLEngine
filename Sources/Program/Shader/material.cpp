@@ -10,6 +10,10 @@
 #include "../Lighting/directionalLight.h"
 #include "../Asset/AssetRegistry.h"
 #include "../EngineLog/engineLog.h"
+#include "../Engine/debugerTool.h"
+
+
+GLuint ubo = 0;
 
 Material::Material(std::string textAssetPath)
 	: Asset(textAssetPath)
@@ -75,14 +79,18 @@ void Material::use(World* OwningWorld)
 	LoadData();
 	glUseProgram(ShaderID);
 
+	unsigned int block_index = glGetUniformBlockIndex(ShaderID, "shader_data");
+	GLuint binding_point_index = 2;
+	glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, ubo);
+	glUniformBlockBinding(ShaderID, block_index, binding_point_index);
 
 	glUniform3f(glGetUniformLocation(ShaderID, "CameraPosition"), (float)OwningWorld->GetCamera()->GetCameraLocation().X, (float)OwningWorld->GetCamera()->GetCameraLocation().Y, (float)OwningWorld->GetCamera()->GetCameraLocation().Z);
 	setFloat("Time", (float)glfwGetTime());
 	setFloat("MaterialShininess", 1.f);
 
-
 	if (!bIsUnlit && !OwningWorld->bSkipLightRendering)
 	{
+
 		std::vector<PointLight*> pointLights = OwningWorld->GetPointLightSources();
 		std::vector<DirectionalLight*> directionalLights = OwningWorld->GetDirectionalLightSources();
 		std::vector<SpotLight*> spotLights = OwningWorld->GetSpotLightSources();
@@ -132,6 +140,27 @@ void Material::use(World* OwningWorld)
 			glBindTexture(GL_TEXTURE_2D, textures[textureIndex]->GetTextureID());
 		}
 	}
+}
+
+void Material::InitializeMaterials()
+{
+	DefaultShaderData shader_data;
+	glGenBuffers(1, &ubo);
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(shader_data), &shader_data, GL_DYNAMIC_COPY);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void Material::UpdateMaterialDefaults(World* OwningWorld)
+{
+	DefaultShaderData shader_data;
+	shader_data.cameraLocation = OwningWorld->GetCamera()->GetCameraLocation().ToGLVector();
+	shader_data.viewMatrix = OwningWorld->GetCamera()->GetViewMatrix();
+	shader_data.worldProjection = OwningWorld->GetProjection();
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+	GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
+	memcpy(p, &shader_data, sizeof(shader_data));
+	glUnmapBuffer(GL_UNIFORM_BUFFER);
 }
 
 void Material::setBool(const std::string &name, bool value) const

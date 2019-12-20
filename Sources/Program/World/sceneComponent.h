@@ -27,8 +27,6 @@ public:
 
 	virtual void MarkRenderStateDirty() {};
 
-	virtual void Update(double DeltaTime) {	}
-
 	virtual void SetLocation(SVector3 newLocation);
 	virtual void SetRotation(SRotator newRotation);
 	virtual void SetForwardVector(glm::vec3 newForwardVector);

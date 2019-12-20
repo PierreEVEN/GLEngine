@@ -13,8 +13,20 @@ StatViewer::StatViewer(const char* inStatName)
 
 StatViewer::~StatViewer()
 {
-	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - startTime);
-	statHistory.push_back(StatHistory(statName, time_span.count()));
+	for(auto& elem : statHistory)
+	{
+		if (elem == statName)
+		{
+			elem.statDelay += GetCurrentDelay();
+			return;
+		}
+	}
+	statHistory.push_back(StatHistory(statName, GetCurrentDelay()));
+}
+
+double StatViewer::GetCurrentDelay() const
+{
+	return std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - startTime).count();
 }
 
 void StatViewer::FlushStats()

@@ -54,6 +54,7 @@ class World
 	bool firstMouse = true;
 
 	void UpdateWorld(double DeltaSecond);
+	void UpdateRenderDefaults();
 
 	std::vector<PointLight*> pointLightSources;
 	std::vector<SpotLight*> spotLightSources;

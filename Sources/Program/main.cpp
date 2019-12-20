@@ -14,6 +14,7 @@
 #include "UI/EditorWindows/engineLogWindow.h"
 #include "UI/ContentBrowser/contentBrowser.h"
 #include "Engine/debugerTool.h"
+#include "Shader/material.h"
 
 double DeltaSecond;
 
@@ -44,6 +45,7 @@ int main()
 	glEnable(GL_CULL_FACE);
 	GLog(LogVerbosity::Display, "EngineStartup", "###################   initialized primary world");
 	WorldOne->GenerateFrameBuffer();
+	Material::InitializeMaterials();
 
 	AssetRegistry::ImportAssetFromDirectory("Sources/EngineContent");
 	AssetRegistry::ImportAssetFromDirectory("Sources/Assets");
@@ -92,7 +94,7 @@ int main()
 	/************************************************************************/
 	/* RENDER loop                                                          */
 	/************************************************************************/
-
+	new StatWindow("Debuger");
 
 	GLog(LogVerbosity::Display, "EngineStartup", "###################   starting Render loop");
 	while (!glfwWindowShouldClose(WorldOne->GetWindow()))

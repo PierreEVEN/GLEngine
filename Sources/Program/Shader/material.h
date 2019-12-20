@@ -14,6 +14,13 @@
 
 class World;
 
+struct DefaultShaderData
+{
+	glm::mat4 viewMatrix;
+	glm::mat4 worldProjection;
+	glm::vec3 cameraLocation;
+};
+
 class Material : public Asset
 {
 public:
@@ -34,6 +41,8 @@ public:
 	virtual void ImportData() override;
 
 	void use(World* OwningWorld);
+	static void InitializeMaterials();
+	static void UpdateMaterialDefaults(World* OwningWorld);
 
 	void setBool(const std::string &name, bool value) const;
 	void setInt(const std::string &name, int value) const;

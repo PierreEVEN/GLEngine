@@ -45,7 +45,6 @@ void EditorWindow::DrawWindow(World* InWorld, float& ViewportLocationX, float& V
 	WindowManager::DrawElements(InWorld);
 
 
-
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 	ImGui::Begin("Viewport", 0, ImGuiWindowFlags_NoScrollbar);
 	ImGui::PopStyleVar();
@@ -86,16 +85,7 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 	ImGui::BeginMainMenuBar();
 	if (ImGui::BeginMenu("File"))
 	{
-		ImGui::Button("OpenWorld");
-		ImGui::Button("SaveWorld");
 		if (ImGui::Button("Quit")) { glfwSetWindowShouldClose(InWorld->GetWindow(), true); }
-		ImGui::EndMenu();
-	}
-	if (ImGui::BeginMenu("Edit"))
-	{
-		ImGui::Button("Edit texture");
-		ImGui::Button("Edit material");
-		ImGui::Button("Edit mesh");
 		ImGui::EndMenu();
 	}
 	if (ImGui::BeginMenu("Window"))

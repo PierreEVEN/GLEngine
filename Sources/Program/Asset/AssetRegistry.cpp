@@ -5,11 +5,13 @@
 #include "../Mesh/staticMesh.h"
 #include "../Shader/material.h"
 #include "../EngineLog/engineLog.h"
+#include "../Engine/debugerTool.h"
 
 std::vector<Asset*> AssetRegistry::registeredAssets;
 
 void AssetRegistry::ImportAssetFromDirectory(std::string RootFolder)
 {
+	ProfileStat(std::string("Import stat from " + RootFolder).data());
 	std::vector<std::string> filesToLoad = AssetLibrary::CollectFilesUnderFolder(RootFolder);
 
 	for (auto& filePath : filesToLoad)
@@ -22,7 +24,6 @@ void AssetRegistry::ImportAssetFromDirectory(std::string RootFolder)
 		{
 			GLog(LogVerbosity::Warning, "AssetRegistry", "wrong file extension for " + filePath + " (must be .glAsset)");
 		}
-
 		if (assetTypeValue.IsValid())
 		{
 			std::string assetTypeText = assetTypeValue.GetValue<const char>();
@@ -44,6 +45,8 @@ void AssetRegistry::ImportAssetFromDirectory(std::string RootFolder)
 			GLog(LogVerbosity::Error, "AssetRegistry", "failed to read asset type for " + filePath);
 		}
 	}
+	double LoadDuration = ReadCurrentStat();
+	GLog((LoadDuration < 1.0 ? LogVerbosity::Display : LogVerbosity::Warning), "AssetRegistry", std::string("Loaded registry '" + RootFolder + "' in " + std::to_string(LoadDuration) + " seconds").data());
 }
 
 void AssetRegistry::RegisterAsset(Asset* newAsset)
