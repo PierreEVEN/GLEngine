@@ -60,7 +60,9 @@ void MeshSectionComponent::BuildMesh()
 }
 
 MeshSectionComponent::MeshSectionComponent(World* inWorld)
-	: SceneComponent(inWorld) { }
+	: SceneComponent(inWorld)
+{
+}
 
 MeshSectionComponent::MeshSectionComponent(World* inWorld, StaticMeshSection* inStaticMeshSection)
 	: MeshSectionComponent(inWorld)
@@ -80,28 +82,27 @@ MeshSectionComponent::~MeshSectionComponent()
 
 void MeshSectionComponent::MarkRenderStateDirty()
 {
+	//ProfileStat("Mesh Rendering");
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, GetLocation().ToGLVector());
 	model = glm::rotate(model, glm::radians(GetAngle()), GetForwardVector());
 	model = glm::scale(model, GetScale3D().ToGLVector());
 
 	{
-		ProfileStat("Texture Rendering");
+		ProfileStat("Draw material");
 		if (staticMeshSection->material)
 		{
-			ProfileStat("Mesh material rendering");
 			staticMeshSection->material->use(GetWorld());
 
 			/** Set materials commons */
-			//staticMeshSection->material->setMat4("view", GetWorld()->GetCamera()->GetViewMatrix());
-			//staticMeshSection->material->setMat4("projection", GetWorld()->GetProjection());
 			staticMeshSection->material->setMat4("model", model);
-			//staticMeshSection->material->setMat4("ambient", model);
+			StatViewer::AddDrawcall();
 
 			/** Load additional textures */
 			for (unsigned int i = 0; i < staticMeshSection->textures.size(); ++i)
 			{
 				staticMeshSection->material->setInt(std::string("DynamicTexture_") + std::to_string(i), i + staticMeshSection->material->textures.size());
+				StatViewer::AddDrawcall();
 				glActiveTexture(GL_TEXTURE0 + i + staticMeshSection->material->textures.size());
 				glBindTexture(GL_TEXTURE_2D, staticMeshSection->textures[i]->GetTextureID());
 			}
@@ -109,22 +110,21 @@ void MeshSectionComponent::MarkRenderStateDirty()
 		else
 		{
 			MaterialEditorDebuger::GetGridMaterial()->use(GetWorld());
-			/** Set materials commons */
-			MaterialEditorDebuger::GetGridMaterial()->setMat4("view", GetWorld()->GetCamera()->GetViewMatrix());
-			MaterialEditorDebuger::GetGridMaterial()->setMat4("projection", GetWorld()->GetProjection());
 			MaterialEditorDebuger::GetGridMaterial()->setMat4("model", model);
-			MaterialEditorDebuger::GetGridMaterial()->setMat4("ambient", model);
+			StatViewer::AddDrawcall();
 		}
 	}
 
-	ProfileStat("vertex rendering");
-	/** Draw vertices */
-	glBindVertexArray(VAO);
-	if (staticMeshSection->sectionIndices.size() > 0)
-		glDrawElements(GL_TRIANGLES, staticMeshSection->sectionIndices.size(), GL_UNSIGNED_INT, 0);
-	else
-		glDrawArrays(GL_TRIANGLES, 0, staticMeshSection->sectionVertices.size());
-
+	{
+		/** Draw vertices */
+		ProfileStat("vertex rendering");
+		glBindVertexArray(VAO);
+		StatViewer::AddDrawcall();
+		if (staticMeshSection->sectionIndices.size() > 0)
+			glDrawElements(GL_TRIANGLES, staticMeshSection->sectionIndices.size(), GL_UNSIGNED_INT, 0);
+		else
+			glDrawArrays(GL_TRIANGLES, 0, staticMeshSection->sectionVertices.size());
+	}
 	/** Set GL to defaults */
 	glBindVertexArray(0);
 	glActiveTexture(GL_TEXTURE0);

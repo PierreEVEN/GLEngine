@@ -1,5 +1,4 @@
-#ifndef SCENECOMPONENT_H
-#define SCENECOMPONENT_H
+#pragma once
 
 #include <glm/gtx/matrix_decompose.hpp>
 #include "../MathLibrary/vector3.h"
@@ -22,7 +21,6 @@ protected:
 	glm::vec3 forwardVector;
 	float angle;
 	SVector3 scale3D;
-	
 public:
 
 	virtual void MarkRenderStateDirty() {};
@@ -38,7 +36,5 @@ public:
 	virtual glm::vec3 GetForwardVector() const;
 	virtual float GetAngle() const;
 	virtual SVector3 GetScale3D() const;
-
 	World* GetWorld();
 };
-#endif

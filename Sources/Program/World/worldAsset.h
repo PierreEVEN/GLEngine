@@ -1,5 +1,6 @@
-#include "../Asset/asset.h"
+#pragma once
 
+#include "../Asset/asset.h"
 
 class WorldAsset : public Asset
 {

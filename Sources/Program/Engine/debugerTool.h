@@ -1,3 +1,5 @@
+#pragma once
+
 #include <chrono>
 #include <ctime>
 #include "../UI/EditorWindow.h"
@@ -25,7 +27,10 @@ struct StatViewer
 	StatViewer(const char* inStatName);
 	~StatViewer();
 	double GetCurrentDelay() const;
+	static void AddDrawcall();
+	static int GetDrawcalls();
 	static void FlushStats();
+	static void FlushDrawcallsCount();
 };
 
 class StatWindow : public UIWindowElement

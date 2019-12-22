@@ -1,5 +1,5 @@
-#ifndef EDITORWINDOW_H
-#define EDITORWINDOW_H
+#pragma once
+
 #include <string>
 #include <vector>
 
@@ -38,4 +38,3 @@ public:
 	static void CloseWindow(UIWindowElement* inElement);
 
 };
-#endif

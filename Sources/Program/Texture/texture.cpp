@@ -11,19 +11,17 @@ void Texture2D::LoadFromPath(std::string textAssetPath)
 	int width, height, nrChannels;
 	stbi_uc *data;
 	SAssetReader reader(textAssetPath);
-	SIntPropertyValue* sizeXData = new SIntPropertyValue(reader.Get(), "TextureSizeX");
-	SIntPropertyValue* sizeYData = new SIntPropertyValue(reader.Get(), "TextureSizeY");
-	SIntPropertyValue* channelCountData = new SIntPropertyValue(reader.Get(), "TextureChannelsCount");
-	SPropertyValue* textureData = new SPropertyValue(reader.Get(), "TextureData");
-	
-	if (!RegisterProperty(sizeXData)) return;
-	if (!RegisterProperty(sizeYData)) return;
-	if (!RegisterProperty(channelCountData)) return;
-	if (!RegisterProperty(textureData)) return;
-
-	width = *sizeXData->GetValue<int>();
-	height = *sizeYData->GetValue<int>();
-	nrChannels = *channelCountData->GetValue<int>();
+	SUIntPropertyValue* sizeXData = new SUIntPropertyValue(this, reader.Get(), "TextureSizeX");
+	SUIntPropertyValue* sizeYData = new SUIntPropertyValue(this, reader.Get(), "TextureSizeY");
+	SUIntPropertyValue* channelCountData = new SUIntPropertyValue(this, reader.Get(), "TextureChannelsCount");
+	SPropertyValue* textureData = new SPropertyValue(this, reader.Get(), "TextureData");
+	RegisterProperty(sizeXData);
+	RegisterProperty(sizeYData);
+	RegisterProperty(channelCountData);
+	RegisterProperty(textureData);
+	width = sizeXData->GetUIntValue();
+	height = sizeYData->GetUIntValue();
+	nrChannels = channelCountData->GetUIntValue();
 	data = textureData->GetValue<stbi_uc>();
 
 	GLenum format;

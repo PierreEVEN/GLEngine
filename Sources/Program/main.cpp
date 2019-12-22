@@ -88,13 +88,13 @@ int main()
 
 	new ContentBrowser("Content browser");
 	new EngineLogWindow("Console");
+	new StatWindow("Debuger");
 
 	GLog(LogVerbosity::Display, "EngineStartup", "###################   initialized ImGUI");
 
 	/************************************************************************/
 	/* RENDER loop                                                          */
 	/************************************************************************/
-	new StatWindow("Debuger");
 
 	GLog(LogVerbosity::Display, "EngineStartup", "###################   starting Render loop");
 	while (!glfwWindowShouldClose(WorldOne->GetWindow()))
@@ -108,6 +108,7 @@ int main()
 		LastTime = glfwGetTime();
 		World::UpdateWorlds(DeltaSecond);
 		StatViewer::FlushStats();
+		StatViewer::FlushDrawcallsCount();
 	}
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

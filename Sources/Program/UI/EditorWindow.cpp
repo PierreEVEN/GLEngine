@@ -200,8 +200,8 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 		ImGui::EndMenu();
 	}
 	ImGui::AlignTextToFramePadding();
-	ImGui::Indent(ImGui::GetWindowWidth() - 130.0f);
-	ImGui::Text(std::string("fps : " + std::to_string(1.0 / InWorld->GetWorldDeltaSecond())).data());
+	ImGui::Indent(ImGui::GetWindowWidth() - 320.0f);
+	ImGui::Text(std::string(std::to_string(InWorld->GetSceneComponents().size()) + " components | " + std::to_string(StatViewer::GetDrawcalls()) + " Drawcalls | " + "fps : " + std::to_string((int)(1.0 / InWorld->GetWorldDeltaSecond()))).data());
 	ImGui::EndMainMenuBar();
 }
 

@@ -1,5 +1,4 @@
-#ifndef ASSETIMPORTER_H
-#define ASSETIMPORTER_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -37,6 +36,4 @@ public:
 	/************************************************************************/
 
 	static void ImportShader(std::string vertexShaderFilePath, std::string fragmentShaderFilePath, std::string newShaderName, std::string newFilePath, std::vector<std::string> linkedTextures);
-
 };
-#endif

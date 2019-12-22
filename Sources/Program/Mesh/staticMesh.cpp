@@ -11,6 +11,7 @@
 #include "../Asset/AssetRegistry.h"
 #include "../World/world.h"
 #include "staticMeshComponent.h"
+#include "../UI/EditorWindows/assetEditor.h"
 
 
 StaticMesh::StaticMesh(std::string dataAssetPath)
@@ -19,30 +20,29 @@ StaticMesh::StaticMesh(std::string dataAssetPath)
 void StaticMesh::LoadMesh(std::string path)
 {
 	SAssetReader reader(path);
-	SPropertyValue* verticeCount = new SPropertyValue(reader.Get(), "SectionCount");
-	if (!RegisterProperty(verticeCount)) return;
+	SPropertyValue* verticeCount = new SPropertyValue(this, reader.Get(), "SectionCount");
 
 	unsigned int sectionCount = *verticeCount->GetValue<unsigned int>();
 	
 	for (unsigned int i = 0; i < sectionCount; ++i)
 	{
-		SPropertyValue* verticesData = new SPropertyValue(reader.Get(), "Section" + std::to_string(i) + "_Vertices");
-		SPropertyValue* indicesData = new SPropertyValue(reader.Get(), "Section" + std::to_string(i) + "_Indices");
-		if (!RegisterProperty(verticesData)) continue;
-		if (!RegisterProperty(indicesData)) continue;
+		SPropertyValue* verticesData = new SPropertyValue(this, reader.Get(), "Section" + std::to_string(i) + "_Vertices");
+		SPropertyValue* indicesData = new SPropertyValue(this, reader.Get(), "Section" + std::to_string(i) + "_Indices");
+
+		RegisterProperty(verticesData);
+		RegisterProperty(indicesData);
 
 		std::vector<Vertex> vertices(verticesData->GetValue<Vertex>(), verticesData->GetValue<Vertex>() + verticesData->GetBufferSize() / sizeof(Vertex));
 		std::vector<unsigned int> indices(indicesData->GetValue<unsigned int>(), indicesData->GetValue<unsigned int>() + indicesData->GetBufferSize() / sizeof(unsigned int));
 
 		Material* linkedMat = nullptr;
 
-		SStringPropertyValue* linkedMaterialNameData = new SStringPropertyValue(reader.Get(), "Material_" + std::to_string(i));
+		SAssetRefPropertyValue* linkedMaterialNameData = new SAssetRefPropertyValue(this, reader.Get(), "Material_" + std::to_string(i));
 		if (RegisterProperty(linkedMaterialNameData))
 		{
-			std::string linkedMaterialName = linkedMaterialNameData->GetStringValue();
+			std::string linkedMaterialName = linkedMaterialNameData->GetAssetRef();
 			linkedMat = AssetRegistry::FindAssetByName<Material>(linkedMaterialName);
 		}
-
 		meshSections.push_back(StaticMeshSection(vertices, indices, linkedMat, {}));
 	}
 }
@@ -55,4 +55,5 @@ void StaticMesh::ImportData()
 
 void StaticMesh::OnAssetClicked()
 {
+	new StaticMeshEditorWindows(GetName(), this);
 }

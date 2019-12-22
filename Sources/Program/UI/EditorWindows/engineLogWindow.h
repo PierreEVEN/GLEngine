@@ -1,5 +1,4 @@
-#ifndef ENGINELOGWINDOW_H
-#define ENGINELOGWINDOW_H
+#pragma once
 
 #include "../EditorWindow.h"
 #include "../../ImGUI/imgui.h"
@@ -207,4 +206,3 @@ public:
 		ScrollToBottom = true;
 	}
 };
-#endif

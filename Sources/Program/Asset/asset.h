@@ -1,5 +1,4 @@
-#ifndef ASSET_H
-#define ASSET_H
+#pragma once
 
 #include <vector>
 #include "GLAssetIO.h"
@@ -13,29 +12,35 @@ class Asset
 private:
 
 	/************************************************************************/
-	/* ASSET BASES                                                          */
+	/* ASSET PROPERTIES MANAGEMENT                                          */
 	/************************************************************************/
 	std::string assetPath;
-	std::string assetName;
+	/** Each asset has an unique id (could be different after restart) */
 	unsigned long assetDynamicID;
+	std::vector<SPropertyValue*> assetBaseProperties;
 	std::vector<SPropertyValue*> assetProperties;
+	bool bIsAssetDirty;
+private:
+
+	bool RegisterBaseProperty(SPropertyValue* inNewProperty);
 
 protected:
 
-	bool RegisterProperty(SPropertyValue* inNewProperty)
-	{
-		if (inNewProperty && inNewProperty->IsValid())
-		{
-			assetProperties.push_back(inNewProperty);
-			return true;
-		}
-		return false;
-	}
+	bool RegisterProperty(SPropertyValue* inNewProperty);
 
 public:
 
-	void Initialize(const std::string inAssetPath);
-	bool ChangeFilePath(const std::string inNewPath);
+	/** Each property has to be registered in the asset when it is created */
+	std::vector<SPropertyValue*> GetAssetBaseProperties();
+	std::vector<SPropertyValue*> GetAssetProperties();
+	SPropertyValue* GetBaseProperty(const std::string propertyName);
+	SPropertyValue* GetProperty(const std::string propertyName);
+
+	/** An asset is set as dirty when a property has been changed and need to be saved */
+	void MarkAssetDirty() { bIsAssetDirty = true; }
+	bool IsAssetDirty() const { return bIsAssetDirty; }
+
+	void SaveAsset();
 
 	/************************************************************************/
 	/* ASSET DATAS                                                          */
@@ -44,28 +49,22 @@ public:
 protected:
 
 	bool bAreDataLoaded;
-
 	bool LoadData();
 	bool UnloadData();
 
 public:
-	
-	SPropertyValue* GetProperty(const std::string propertyName);
-	void SetProperty(const std::string propertyName, const SPropertyValue& property);
-	std::vector<SPropertyValue*> GetAssetProperties() 
-	{
-		LoadData();
-		return assetProperties; 
-	}
 
+	void Initialize(const std::string inAssetPath);
 	virtual void ImportData();
 
 public:
 
 	Asset(std::string inAssetPath);
 		
-	std::string GetName() const { return assetName; }
+	std::string GetName();
+	std::string GetAssetType();
 	std::string GetPath() const { return assetPath; }
+	bool ChangeFilePath(const std::string inNewPath);
 	unsigned long GetDynamicID() const { return assetDynamicID; }
 	bool HasValidPath() const { return assetPath != ""; }
 
@@ -75,8 +74,7 @@ public:
 
 	virtual Texture2D* GetAssetThumbnail() { return nullptr; }
 	virtual ImColor GetAssetColor() { return ImColor(0.5, 0.5, 0.5, 1.f); }
-	virtual void OnAssetClicked() {}
+	virtual void OnAssetClicked();
 
 	virtual void DrawContentBrowserIcon();
 };
-#endif

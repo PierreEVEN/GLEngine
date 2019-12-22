@@ -1,5 +1,4 @@
-#ifndef SHADERLOADER_H
-#define SHADERLOADER_H
+#pragma once
 
 #include <glad/glad.h>
 #include <string>
@@ -21,4 +20,3 @@ private:
 
 	void checkCompileErrors(GLuint shader, std::string type);
 };
-#endif

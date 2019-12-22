@@ -1,5 +1,4 @@
-#ifndef PRIMITIVECOMPONENT_H
-#define PRIMITIVECOMPONENT_H
+#pragma once
 
 #include "../World/sceneComponent.h"
 #include <vector>
@@ -20,4 +19,3 @@ public:
 
 
 };
-#endif

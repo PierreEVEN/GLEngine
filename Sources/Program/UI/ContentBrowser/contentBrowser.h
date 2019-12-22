@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../EditorWindow.h"
 
 class ContentBrowser : public UIWindowElement

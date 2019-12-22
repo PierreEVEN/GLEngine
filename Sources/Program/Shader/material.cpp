@@ -5,13 +5,9 @@
 #include "../World/world.h"
 #include "../Camera/camera.h"
 #include <glfw3/glfw3.h>
-#include "../Lighting/pointLight.h"
-#include "../Lighting/spotLight.h"
-#include "../Lighting/directionalLight.h"
 #include "../Asset/AssetRegistry.h"
 #include "../EngineLog/engineLog.h"
 #include "../Engine/debugerTool.h"
-
 
 GLuint ubo = 0;
 
@@ -21,23 +17,27 @@ Material::Material(std::string textAssetPath)
 	SAssetReader reader(textAssetPath);
 	if (!reader.IsValid()) return;
 
-	SPropertyValue vertexShader(reader.Get(), "VertexShaderFilePath");
-	SPropertyValue fragmentShader(reader.Get(), "FragmentShaderFilePath");
-	SPropertyValue textureCount(reader.Get(), "TextureCount");
+	SFileRefPropertyValue* vertexShader = new SFileRefPropertyValue(this, reader.Get(), "VertexShaderFilePath");
+	SFileRefPropertyValue* fragmentShader = new SFileRefPropertyValue(this, reader.Get(), "FragmentShaderFilePath");
+	SUIntPropertyValue* textureCount = new SUIntPropertyValue(this, reader.Get(), "TextureCount");
 
-	if (!vertexShader.IsValid()) return;
-	if (!fragmentShader.IsValid()) return;
-	if (!textureCount.IsValid()) return;
+	RegisterProperty(vertexShader);
+	RegisterProperty(fragmentShader);
+	RegisterProperty(textureCount);
 
-	vertexShaderPath = vertexShader.GetValue<const char>();
-	fragmentShaderPath = fragmentShader.GetValue<const char>();
-	unsigned int texturesCount = *textureCount.GetValue<unsigned int>();
+	if (!vertexShader->IsValid()) return;
+	if (!fragmentShader->IsValid()) return;
+	if (!textureCount->IsValid()) return;
+
+	vertexShaderPath = vertexShader->GetFileRef();
+	fragmentShaderPath = fragmentShader->GetFileRef();
+	unsigned int texturesCount = textureCount->GetUIntValue();
 
 	for (unsigned int i = 0; i < texturesCount; ++i)
 	{
-		SPropertyValue textureName(reader.Get(), "Texture_" + std::to_string(i));
-		if (!textureName.IsValid()) continue;
-		linkedTexturesName.push_back(textureName.GetValue<const char>());
+		SAssetRefPropertyValue* textureName = new SAssetRefPropertyValue(this, reader.Get(), "Texture_" + std::to_string(i));
+		if (!RegisterProperty(textureName)) continue;
+		linkedTexturesName.push_back(textureName->GetAssetRef());
 	}
 }
 
@@ -76,68 +76,28 @@ void Material::ImportData()
 
 void Material::use(World* OwningWorld)
 {
-	LoadData();
-	glUseProgram(ShaderID);
-
-	unsigned int block_index = glGetUniformBlockIndex(ShaderID, "shader_data");
-	GLuint binding_point_index = 2;
-	glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, ubo);
-	glUniformBlockBinding(ShaderID, block_index, binding_point_index);
-
-	glUniform3f(glGetUniformLocation(ShaderID, "CameraPosition"), (float)OwningWorld->GetCamera()->GetCameraLocation().X, (float)OwningWorld->GetCamera()->GetCameraLocation().Y, (float)OwningWorld->GetCamera()->GetCameraLocation().Z);
-	setFloat("Time", (float)glfwGetTime());
-	setFloat("MaterialShininess", 1.f);
-
-	if (!bIsUnlit && !OwningWorld->bSkipLightRendering)
 	{
-
-		std::vector<PointLight*> pointLights = OwningWorld->GetPointLightSources();
-		std::vector<DirectionalLight*> directionalLights = OwningWorld->GetDirectionalLightSources();
-		std::vector<SpotLight*> spotLights = OwningWorld->GetSpotLightSources();
-		for (unsigned int i = 0; i < pointLights.size() && i < 16; ++i)
-		{
-			setVec3("pointLights[" + std::to_string(i) + "].position", pointLights[i]->GetLocation().ToGLVector());
-			setVec3("pointLights[" + std::to_string(i) + "].ambient", pointLights[i]->ambiant[0], pointLights[i]->ambiant[1], pointLights[i]->ambiant[2]);
-			setVec3("pointLights[" + std::to_string(i) + "].diffuse", pointLights[i]->diffuse[0], pointLights[i]->diffuse[1], pointLights[i]->diffuse[2]);
-			setVec3("pointLights[" + std::to_string(i) + "].specular", pointLights[i]->specular[0], pointLights[i]->specular[1], pointLights[i]->specular[2]);
-			setFloat("pointLights[" + std::to_string(i) + "].constant", pointLights[i]->constant);
-			setFloat("pointLights[" + std::to_string(i) + "].linear", pointLights[i]->linear);
-			setFloat("pointLights[" + std::to_string(i) + "].quadratic", pointLights[i]->quadratic);
-		}
-		for (unsigned int i = 0; i < directionalLights.size() && i < 2; ++i)
-		{
-			setVec3("dirLight[" + std::to_string(i) + "].ambient", directionalLights[i]->ambiant[0], directionalLights[i]->ambiant[1], directionalLights[i]->ambiant[2]);
-			setVec3("dirLight[" + std::to_string(i) + "].diffuse", directionalLights[i]->diffuse[0], directionalLights[i]->diffuse[1], directionalLights[i]->diffuse[2]);
-			setVec3("dirLight[" + std::to_string(i) + "].specular", directionalLights[i]->specular[0], directionalLights[i]->specular[1], directionalLights[i]->specular[2]);
-			setVec3("dirLight[" + std::to_string(i) + "].direction", directionalLights[i]->direction);
-		}
-		for (unsigned int i = 0; i < spotLights.size() && i < 16; ++i)
-		{
-			setVec3("spotLight[" + std::to_string(i) + "].position", spotLights[i]->GetLocation().ToGLVector());
-			setVec3("spotLight[" + std::to_string(i) + "].direction", spotLights[i]->direction);
-			setVec3("spotLight[" + std::to_string(i) + "].ambient", spotLights[i]->ambiant[0], spotLights[i]->ambiant[1], spotLights[i]->ambiant[2]);
-			setVec3("spotLight[" + std::to_string(i) + "].diffuse", spotLights[i]->diffuse[0], spotLights[i]->diffuse[1], spotLights[i]->diffuse[2]);
-			setVec3("spotLight[" + std::to_string(i) + "].specular", spotLights[i]->specular[0], spotLights[i]->specular[1], spotLights[i]->specular[2]);
-			setFloat("spotLight[" + std::to_string(i) + "].constant", spotLights[i]->constant);
-			setFloat("spotLight[" + std::to_string(i) + "].linear", spotLights[i]->linear);
-			setFloat("spotLight[" + std::to_string(i) + "].quadratic", spotLights[i]->quadratic);
-			setFloat("spotLight[" + std::to_string(i) + "].cutOff", spotLights[i]->cutOff);
-			setFloat("spotLight[" + std::to_string(i) + "].outerCutOff", spotLights[i]->outerCutOff);
-		}
-		setInt("DirectionalLightCounts", directionalLights.size());
-		setInt("SpotLightCounts", spotLights.size());
-		setInt("PointLightCounts", pointLights.size());
+		LoadData();
+		glUseProgram(ShaderID);
+		ProfileStat("UBO Binding");
+		unsigned int block_index = glGetUniformBlockIndex(ShaderID, "shader_data");
+		GLuint binding_point_index = 0;
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, ubo);
+		glUniformBlockBinding(ShaderID, block_index, binding_point_index);
 	}
 
-
-	std::string name = "texture";
-	for (unsigned int textureIndex = 0; textureIndex < textures.size(); ++textureIndex)
 	{
-		if (textures[textureIndex])
+		ProfileStat("set shader textures");
+		for (unsigned int textureIndex = 0; textureIndex < textures.size(); ++textureIndex)
 		{
-			setInt(std::string("StaticTexture_") + std::to_string(textureIndex), textureIndex);
-			glActiveTexture(GL_TEXTURE0 + textureIndex);
-			glBindTexture(GL_TEXTURE_2D, textures[textureIndex]->GetTextureID());
+			if (textures[textureIndex])
+			{
+				ProfileStat("Set texture ID");
+				setInt(std::string("StaticTexture_") + std::to_string(textureIndex), textureIndex);
+				StatViewer::AddDrawcall();
+				glActiveTexture(GL_TEXTURE0 + textureIndex);
+				glBindTexture(GL_TEXTURE_2D, textures[textureIndex]->GetTextureID());
+			}
 		}
 	}
 }
@@ -157,6 +117,29 @@ void Material::UpdateMaterialDefaults(World* OwningWorld)
 	shader_data.cameraLocation = OwningWorld->GetCamera()->GetCameraLocation().ToGLVector();
 	shader_data.viewMatrix = OwningWorld->GetCamera()->GetViewMatrix();
 	shader_data.worldProjection = OwningWorld->GetProjection();
+
+	std::vector<PointLight*> pointLights = OwningWorld->GetPointLightSources();
+	std::vector<DirectionalLight*> directionalLights = OwningWorld->GetDirectionalLightSources();
+	std::vector<SpotLight*> spotLights = OwningWorld->GetSpotLightSources();
+	shader_data.directionalLightCount = directionalLights.size();
+	shader_data.pointLightCount = pointLights.size();
+	shader_data.spotLightCount = spotLights.size();
+	for (unsigned int i = 0; i < directionalLights.size() && i < MAX_DIRECTIONAL_LIGHTS; ++i)
+	{
+		shader_data.directionalLightBaseParams[i] = directionalLights[i]->lightParams;
+		shader_data.directionalLightAdvancedParams[i] = directionalLights[i]->directionalLightParams;
+	}
+	for (unsigned int i = 0; i < pointLights.size() && i < MAX_POINT_LIGHTS; ++i)
+	{
+		shader_data.pointLightBaseParameters[i] = pointLights[i]->lightParams;
+		shader_data.pointLightAdvancedParameters[i] = pointLights[i]->pointLightParams;
+	}
+	for (unsigned int i = 0; i < spotLights.size() && i < MAX_SPOT_LIGHTS; ++i)
+	{
+		shader_data.spotLightBaseParameters[i] = spotLights[i]->lightParams;
+		shader_data.spotLightAdvancedParameters[i] = spotLights[i]->spotLightParams;
+	}
+
 	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
 	GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
 	memcpy(p, &shader_data, sizeof(shader_data));

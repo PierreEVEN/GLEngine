@@ -1,14 +1,10 @@
-#ifndef ASSETREGISTRY_H
-#define ASSETREGISTRY_H
+#pragma once
 
 #include <vector>
 #include <string>
 
-
 class Asset;
 class AssetRegistry;
-
-
 
 class AssetRegistry
 {
@@ -63,9 +59,25 @@ public:
 		return nullptr;
 	}
 
+	template <class T>
+	static std::vector<T*> FindAssetsOfType(std::string assetType)
+	{
+		std::vector<T*> outArray = {};
+		for (Asset* asset : GetAssets())
+		{
+			if (asset->GetAssetType() == assetType)
+			{
+				if (T* castedAsset = dynamic_cast<T*>(asset))
+				{
+					outArray.push_back(castedAsset);
+				}
+			}
+		}
+		return outArray;
+	}
+
 	static void ImportAssetFromDirectory(std::string RootFolder);
 	static void RegisterAsset(Asset* newAsset);
 
 	static std::vector<Asset*> GetAssets() { return AssetRegistry::registeredAssets; }
 };
-#endif

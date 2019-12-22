@@ -1,5 +1,4 @@
-#ifndef MESHSECTIONCOMPONENT_H
-#define MESHSECTIONCOMPONENT_H
+#pragma once
 
 #include "../World/sceneComponent.h"
 
@@ -25,4 +24,3 @@ private:
 	unsigned int VBO, VAO, EBO;
 	virtual void BuildMesh();
 };
-#endif

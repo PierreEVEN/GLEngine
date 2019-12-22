@@ -1,5 +1,4 @@
-#ifndef PHYSICPRIMITIVECOMPONENT_H
-#define PHYSICPRIMITIVECOMPONENT_H
+#pragma once
 
 #include "meshSectionComponent.h"
 
@@ -30,4 +29,3 @@ public:
 
 protected:
 };
-#endif

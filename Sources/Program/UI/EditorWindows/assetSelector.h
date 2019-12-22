@@ -1,5 +1,5 @@
-#ifndef ASSETSELECTOR_H
-#define ASSETSELECTOR_H
+#pragma once
+
 #include <string>
 
 class Asset;
@@ -14,6 +14,3 @@ public:
 	void Draw(World* inWorld);
 	Asset* selectedAsset = nullptr;
 };
-
-
-#endif

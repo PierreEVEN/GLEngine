@@ -1,5 +1,4 @@
-#ifndef MATERIAL_H
-#define MATERIAL_H
+#pragma once
 
 #include <glad/glad.h>
 
@@ -11,20 +10,39 @@
 #include <vector>
 #include "../Texture/texture.h"
 #include "../Asset/asset.h"
+#include "../Lighting/directionalLight.h"
+#include "../Lighting/pointLight.h"
+#include "../Lighting/spotLight.h"
+
+#define MAX_DIRECTIONAL_LIGHTS 4
+#define MAX_POINT_LIGHTS 16
+#define MAX_SPOT_LIGHTS 16
 
 class World;
+struct LightParameters;
+struct DirectionalLightParameters;
+struct PointLightParameters;
+struct SpotLightParameters;
 
 struct DefaultShaderData
 {
 	glm::mat4 viewMatrix;
 	glm::mat4 worldProjection;
 	glm::vec3 cameraLocation;
+	int directionalLightCount;
+	int pointLightCount;
+	int spotLightCount;
+ 	LightParameters directionalLightBaseParams[MAX_DIRECTIONAL_LIGHTS];
+	DirectionalLightParameters directionalLightAdvancedParams[MAX_DIRECTIONAL_LIGHTS];
+	LightParameters pointLightBaseParameters[MAX_POINT_LIGHTS];
+	PointLightParameters pointLightAdvancedParameters[MAX_POINT_LIGHTS];
+	LightParameters spotLightBaseParameters[MAX_SPOT_LIGHTS];
+	SpotLightParameters spotLightAdvancedParameters[MAX_SPOT_LIGHTS];
 };
 
 class Material : public Asset
 {
 public:
-
 	unsigned int ShaderID;
 
 	std::string vertexShaderPath;
@@ -71,7 +89,3 @@ public:
 	static Material* GetDebugMaterial();
 	static Material* GetGridMaterial();
 };
-
-
-
-#endif

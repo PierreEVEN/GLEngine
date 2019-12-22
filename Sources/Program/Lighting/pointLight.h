@@ -1,24 +1,19 @@
-#include "Light.h"
+#pragma once
 
+#include "Light.h"
 
 class World;
 
+struct PointLightParameters
+{
+	float constant = 1.0f;
+	float linear = 0.09f;
+	float quadratic = 0.032f;
+};
 
 class PointLight : public Light
 {
-
-private:
-
-
 public:
-
 	PointLight(World* newWorld);
-
-	virtual void MarkRenderStateDirty() override;
-
-	float constant;
-	float linear;
-	float quadratic;
-
-
+	PointLightParameters pointLightParams;
 };

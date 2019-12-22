@@ -25,6 +25,8 @@
 #include "../Physic/physicDebugViewer.h"
 #include "../Engine/debugerTool.h"
 
+#define DISABLE_DOUBLE_BUFFERING true
+
 std::vector<World*> GWorlds;
 
 World::World(std::string worldName)
@@ -32,6 +34,9 @@ World::World(std::string worldName)
 	GWorlds.push_back(this);
 	worldDeltaSecond = 0.0;
 	std::string viewportName = std::string("GLEngine 0.1 - ") + worldName;
+#if DISABLE_DOUBLE_BUFFERING
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
+#endif
 	window = glfwCreateWindow(screenWidth, screenHeight, viewportName.data(), NULL, NULL);
 	if (window == NULL)
 	{
@@ -159,12 +164,15 @@ void World::processInput() {
 	{
 		if (glfwGetTime() - LastLightUseTime > 0.5f)
 		{
-// 			PointLight* newObj = new PointLight(this);
-// 			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetRegistry::FindAssetByName<StaticMesh>("CubeMesh"));
-// 			newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
-// 			newObj->ambiant = glm::normalize(glm::vec3(rand() % 512 / 256.f, rand() % 512 / 256.f, rand() % 512 / 256.f));
-// 			lightMesh->SetLocation(newObj->GetLocation());
-// 			LastLightUseTime = glfwGetTime();
+			PointLight* newObj = new PointLight(this);
+			newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
+			newObj->lightParams.ambiant = glm::normalize(glm::vec3(rand() % 512 / 256.f, rand() % 512 / 256.f, rand() % 512 / 256.f));
+			LastLightUseTime = glfwGetTime();
+			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetRegistry::FindAssetByName<StaticMesh>("CubeMesh"));
+			if (lightMesh)
+			{
+				lightMesh->SetLocation(newObj->GetLocation());
+			}
 		}
 	}
 
@@ -172,9 +180,9 @@ void World::processInput() {
 	{
 		if (glfwGetTime() - LastLightUseTime > 0.5f)
 		{
-// 			DirectionalLight* newObj = new DirectionalLight(this);
-// 			newObj->direction = GetCamera()->GetCameraForwardVector().ToGLVector();
-// 			LastLightUseTime = glfwGetTime();
+			DirectionalLight* newObj = new DirectionalLight(this);
+			newObj->directionalLightParams.direction = GetCamera()->GetCameraForwardVector().ToGLVector();
+			LastLightUseTime = glfwGetTime();
 		}
 	}
 
@@ -182,12 +190,14 @@ void World::processInput() {
 	{
 		if (glfwGetTime() - LastLightUseTime > 0.5f)
 		{
-// 			SpotLight* newObj = new SpotLight(this);
-// 			StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetRegistry::FindAssetByName<StaticMesh>("CubeMesh"));
-// 			newObj->direction = GetCamera()->GetCameraForwardVector().ToGLVector();
-// 			newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
-// 			lightMesh->SetLocation(newObj->GetLocation());
-// 			LastLightUseTime = glfwGetTime();
+			SpotLight* newObj = new SpotLight(this);
+			newObj->spotLightParams.direction = GetCamera()->GetCameraForwardVector().ToGLVector();
+			newObj->SetLocation(worldCamera->GetCameraLocation() + worldCamera->GetCameraForwardVector() * glm::vec3(20.f));
+			LastLightUseTime = glfwGetTime();
+			if (StaticMeshComponent* lightMesh = new StaticMeshComponent(this, AssetRegistry::FindAssetByName<StaticMesh>("CubeMesh")))
+			{
+				lightMesh->SetLocation(newObj->GetLocation());
+			}
 		}
 	}
 }
@@ -292,7 +302,11 @@ void World::UpdateWorld(double deltaSecond)
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
+#if DISABLE_DOUBLE_BUFFERING
+	glFlush();
+#else
 	glfwSwapBuffers(GetWindow());
+#endif
 	glfwPollEvents();
 }
 

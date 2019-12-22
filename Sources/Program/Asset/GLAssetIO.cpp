@@ -1,10 +1,13 @@
 #include "GLAssetIO.h"
 #include <iostream>
 #include "../EngineLog/engineLog.h"
+#include "asset.h"
 
-SPropertyValue::SPropertyValue(std::ifstream* fileStream, const std::string inPropertyName)
-	: propertyName(inPropertyName)
+SPropertyValue::SPropertyValue(Asset* inParentAsset, std::ifstream* fileStream, const std::string inPropertyName)
+	: SPropertyValue(inPropertyName)
 {
+	bIsDirty = false;
+	owner = inParentAsset;
 	unsigned int fieldCursorLocation;
 	unsigned int fieldBufferSize;
 	if (GLAssetIO::FindField(fileStream, propertyName, fieldCursorLocation, fieldBufferSize))
@@ -19,10 +22,28 @@ SPropertyValue::SPropertyValue(std::ifstream* fileStream, const std::string inPr
 	}
 }
 
+SPropertyValue::SPropertyValue(std::string inPropertyName)
+{
+	propertyName = inPropertyName;
+	bIsDirty = false;
+	propertyValue = nullptr;
+	bufferSize = 0;
+	owner = nullptr;
+}
+
+void SPropertyValue::MarkPropertyDirty()
+{
+	bIsDirty = true;
+	if (GetOwner())
+	{
+		GetOwner()->MarkAssetDirty();
+	}
+}
+
 SAssetReader::SAssetReader(std::string inAssetPath)
 {
 	assetPath = inAssetPath;
-	fileStream = new std::ifstream(assetPath, std::ios::in | std::ios::binary);
+	fileStream = new std::ifstream(assetPath, std::ios::in | std::ios::binary | std::ios::binary);
 	if (!fileStream || !fileStream->is_open())
 	{
 		GLog(LogVerbosity::Error, "AssetLoading", "Failed to open file '" + assetPath + "' : " + (fileStream ? " invalid path " : " cannot open file "));
@@ -42,10 +63,17 @@ SAssetReader::~SAssetReader()
 	}
 }
 
-SAssetWriter::SAssetWriter(std::string inAssetPath)
+SAssetWriter::SAssetWriter(std::string inAssetPath, bool bResetFile)
 {
 	assetPath = inAssetPath;
-	fileStream = new std::ofstream(assetPath, std::ios::out | std::ios::binary);
+	if (bResetFile)
+	{
+		fileStream = new std::ofstream(assetPath, std::ios::out | std::ios::binary | std::ios::trunc);
+	}
+	else
+	{
+		fileStream = new std::ofstream(assetPath, std::ios::out | std::ios::binary);
+	}
 	if (!fileStream || !fileStream->is_open()) {
 		GLog(LogVerbosity::Error, "AssetLoading", "Failed to open file '" + assetPath + "' : " + (fileStream ? " invalid path " : " cannot open file "));
 		delete fileStream;
@@ -103,5 +131,19 @@ void GLAssetIO::GenerateFileBody(std::ofstream* newFileStream, std::string newAs
 {
 	GLAssetIO::AppendField<char*>(newFileStream, "AssetType", (char*)(assetType.data()), assetType.size() + 1);
 	GLAssetIO::AppendField<char*>(newFileStream, "AssetName", (char*)(newAssetName.data()), newAssetName.size() + 1);
+}
+
+void GLAssetIO::SaveAssetProperties(Asset* inAsset)
+{
+	if (!inAsset || !inAsset->HasValidPath()) return;
+	SAssetWriter writer(inAsset->GetPath(), true);
+	GLAssetIO::GenerateFileBody(writer.Get(), inAsset->GetName(), inAsset->GetAssetType());
+	for (const auto& prop : inAsset->GetAssetProperties())
+	{
+		if (prop && prop->GetPropertyName() != "AssetType" && prop->GetPropertyName() != "AssetName")
+		{
+			GLAssetIO::AppendField<char*>(writer.Get(), prop->GetPropertyName(), prop->GetValue<char>(), prop->GetBufferSize());
+		}
+	}
 }
 

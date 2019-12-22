@@ -1,6 +1,4 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
-
+#pragma once
 
 #include <string>
 #include "../Asset/asset.h"
@@ -25,4 +23,3 @@ public:
 	virtual Texture2D* GetAssetThumbnail() override { return this; }
 	virtual ImColor GetAssetColor() { return ImColor(0.3f, 0.3f, 0.7f, 1.f); }
 };
-#endif

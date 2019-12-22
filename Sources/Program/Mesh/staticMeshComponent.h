@@ -1,5 +1,4 @@
-#ifndef STATICMESHCOMPONENT_H
-#define STATICMESHCOMPONENT_H
+#pragma once
 
 #include <vector>
 #include "../Physic/PrimitiveComponent.h"
@@ -26,4 +25,3 @@ public:
 	virtual void SetAngle(float newAngle) override;
 	virtual void SetScale3D(SVector3 newScale3D) override;
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef VECTOR3_H
-#define VECTOR3_H
+#pragma once
 
 #include <glm/gtx/matrix_decompose.hpp>
 #include <bullet3D/LinearMath/btVector3.h>
@@ -253,5 +252,3 @@ public:
 		Scale3D = SVector3(1);
 	}
 };
-
-#endif

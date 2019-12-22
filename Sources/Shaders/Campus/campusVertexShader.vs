@@ -10,9 +10,14 @@ out vec3 Normal;
 out vec2 TexCoords;
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
 uniform float Time;
+
+layout (std140) uniform shader_data
+{
+  mat4 viewMatrix;
+  mat4 worldProjection;
+  vec3 cameraLocation;
+};
 
 void main()
 {
@@ -20,5 +25,5 @@ void main()
     Normal = mat3(transpose(inverse(model))) * aNormal;
     TexCoords = aTexCoords;
 
-    gl_Position = projection * view * vec4(FragPos, 1.0);
+    gl_Position = worldProjection * viewMatrix * vec4(FragPos, 1.0);
 }

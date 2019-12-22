@@ -1,5 +1,4 @@
-#ifndef FILEEXPLORER_H
-#define FILEEXPLORER_H
+#pragma once
 
 #include "../EditorWindow.h"
 #include "../../ImGUI/imgui.h"
@@ -29,4 +28,3 @@ public:
 
 	void DrawSubFolderTreeNodeElement(std::string inPath);
 };
-#endif

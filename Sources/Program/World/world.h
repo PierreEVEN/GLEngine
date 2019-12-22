@@ -1,12 +1,9 @@
-#ifndef WORLD_H
-#define WORLD_H
-
+#pragma once
 
 #include <glm/fwd.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "../Asset/asset.h"
 #include <vector>
-
 
 class Camera;
 struct GLFWwindow;
@@ -135,4 +132,3 @@ public:
 	}
 
 };
-#endif

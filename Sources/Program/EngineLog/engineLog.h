@@ -1,5 +1,4 @@
-#ifndef ENGINELOG_H
-#define ENGINELOG_H
+#pragma once
 
 #include <string>
 
@@ -18,4 +17,3 @@ class EngineLog
 public:
 	static void PrintLog(LogVerbosity verbosity, std::string LogCategory, std::string message);
 };
-#endif

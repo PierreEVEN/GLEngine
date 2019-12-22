@@ -6,6 +6,7 @@
 #include "../Mesh/staticMesh.h"
 #include "../World/worldAsset.h"
 #include "AssetRegistry.h"
+#include "../EngineLog/engineLog.h"
 
 
 std::vector<Asset*> AssetRegistry;
@@ -83,6 +84,24 @@ std::vector<std::string> AssetLibrary::CollectFilesUnderFolder(std::string folde
 		::FindClose(hFind);
 	}
 	return names;
+}
+
+std::string AssetLibrary::GetExtension(const std::string& filePath)
+{
+	bool bFoundDot = false;
+	std::string outExtension = "";
+	for (int i = filePath.size() - 1; i >= 0 && !bFoundDot; --i)
+	{
+		if (filePath.at(i) == '.')
+		{
+			bFoundDot = true;
+		}
+		else
+		{
+			outExtension = filePath[i] + outExtension;
+		}
+	}
+	return bFoundDot ? outExtension : "";
 }
 
 bool AssetLibrary::CheckExtension(const std::string& filePath, const std::string& extension)

@@ -1,5 +1,4 @@
-#ifndef PHYSICDEBUGVIEWER_H
-#define PHYSICDEBUGVIEWER_H
+#pragma once
 
 #include "bullet3D/LinearMath/btIDebugDraw.h"
 
@@ -35,4 +34,3 @@ public:
 	virtual int    getDebugMode() const { return m_debugMode; }
 
 };
-#endif

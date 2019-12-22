@@ -1,6 +1,4 @@
-#ifndef ASSETLIBRARY_H
-#define ASSETLIBRARY_H
-
+#pragma once
 
 #include <vector>
 #include <string>
@@ -17,10 +15,8 @@ public:
 	static std::vector<std::string> GetFolderInPath(std::string path, bool returnBack = false);
 
 	static std::vector<std::string> CollectFilesUnderFolder(std::string folder);
+	static std::string GetExtension(const std::string& filePath);
 	static bool CheckExtension(const std::string& filePath, const std::string& extension);
 	static std::string RemoveExtension(const std::string& filePath);
 	static std::string GenerateNonExistingAssetName(std::string baseName = "NewAsset");
 };
-
-
-#endif
