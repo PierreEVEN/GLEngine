@@ -22,13 +22,13 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{1255E73D-5858-41FB-88CF-5BD1E2512432}</ProjectGuid>
     <RootNamespace>GLEngine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -137,6 +137,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Sources/Program/Engine/debugerTool.h" />
+    <ClInclude Include="Sources/Program/Engine/Gizmo.h" />
+    <ClInclude Include="Sources/Program/Engine/inputManager.h" />
+    <ClInclude Include="Sources/Program/Engine/eventManager.h" />
+    <ClInclude Include="Sources/Program/Engine/engine.h" />
     <ClInclude Include="Sources/Program/Asset/asset.h" />
     <ClInclude Include="Sources/Program/Asset/AssetImporter.h" />
     <ClInclude Include="Sources/Program/Asset/GLAssetIO.h" />
@@ -147,21 +151,22 @@
     <ClInclude Include="Sources/Program/World/world.h" />
     <ClInclude Include="Sources/Program/World/worldAsset.h" />
     <ClInclude Include="Sources/Program/World/sceneComponent.h" />
+    <ClInclude Include="Sources/Program/World/scene.h" />
     <ClInclude Include="Sources/Program/Camera/camera.h" />
     <ClInclude Include="Sources/Program/Shader/material.h" />
     <ClInclude Include="Sources/Program/Shader/shaderLoader.h" />
     <ClInclude Include="Sources/Program/ThirdParty/stb_image.h" />
+    <ClInclude Include="Sources/Program/MathLibrary/vector3.h" />
+    <ClInclude Include="Sources/Program/MathLibrary/worldInteraction.h" />
     <ClInclude Include="Sources/Program/Mesh/meshSectionComponent.h" />
     <ClInclude Include="Sources/Program/Mesh/staticMeshComponent.h" />
     <ClInclude Include="Sources/Program/Mesh/staticMesh.h" />
-    <ClInclude Include="Sources/Program/Mesh/PhysicPrimitiveComponent.h" />
     <ClInclude Include="Sources/Program/Lighting/directionalLight.h" />
     <ClInclude Include="Sources/Program/Lighting/spotLight.h" />
     <ClInclude Include="Sources/Program/Lighting/Light.h" />
     <ClInclude Include="Sources/Program/Lighting/pointLight.h" />
     <ClInclude Include="Sources/Program/Physic/primitiveComponent.h" />
     <ClInclude Include="Sources/Program/Physic/physicDebugViewer.h" />
-    <ClInclude Include="Sources/Program/MathLibrary/vector3.h" />
     <ClInclude Include="Sources/Program/ImGUI/imgui_impl_glfw.h" />
     <ClInclude Include="Sources/Program/ImGUI/imgui_impl_opengl3.h" />
     <ClInclude Include="Sources/Program/ImGUI/imconfig.h" />
@@ -176,10 +181,15 @@
     <ClInclude Include="Sources/Program/UI/EditorWindows/assetSelector.h" />
     <ClInclude Include="Sources/Program/UI/EditorWindows/assetEditor.h" />
     <ClInclude Include="Sources/Program/UI/EditorWindows/engineLogWindow.h" />
+    <ClInclude Include="Sources/Program/UI/EditorWindows/sceneComponentEditor.h" />
     <ClInclude Include="Sources/Program/UI/Importers/importerWindows.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources/Program/Engine/debugerTool.cpp" />
+    <ClCompile Include="Sources/Program/Engine/Gizmo.cpp" />
+    <ClCompile Include="Sources/Program/Engine/inputManager.cpp" />
+    <ClCompile Include="Sources/Program/Engine/eventManager.cpp" />
+    <ClCompile Include="Sources/Program/Engine/engine.cpp" />
     <ClCompile Include="Sources/Program/Asset/asset.cpp" />
     <ClCompile Include="Sources/Program/Asset/AssetImporter.cpp" />
     <ClCompile Include="Sources/Program/Asset/GLAssetIO.cpp" />
@@ -190,15 +200,16 @@
     <ClCompile Include="Sources/Program/World/world.cpp" />
     <ClCompile Include="Sources/Program/World/worldAsset.cpp" />
     <ClCompile Include="Sources/Program/World/sceneComponent.cpp" />
+    <ClCompile Include="Sources/Program/World/scene.cpp" />
     <ClCompile Include="Sources/Program/main.cpp" />
     <ClCompile Include="Sources/Program/ThirdParty/stb_image.cpp" />
     <ClCompile Include="Sources/Program/Shader/material.cpp" />
     <ClCompile Include="Sources/Program/Shader/shaderLoader.cpp" />
     <ClCompile Include="Sources/Program/ThirdParty/glad.c" />
+    <ClCompile Include="Sources/Program/MathLibrary/worldInteraction.cpp" />
     <ClCompile Include="Sources/Program/Mesh/staticMesh.cpp" />
     <ClCompile Include="Sources/Program/Mesh/meshSectionComponent.cpp" />
     <ClCompile Include="Sources/Program/Mesh/staticMeshComponent.cpp" />
-    <ClCompile Include="Sources/Program/Mesh/PhysicPrimitiveComponent.cpp" />
     <ClCompile Include="Sources/Program/Camera/camera.cpp" />
     <ClCompile Include="Sources/Program/Lighting/directionalLight.cpp" />
     <ClCompile Include="Sources/Program/Lighting/spotLight.cpp" />
@@ -218,6 +229,7 @@
     <ClCompile Include="Sources/Program/UI/EditorWindows/assetSelector.cpp" />
     <ClCompile Include="Sources/Program/UI/EditorWindows/assetEditor.cpp" />
     <ClCompile Include="Sources/Program/UI/EditorWindows/engineLogWindow.cpp" />
+    <ClCompile Include="Sources/Program/UI/EditorWindows/sceneComponentEditor.cpp" />
     <ClCompile Include="Sources/Program/UI/Importers/importerWindows.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
