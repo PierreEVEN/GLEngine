@@ -22,14 +22,18 @@ void AssetRegistry::ImportAssetFromDirectory(std::string RootFolder)
 		SPropertyValue assetTypeValue(nullptr, reader.Get(), "AssetType");
 		if (!AssetLibrary::CheckExtension(filePath, ".glAsset"))
 		{
-			GLog(LogVerbosity::Warning, "AssetRegistry", "wrong file extension for " + filePath + " (must be .glAsset)");
+			GFullLog(LogVerbosity::Warning, "AssetRegistry", "wrong file extension for " + filePath + " (must be .glAsset)");
 		}
-		if (assetTypeValue.IsValid())
+		if (assetTypeValue.IsValueValid())
 		{
 			std::string assetTypeText = assetTypeValue.GetValue<const char>();
 			if (assetTypeText == "Texture2D")
 			{
 				new Texture2D(filePath);
+			}
+			else if (assetTypeText == "TextureCube")
+			{
+				new TextureCube(filePath);
 			}
 			else if (assetTypeText == "StaticMesh")
 			{
@@ -42,11 +46,9 @@ void AssetRegistry::ImportAssetFromDirectory(std::string RootFolder)
 		}
 		else
 		{
-			GLog(LogVerbosity::Error, "AssetRegistry", "failed to read asset type for " + filePath);
+			GFullLog(LogVerbosity::Error, "AssetRegistry", "failed to read asset type for " + filePath);
 		}
 	}
-	double LoadDuration = ReadCurrentStat();
-	GLog((LoadDuration < 1.0 ? LogVerbosity::Display : LogVerbosity::Warning), "AssetRegistry", std::string("Loaded registry '" + RootFolder + "' in " + std::to_string(LoadDuration) + " seconds").data());
 }
 
 void AssetRegistry::RegisterAsset(Asset* newAsset)

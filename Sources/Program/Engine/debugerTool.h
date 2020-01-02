@@ -13,6 +13,12 @@ struct StatHistory
 	StatHistory(const char* inStatName, double inStatDelay) : statName(inStatName), statDelay(inStatDelay) {}
 	const char* statName = "";
 	double statDelay = 0.0;
+	int callCount = 1;
+	void IncrementDelay(double inDelay)
+	{
+		statDelay += inDelay;
+		callCount++;
+	}
 
 	bool operator==(const char* inStatName)
 	{

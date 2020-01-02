@@ -41,6 +41,26 @@ public:
 	void CreateObject();
 };
 
+class TextureCubeImporterWindow : public UIWindowElement
+{
+public:
+
+	TextureCubeImporterWindow(std::string inWindowName) : UIWindowElement(inWindowName) {}
+
+	virtual void Draw(World* inWorld) override;
+	std::string rightTexturePath;
+	std::string leftTexturePath;
+	std::string topTexturePath;
+	std::string bottomTexturePath;
+	std::string frontTexturePath;
+	std::string backTexturePath;
+	std::string outputFilePath;
+
+	char outAssetNameString[32] = "";
+
+	void CreateObject();
+};
+
 class ShaderImporterWindow : public UIWindowElement
 {
 public:

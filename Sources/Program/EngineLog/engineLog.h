@@ -2,7 +2,8 @@
 
 #include <string>
 
-#define GLog(verbosity, category, message) EngineLog::PrintLog(verbosity, category, message)
+#define GFullLog(verbosity, category, message) EngineLog::PrintLog(verbosity, category, message)
+#define GDebugLog(message) EngineLog::PrintLog(LogVerbosity::Display, "Debug", message)
 
 enum LogVerbosity
 {

@@ -9,5 +9,6 @@ public:
 	bool bShowMaterials = false;
 	bool bShowMesh = true;
 	bool bShowTextures = false;
+	bool bShowTextureCubes = false;
 	virtual void Draw(World* InWorld) override;
 };

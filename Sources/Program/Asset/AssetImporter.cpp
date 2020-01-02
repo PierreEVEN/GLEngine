@@ -18,13 +18,14 @@
 #include "../Shader/shaderLoader.h"
 #include "../EngineLog/engineLog.h"
 
-void AssetImporter::ImportTexture(std::string textureFilePath, std::string newTextureName, std::string newFilePath)
+void AssetImporter::ImportTexture2D(std::string textureFilePath, std::string newTextureName, std::string newFilePath)
 {
 	int x, y, nbrChannels;
 	if (stbi_uc *data = stbi_load(textureFilePath.data(), &x, &y, &nbrChannels, 0))
 	{
-		GLog(LogVerbosity::Display, "AssetImporter", "Importing texture from " + textureFilePath);
-		SAssetWriter writer(newFilePath + ".glAsset");
+		GFullLog(LogVerbosity::Display, "AssetImporter", "Importing texture from " + textureFilePath);
+		newFilePath += ".glAsset";
+		SAssetWriter writer(newFilePath);
 		GLAssetIO::GenerateFileBody(writer.Get(), newTextureName, "Texture2D");
 		GLAssetIO::AppendField<int*>(writer.Get(), "TextureSizeX", &x, sizeof(x));
 		GLAssetIO::AppendField<int*>(writer.Get(), "TextureSizeY", &y, sizeof(y));
@@ -36,8 +37,36 @@ void AssetImporter::ImportTexture(std::string textureFilePath, std::string newTe
 	}
 	else
 	{
-		GLog(LogVerbosity::Error, "AssetImporter", "failed to find texture " + textureFilePath);
+		GFullLog(LogVerbosity::Error, "AssetImporter", "failed to find texture " + textureFilePath);
 	}
+}
+
+void AssetImporter::ImportTextureCube(std::string textures[6], std::string newTextureName, std::string newFilePath)
+{
+	newFilePath += ".glAsset";
+	SAssetWriter writer(newFilePath);
+	assert(writer.IsValid());
+	GLAssetIO::GenerateFileBody(writer.Get(), newTextureName, "TextureCube");
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		int x, y, nbrChannels;
+		if (stbi_uc* data = stbi_load(textures[i].data(), &x, &y, &nbrChannels, 0))
+		{
+			GFullLog(LogVerbosity::Display, "AssetImporter", "Importing texture from " + textures[i] + " (index " + std::to_string(i) + ")");
+			assert(writer.IsValid());
+			GLAssetIO::AppendField<int*>(writer.Get(), "TextureSizeX_" + std::to_string(i), &x, sizeof(x));
+			GLAssetIO::AppendField<int*>(writer.Get(), "TextureSizeY_" + std::to_string(i), &y, sizeof(y));
+			GLAssetIO::AppendField<int*>(writer.Get(), "TextureChannelsCount_" + std::to_string(i), &nbrChannels, sizeof(nbrChannels));
+			GLAssetIO::AppendField<stbi_uc*>(writer.Get(), "TextureData_" + std::to_string(i), data, x * y * nbrChannels);
+			stbi_image_free(data);
+		}
+		else
+		{
+			GFullLog(LogVerbosity::Error, "AssetImporter", "failed to find texture " + textures[i]);
+		}
+	}
+	writer.ForceCloseFile();
+	new TextureCube(newFilePath);
 }
 
 void AssetImporter::ImportMesh(std::string meshFilePath, std::string newMeshName, std::string newFilePath, bool importMaterials)
@@ -47,7 +76,7 @@ void AssetImporter::ImportMesh(std::string meshFilePath, std::string newMeshName
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		GLog(LogVerbosity::Error, "AssetImporter", "ERROR::ASSIMP::" + std::string(assimpImporter.GetErrorString()));
+		GFullLog(LogVerbosity::Error, "AssetImporter", "ERROR::ASSIMP::" + std::string(assimpImporter.GetErrorString()));
 		return;
 	}
 
@@ -144,6 +173,23 @@ void AssetImporter::processMesh(aiMesh *mesh, const aiScene *scene, unsigned int
 			}
 		}
 
+		/** Get or generate vertex colors */
+		{
+			if (mesh->HasVertexColors(i))
+			{
+				// tangents
+				glm::vec4 color;
+				color.r = mesh->mColors ? mesh->mColors[i]->r : 0.f;
+				color.g = mesh->mColors ? mesh->mColors[i]->g : 0.f;
+				color.b = mesh->mColors ? mesh->mColors[i]->b : 0.f;
+				color.a = mesh->mColors ? mesh->mColors[i]->a : 0.f;
+				vertex.VertexColor = color;
+			}
+			else
+			{
+				vertex.VertexColor = glm::vec4(0.f, 0.f, 0.f, 1.f);
+			}
+		}
 		vertices.push_back(vertex);
 	}
 
@@ -183,7 +229,7 @@ std::string AssetImporter::loadMaterialTextures(aiMaterial *mat, aiTextureType t
 
 			std::string newTextureName = AssetLibrary::GenerateNonExistingAssetName("Texture_" + meshName + std::to_string(meshIndex));
 			textures.push_back(newTextureName);
-			AssetImporter::ImportTexture(str.C_Str(), newTextureName, "./Sources/Assets/Textures/" + newTextureName);
+			AssetImporter::ImportTexture2D(str.C_Str(), newTextureName, "./Sources/Assets/Textures/" + newTextureName);
 		}
 	}
 	std::string newMaterialName = AssetLibrary::GenerateNonExistingAssetName("Material_" + meshName + std::to_string(meshIndex));
@@ -191,15 +237,12 @@ std::string AssetImporter::loadMaterialTextures(aiMaterial *mat, aiTextureType t
 	return newMaterialName;
 }
 
-
-
-
-
 void AssetImporter::ImportShader(std::string vertexShaderFilePath, std::string fragmentShaderFilePath, std::string newShaderName, std::string newFilePath, std::vector<std::string> linkedTextures)
 {
 	ShaderLoader* compiler = new ShaderLoader(vertexShaderFilePath.data(), fragmentShaderFilePath.data());
 
-	SAssetWriter writer(newFilePath + ".glAsset");
+	newFilePath += ".glAsset";
+	SAssetWriter writer(newFilePath);
 
 	GLAssetIO::GenerateFileBody(writer.Get(), newShaderName, "Material");
 	GLAssetIO::AppendField<char*>(writer.Get(), "VertexShaderFilePath", (char*)(vertexShaderFilePath.data()), vertexShaderFilePath.size() + 1);

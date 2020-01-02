@@ -6,17 +6,18 @@ class World;
 
 struct LightParameters
 {
-	glm::vec3 ambiant = glm::vec3(0.4f, 0.4f, 0.4f);
-	glm::vec3 diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
-	glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec4 ambiant = glm::vec4(0.1f, 0.1f, 0.1f, 0.f);
+	glm::vec4 diffuse = glm::vec4(1.f, 1.f, 1.f, 0.f);
+	glm::vec4 specular = glm::vec4(1.0f, 1.0f, 1.0f, 0.f);
+	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 0.f);
 };
 
 class Light : public SceneComponent
 {
 public:
+	int randIndex;
 
-	Light(World* newWorld) : SceneComponent(newWorld) {}
+	Light(Scene* drawScene);
 	LightParameters lightParams;
-
+	virtual void Tick() override;
 };

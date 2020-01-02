@@ -20,7 +20,14 @@ public:
 	/* Texture importer                                                     */
 	/************************************************************************/
 
-	static void ImportTexture(std::string textureFilePath, std::string newTextureName, std::string newFilePath);
+	static void ImportTexture2D(std::string textureFilePath, std::string newTextureName, std::string newFilePath);
+
+	/************************************************************************/
+	/* TextureCube importer                                                     */
+	/************************************************************************/
+
+	static void ImportTextureCube(std::string textures[6], std::string newTextureName, std::string newFilePath);
+
 
 	/************************************************************************/
 	/* MeshImporter                                                         */

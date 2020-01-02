@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include "../EngineLog/engineLog.h"
+#include <glad/glad.h>
 
 ShaderLoader::ShaderLoader(const char* vertexShaderPath, const char* fragmentShaderPath)
 {
@@ -33,7 +34,7 @@ ShaderLoader::ShaderLoader(const char* vertexShaderPath, const char* fragmentSha
 	}
 	catch (std::ifstream::failure e)
 	{
-		GLog(LogVerbosity::Error, "AssetRegistry", "Failed to read shader file '" + std::string(vertexShaderPath) + "' | '" + fragmentShaderPath + "'");
+		GFullLog(LogVerbosity::Error, "AssetRegistry", "Failed to read shader file '" + std::string(vertexShaderPath) + "' | '" + fragmentShaderPath + "'");
 	}
 }
 
@@ -68,7 +69,7 @@ int ShaderLoader::Get()
 	return ShaderID;
 }
 
-void ShaderLoader::checkCompileErrors(GLuint shader, std::string type)
+void ShaderLoader::checkCompileErrors(unsigned int shader, std::string type)
 {
 	GLint success;
 	GLchar infoLog[1024];
@@ -78,7 +79,7 @@ void ShaderLoader::checkCompileErrors(GLuint shader, std::string type)
 		if (!success)
 		{
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			GLog(LogVerbosity::Error, "AssetRegistry", "Failed to compile shader " + std::string(type) + " : " + std::string(infoLog));
+			GFullLog(LogVerbosity::Error, "AssetRegistry", "Failed to compile shader " + std::string(type) + " : " + std::string(infoLog));
 		}
 	}
 	else
@@ -87,7 +88,7 @@ void ShaderLoader::checkCompileErrors(GLuint shader, std::string type)
 		if (!success)
 		{
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			GLog(LogVerbosity::Error, "AssetRegistry", "Failed to compile shader " + std::string(type) + " : " + std::string(infoLog));
+			GFullLog(LogVerbosity::Error, "AssetRegistry", "Failed to compile shader " + std::string(type) + " : " + std::string(infoLog));
 		}
 	}
 }

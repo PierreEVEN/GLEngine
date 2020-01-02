@@ -1,12 +1,9 @@
 #pragma once
 
-#include <glad/glad.h>
-
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <glm/glm.hpp>
 #include <vector>
 #include "../Texture/texture.h"
 #include "../Asset/asset.h"
@@ -14,9 +11,9 @@
 #include "../Lighting/pointLight.h"
 #include "../Lighting/spotLight.h"
 
-#define MAX_DIRECTIONAL_LIGHTS 4
-#define MAX_POINT_LIGHTS 16
-#define MAX_SPOT_LIGHTS 16
+#define MAX_DIRECTIONAL_LIGHTS 16
+#define MAX_POINT_LIGHTS 512
+#define MAX_SPOT_LIGHTS 64
 
 class World;
 struct LightParameters;
@@ -28,10 +25,11 @@ struct DefaultShaderData
 {
 	glm::mat4 viewMatrix;
 	glm::mat4 worldProjection;
-	glm::vec3 cameraLocation;
+	glm::vec4 cameraLocation;
 	int directionalLightCount;
 	int pointLightCount;
 	int spotLightCount;
+	int offset;
  	LightParameters directionalLightBaseParams[MAX_DIRECTIONAL_LIGHTS];
 	DirectionalLightParameters directionalLightAdvancedParams[MAX_DIRECTIONAL_LIGHTS];
 	LightParameters pointLightBaseParameters[MAX_POINT_LIGHTS];
@@ -40,6 +38,8 @@ struct DefaultShaderData
 	SpotLightParameters spotLightAdvancedParameters[MAX_SPOT_LIGHTS];
 };
 
+class Scene;
+
 class Material : public Asset
 {
 public:
@@ -47,20 +47,23 @@ public:
 
 	std::string vertexShaderPath;
 	std::string fragmentShaderPath;
-	std::vector<std::string> linkedTexturesName;
 	std::vector<Texture2D*> textures;
 
 	bool bIsUnlit;
 
-	Material(std::string textAssetPath);
+	Material(std::string textAssetPath) : Asset(textAssetPath) {}
 
-	void InitializeShader(const char* inVertexShaderPath, const char* inFragmentShaderPath, std::vector<std::string> newTextures);
+	void InitializeShader(const char* inVertexShaderPath, const char* inFragmentShaderPath);
 
-	virtual void ImportData() override;
+	virtual void OnPropertiesLoaded() override;
 
-	void use(World* OwningWorld);
+	void AddTexture(Texture2D* inTexture = nullptr);
+	unsigned int GetTextureCount();
+
+	void use();
 	static void InitializeMaterials();
-	static void UpdateMaterialDefaults(World* OwningWorld);
+	static void UpdateMaterialDefaults(Scene* drawScene);
+	void UpdateLinkedTextures();
 
 	void setBool(const std::string &name, bool value) const;
 	void setInt(const std::string &name, int value) const;
@@ -79,8 +82,10 @@ public:
 	void setMat3(const std::string &name, const glm::mat3 &mat) const;
 	void setMat4(const std::string &name, const glm::mat4 &mat) const;
 
-	virtual Texture2D* GetAssetThumbnail() override;
 	virtual ImColor GetAssetColor() { return ImColor(0.3f, 0.6f, 0.3f, 1.f); }
+	virtual void OnAssetClicked() override;
+	virtual void SaveAsset() override;
+	virtual void BuildThumbnail();
 };
 
 class MaterialEditorDebuger
@@ -88,4 +93,5 @@ class MaterialEditorDebuger
 public:
 	static Material* GetDebugMaterial();
 	static Material* GetGridMaterial();
+	static Material* GetGizmoMaterial();
 };

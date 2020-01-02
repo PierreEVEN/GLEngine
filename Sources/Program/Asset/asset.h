@@ -4,6 +4,8 @@
 #include "GLAssetIO.h"
 #include "../ImGUI/imgui.h"
 
+#define THUMBNAIL_RESOLUTION 80
+
 class Texture2D;
 struct SPropertyValue;
 
@@ -19,7 +21,11 @@ private:
 	unsigned long assetDynamicID;
 	std::vector<SPropertyValue*> assetBaseProperties;
 	std::vector<SPropertyValue*> assetProperties;
+
+public:
+
 	bool bIsAssetDirty;
+
 private:
 
 	bool RegisterBaseProperty(SPropertyValue* inNewProperty);
@@ -40,7 +46,7 @@ public:
 	void MarkAssetDirty() { bIsAssetDirty = true; }
 	bool IsAssetDirty() const { return bIsAssetDirty; }
 
-	void SaveAsset();
+	virtual void SaveAsset();
 
 	/************************************************************************/
 	/* ASSET DATAS                                                          */
@@ -48,19 +54,31 @@ public:
 
 protected:
 
-	bool bAreDataLoaded;
-	bool LoadData();
+	bool bAreDataLoaded = false;
+	bool bIsLoadingData = false;
+	bool bIsWaitingForDataAsyncLoad = false;;
 	bool UnloadData();
 
+private:
+
+	static void StartDataImport(Asset* inAsset)
+	{
+		inAsset->ImportData();
+	}
+
 public:
+	bool LoadData(bool bLoadAsync = false);
 
 	void Initialize(const std::string inAssetPath);
 	virtual void ImportData();
+	virtual void OnPropertiesLoaded();
+
+	bool AreDataLoaded();
 
 public:
 
 	Asset(std::string inAssetPath);
-		
+
 	std::string GetName();
 	std::string GetAssetType();
 	std::string GetPath() const { return assetPath; }
@@ -72,7 +90,9 @@ public:
 	/* Editor widgets                                                       */
 	/************************************************************************/
 
-	virtual Texture2D* GetAssetThumbnail() { return nullptr; }
+	virtual void BuildThumbnail() {}
+	unsigned int thumbnailTextureIndex = -1;
+	virtual unsigned int GetAssetThumbnail();
 	virtual ImColor GetAssetColor() { return ImColor(0.5, 0.5, 0.5, 1.f); }
 	virtual void OnAssetClicked();
 

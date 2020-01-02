@@ -7,6 +7,12 @@
 #include "../../Asset/assetLibrary.h"
 #include "../../EngineLog/engineLog.h"
 #include "../../Asset/AssetRegistry.h"
+#include "../../Shader/material.h"
+#include "../../World/scene.h"
+#include "../../Mesh/staticMeshComponent.h"
+#include "../../Mesh/staticMesh.h"
+#include "../../Camera/camera.h"
+#include <glfw3/glfw3.h>
 
 AssetEditorWindow::AssetEditorWindow(std::string inWindowName, Asset* inAsset)
  : UIWindowElement(inWindowName)
@@ -17,9 +23,13 @@ AssetEditorWindow::AssetEditorWindow(std::string inWindowName, Asset* inAsset)
 
 void AssetEditorWindow::ShowProperty(SPropertyValue* inProperty)
 {
-	if (!inProperty || !inProperty->IsValid()) return;
+	if (!inProperty) return;
 
 	if (std::find(hiddenProperties.begin(), hiddenProperties.end(), inProperty->GetPropertyName()) != hiddenProperties.end()) return;
+	for (const auto& prop : skippedFields)
+	{
+		if (inProperty->GetPropertyName().find(prop) != std::string::npos) return;
+	}
 
 	if (inProperty->GetPropertyType() == PropertyTypeBool) DisplayBoolProperty((SBoolPropertyValue*)inProperty);
 	else if (inProperty->GetPropertyType() == PropertyTypeString) DisplayStringProperty((SStringPropertyValue*)inProperty);
@@ -32,7 +42,7 @@ void AssetEditorWindow::ShowProperty(SPropertyValue* inProperty)
 
 void AssetEditorWindow::DisplayEmptyProp(SPropertyValue* inProperty)
 {
-	if (inProperty && inProperty->IsValid()) ImGui::Text(std::string(inProperty->GetPropertyName()).data());
+	if (inProperty) ImGui::Text(std::string(inProperty->GetPropertyName()).data());
 }
 
 void AssetEditorWindow::DisplayBoolProperty(SBoolPropertyValue* inProperty)
@@ -43,7 +53,7 @@ void AssetEditorWindow::DisplayBoolProperty(SBoolPropertyValue* inProperty)
 
 void AssetEditorWindow::DisplayStringProperty(SStringPropertyValue* inProperty)
 {
-	std::string value = inProperty->GetStringValue();
+	std::string value = inProperty->IsValueValid() ? inProperty->GetStringValue() : "";
 	char* propertySize = (char*)malloc(100);
 	propertySize = (char*)value.data();
 	ImGui::InputText(inProperty->GetPropertyName().data(), propertySize, 100);
@@ -57,7 +67,7 @@ void AssetEditorWindow::DisplayStringProperty(SStringPropertyValue* inProperty)
 
 void AssetEditorWindow::DisplayIntProperty(SIntPropertyValue* inProperty)
 {
-	int localValue = inProperty->GetIntValue();
+	int localValue = inProperty->IsValueValid() ? inProperty->GetIntValue() : 0;
 	ImGui::SliderInt(inProperty->GetPropertyName().data(), &localValue, -1000, 1000);
 
 	if (localValue != inProperty->GetIntValue())
@@ -73,13 +83,23 @@ void AssetEditorWindow::DisplayUIntProperty(SUIntPropertyValue* inProperty)
 
 void AssetEditorWindow::DisplayAssetRefProperty(SAssetRefPropertyValue* inProperty)
 {
-	if (ImGui::Button(std::string(inProperty->GetPropertyName() + " : " + inProperty->GetAssetRef()).data()))
+	if (ImGui::Button(std::string("x : " + inProperty->GetPropertyName()).data(), ImVec2(20, 20)))
+	{
+		inProperty->SetAssetRef("");
+	}
+	ImGui::SameLine(30.f);
+	if (ImGui::Button(std::string(inProperty->GetPropertyName() + " : " + (inProperty->IsValueValid() ? inProperty->GetAssetRef() : "none")).data()))
 	{
 		currentEditedAssetRef = inProperty;
 	}
 	if (currentEditedAssetRef == inProperty)
 	{
-		if (Asset* foundAsset = AssetRegistry::FindAssetByName<Asset>(inProperty->GetAssetRef()))
+		Asset* foundAsset = nullptr;
+		if (inProperty->IsValueValid())
+		{
+			foundAsset = AssetRegistry::FindAssetByName<Asset>(inProperty->GetAssetRef());
+		}
+		if (foundAsset)
 		{
 			for (auto& asset : AssetRegistry::FindAssetsOfType<Asset>(foundAsset->GetAssetType()))
 			{
@@ -110,15 +130,15 @@ void AssetEditorWindow::DisplayAssetRefProperty(SAssetRefPropertyValue* inProper
 
 void AssetEditorWindow::DisplayFileRefProperty(SFileRefPropertyValue* inProperty)
 {
-	if (ImGui::Button(std::string(inProperty->GetPropertyName() + " : " + inProperty->GetFileRef()).data()))
+	if (ImGui::Button(std::string(inProperty->GetPropertyName() + " : " + (inProperty->IsValueValid() ? inProperty->GetFileRef() : "None")).data()))
 	{
 		CurrentEditedFileRef = inProperty;
 		currentEditedFileRefNewPath = "";
-		GLog(LogVerbosity::Warning, "test", inProperty->GetFileRef());
-		GLog(LogVerbosity::Warning, "test", AssetLibrary::GetExtension(inProperty->GetFileRef()));
+		GFullLog(LogVerbosity::Warning, "test", inProperty->GetFileRef());
+		GFullLog(LogVerbosity::Warning, "test", AssetLibrary::GetExtension(inProperty->GetFileRef()));
 		new FileExplorer(inProperty->GetPropertyName(), ".", nullptr, &currentEditedFileRefNewPath, { AssetLibrary::GetExtension(inProperty->GetFileRef()) }, AssetLibrary::GetExtension(inProperty->GetFileRef()) == "" ? false : true, false);
 	}
-	if (inProperty == CurrentEditedFileRef && currentEditedFileRefNewPath != "" && inProperty->GetFileRef() != currentEditedFileRefNewPath)
+	if (inProperty == CurrentEditedFileRef && currentEditedFileRefNewPath != "" && (!inProperty->IsValueValid() || inProperty->GetFileRef() != currentEditedFileRefNewPath))
 	{
 		inProperty->SetFileRef(currentEditedFileRefNewPath);
 		CurrentEditedFileRef = nullptr;
@@ -129,7 +149,7 @@ void AssetEditorWindow::DisplayFileRefProperty(SFileRefPropertyValue* inProperty
 void AssetEditorWindow::Draw(World* inWorld)
 {
 	UIWindowElement::Draw(inWorld);
-	ImGui::Begin(std::string("Static mesh editor #" + std::to_string(GetAsset()->GetDynamicID())).data(), &bKeepOpen);
+	ImGui::Begin(std::string(windowTitle + " Editor").data(), &bKeepOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings);
 	if (GetAsset()->IsAssetDirty())
 	{
 		if (ImGui::Button("Save changes"))
@@ -137,6 +157,7 @@ void AssetEditorWindow::Draw(World* inWorld)
 			GetAsset()->SaveAsset();
 		}
 	}
+	DrawHeader();
 	for (const auto& currentProperty : GetAsset()->GetAssetBaseProperties())
 	{
 		ShowProperty(currentProperty);
@@ -145,20 +166,71 @@ void AssetEditorWindow::Draw(World* inWorld)
 	{
 		ShowProperty(currentProperty);
 	}
+	DrawFooter();
 	ImGui::End();
-
 }
 
 StaticMeshEditorWindows::StaticMeshEditorWindows(std::string inWorld, Asset* inAsset)
 	: AssetEditorWindow(inWorld, inAsset)
 {
 	hiddenProperties.push_back("SectionCount");
+	skippedFields.push_back("_Vertices");
+	skippedFields.push_back("_Indices");
+
+	staticMeshEditorScene = new AdvancedScene();
+	meshComp = new StaticMeshComponent(staticMeshEditorScene, (StaticMesh*)inAsset, {  });
+	meshComp->SetAngle(90.f);
+	meshComp->RebuildTransformData();
+	DirectionalLight* dirLight = new DirectionalLight(staticMeshEditorScene);
+	dirLight->lightParams.ambiant = glm::vec4(1);
+	staticMeshEditorScene->UpdateFramebufferSize(256, 256);
+	staticMeshEditorScene->GetCamera()->Pitch = -45;
 }
 
-void StaticMeshEditorWindows::ShowProperty(SPropertyValue* inProperty)
+void StaticMeshEditorWindows::DrawHeader()
 {
-	if (inProperty->GetPropertyName().find("_Vertices") != std::string::npos) return;
-	if (inProperty->GetPropertyName().find("_Indices") != std::string::npos) return;
+	staticMeshEditorScene->GetCamera()->Yaw = (float)glfwGetTime() * 5;
+	staticMeshEditorScene->GetCamera()->updateCameraVectors();
+	staticMeshEditorScene->GetCamera()->SetCameraLocation(meshComp->GetWorldBounds().GetOrigin() + staticMeshEditorScene->GetCamera()->Front * meshComp->GetWorldBounds().GetBoundRadius() * -2.5f);
+	staticMeshEditorScene->Draw();
+	ImGui::Image((ImTextureID*)staticMeshEditorScene->GetColorBuffer(), ImVec2(256, 256), ImVec2(0, 1), ImVec2(1, 0));
+}
 
-	AssetEditorWindow::ShowProperty(inProperty);
+MaterialEditorWindow::MaterialEditorWindow(std::string inWorld, Asset* inAsset)
+	: AssetEditorWindow(inWorld, inAsset)
+{
+	materialEditorScene = new AdvancedScene();
+	StaticMesh* sphereMesh = AssetRegistry::FindAssetByName<StaticMesh>("SphereMesh");
+	StaticMeshComponent* comp = new StaticMeshComponent(materialEditorScene, sphereMesh, { (Material*)inAsset });
+	comp->SetAngle(90.f);
+	comp->RebuildTransformData();
+	DirectionalLight* dirLight = new DirectionalLight(materialEditorScene);
+	dirLight->lightParams.ambiant = glm::vec4(1);
+	materialEditorScene->UpdateFramebufferSize(256, 256);
+	materialEditorScene->GetCamera()->Pitch = -45;
+
+	hiddenProperties.push_back("TextureCount");
+}
+
+void MaterialEditorWindow::DrawHeader()
+{
+	materialEditorScene->GetCamera()->Yaw = (float)glfwGetTime() * 5;
+	materialEditorScene->GetCamera()->updateCameraVectors();
+	materialEditorScene->GetCamera()->SetCameraLocation(materialEditorScene->GetCamera()->Front * -3);
+	materialEditorScene->Draw();
+	ImGui::Text(std::string("Texture count : " + std::to_string(((Material*)GetAsset())->GetTextureCount())).data());
+	ImGui::Image((ImTextureID*)materialEditorScene->GetColorBuffer(), ImVec2(256, 256), ImVec2(0, 1), ImVec2(1, 0));
+	if (ImGui::Button("Add texture"))
+	{
+		((Material*)GetAsset())->AddTexture();
+	}
+}
+
+TextureEditorWindow::TextureEditorWindow(std::string inWorld, Asset* inAsset)
+	: AssetEditorWindow(inWorld, inAsset)
+{
+	hiddenProperties.push_back("TextureSizeX");
+	hiddenProperties.push_back("TextureSizeY");
+	hiddenProperties.push_back("TextureChannelsCount");
+	hiddenProperties.push_back("TextureData");
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
 #include <string>
 
 class ShaderLoader
@@ -18,5 +17,5 @@ public:
 
 private:
 
-	void checkCompileErrors(GLuint shader, std::string type);
+	void checkCompileErrors(unsigned int shader, std::string type);
 };

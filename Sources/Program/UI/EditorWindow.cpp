@@ -26,6 +26,8 @@
 #include <bullet3D/LinearMath/btIDebugDraw.h>
 #include <bullet3D/btBulletDynamicsCommon.h>
 #include "../Engine/debugerTool.h"
+#include "EditorWindows/sceneComponentEditor.h"
+#include "../World/scene.h"
 
 std::vector<UIWindowElement*> WindowManager::elementsArray;
 
@@ -48,11 +50,12 @@ void EditorWindow::DrawWindow(World* InWorld, float& ViewportLocationX, float& V
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 	ImGui::Begin("Viewport", 0, ImGuiWindowFlags_NoScrollbar);
 	ImGui::PopStyleVar();
-	if (ImGui::GetWindowWidth() != InWorld->GetScreenWidth() || ImGui::GetWindowHeight() != InWorld->GetScreenHeight())
+	if ((int)ImGui::GetWindowWidth() != (int)InWorld->GetScene()->GetScreenWidth() || (int)ImGui::GetWindowHeight() != (int)InWorld->GetScene()->GetScreenHeight())
 	{
-		InWorld->UpdateFramebufferSize((int)ImGui::GetWindowWidth(), (int)ImGui::GetWindowHeight());
+		InWorld->GetScene()->UpdateFramebufferSize((int)ImGui::GetWindowWidth(), (int)ImGui::GetWindowHeight());
+		((AdvancedScene*)InWorld->GetScene())->SetSceneWindowLocation((int)ImGui::GetWindowPos().x, (int)ImGui::GetWindowPos().y);
 	}
-	ImGui::Image((void*)(intptr_t)InWorld->textureColorbuffer, ImVec2((float)InWorld->GetScreenWidth(), (float)InWorld->GetScreenHeight()), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((void*)(intptr_t)InWorld->GetScene()->GetColorBuffer(), ImVec2((float)InWorld->GetScene()->GetScreenWidth(), (float)InWorld->GetScene()->GetScreenHeight()), ImVec2(0, 1), ImVec2(1, 0));
 	ImVec2 windowsPos = ImGui::GetWindowPos();
 	ViewportLocationX = windowsPos.x;
 	ViewportLocationY = windowsPos.y;
@@ -63,16 +66,16 @@ void EditorWindow::DrawWindow(World* InWorld, float& ViewportLocationX, float& V
 		{
 			if (StaticMesh* foundMesh = AssetRegistry::FindAssetByID<StaticMesh>(*(unsigned long*)payload->Data))
 			{
-				StaticMeshComponent* spawnedMeshComp = new StaticMeshComponent(InWorld, foundMesh);
+				StaticMeshComponent* spawnedMeshComp = new StaticMeshComponent(InWorld->GetScene(), foundMesh, {}, new btBoxShape(btVector3(1, 1, 1)), true);
 				spawnedMeshComp->SetAngle(90.f);
-				spawnedMeshComp->SetScale3D(SVector3(10.f));
+				spawnedMeshComp->SetScale3D(SVector3(1.f));
+				spawnedMeshComp->SetLocation(InWorld->GetScene()->GetCamera()->GetCameraLocation() + InWorld->GetScene()->GetCamera()->GetCameraForwardVector() * 10);
+/*				spawnedMeshComp->body->setCollisionShape(new btBoxShape(spawnedMeshComp->GetLocalBounds().GetBoxMax().ToBulletVector()));*/
 			}
 		}
 		ImGui::EndDragDropTarget();
 	}
 	ImGui::End();
-
-
 }
 
 double EditorWindow::GetMaxFramerate()
@@ -85,6 +88,7 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 	ImGui::BeginMainMenuBar();
 	if (ImGui::BeginMenu("File"))
 	{
+		if (ImGui::Button("Save All")) { GLAssetIO::SaveUnsavedAsset(); }
 		if (ImGui::Button("Quit")) { glfwSetWindowShouldClose(InWorld->GetWindow(), true); }
 		ImGui::EndMenu();
 	}
@@ -110,9 +114,13 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 	}
 	if (ImGui::BeginMenu("Import"))
 	{
-		if (ImGui::Button("Import Texture"))
+		if (ImGui::Button("Import Texture2D"))
 		{
 			new TextureImporterWindow("Texture importer");
+		}
+		if (ImGui::Button("Import TextureCube"))
+		{
+			new TextureCubeImporterWindow("Texture cubemap importer");
 		}
 		if (ImGui::Button("Import material"))
 		{
@@ -133,75 +141,74 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 			if (ImGui::Button("Vertices")) { glPolygonMode(GL_FRONT_AND_BACK, GL_POINT); }
 			ImGui::EndMenu();
 		}
-		ImGui::Checkbox("Skip light rendering", &InWorld->bSkipLightRendering);
-		ImGui::Checkbox("Simulate physics", &InWorld->bSimulatePhysics);
+		//ImGui::Checkbox("Simulate physics", &InWorld->bSimulatePhysics);
 		ImGui::Checkbox("Debug physics", &bDebugPhysics);
-		InWorld->GetPhysicWorld()->getDebugDrawer()->setDebugMode(bDebugPhysics ? btIDebugDraw::DBG_DrawWireframe : btIDebugDraw::DBG_NoDebug);
-		ImGui::SliderFloat("Camera velocity", &InWorld->GetCamera()->MovementSpeed, 1, 2000, "%3.f", 4.f);
-		ImGui::SliderFloat("Field of view", &InWorld->GetCamera()->Zoom, 10, 140, "%3.f", 1.f);
+		ImGui::SliderFloat("Camera velocity", &InWorld->GetScene()->GetCamera()->MovementSpeed, 1, 2000, "%3.f", 4.f);
+		ImGui::SliderFloat("Field of view", &InWorld->GetScene()->GetCamera()->Zoom, 10, 140, "%3.f", 1.f);
 		ImGui::SliderFloat("Max framerate", &MAX_FRAMERATE, 20, 5000, "%3.f", 1.f);
 		ImGui::EndMenu();
 	}
 	if (ImGui::BeginMenu("Info"))
 	{
-		if (ImGui::BeginMenu(std::string("Scene components : " + std::to_string(InWorld->GetSceneComponents().size())).data()))
-		{
-			int Counter = 0;
-			for (auto& component : InWorld->GetSceneComponents())
-			{
-				Counter++;
-				if (ImGui::Button(std::string("SceneComponent_" + std::to_string(Counter)).data()))
-				{
-					InWorld->GetCamera()->SetCameraLocation(component->GetLocation() - InWorld->GetCamera()->GetCameraForwardVector() * 4.f);
-				}
-			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu(std::string("Point light : " + std::to_string(InWorld->GetPointLightSources().size())).data()))
-		{
-			int Counter = 0;
-			for (auto& component : InWorld->GetPointLightSources())
-			{
-				Counter++;
-				if (ImGui::Button(std::string("PointLight_" + std::to_string(Counter)).data()))
-				{
-					InWorld->GetCamera()->SetCameraLocation(component->GetLocation() - InWorld->GetCamera()->GetCameraForwardVector() * 4.f);
-				}
-			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu(std::string("Directional light : " + std::to_string(InWorld->GetDirectionalLightSources().size())).data()))
-		{
-			int Counter = 0;
-			for (auto& component : InWorld->GetDirectionalLightSources())
-			{
-				Counter++;
-				if (ImGui::Button(std::string("DirectionalLight_" + std::to_string(Counter)).data()))
-				{
-					InWorld->GetCamera()->SetCameraLocation(component->GetLocation() - InWorld->GetCamera()->GetCameraForwardVector() * 4.f);
-				}
-			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu(std::string("Spot light : " + std::to_string(InWorld->GetSpotLightSources().size())).data()))
-		{
-			int Counter = 0;
-			for (auto& component : InWorld->GetSpotLightSources())
-			{
-				Counter++;
-				if (ImGui::Button(std::string("SpotLight_" + std::to_string(Counter)).data()))
-				{
-					InWorld->GetCamera()->SetCameraLocation(component->GetLocation() - InWorld->GetCamera()->GetCameraForwardVector() * 4.f);
-				}
-			}
-			ImGui::EndMenu();
-		}
+// 		if (ImGui::BeginMenu(std::string("Scene components : " + std::to_string(InWorld->GetSceneComponents().size())).data()))
+// 		{
+// 			int Counter = 0;
+// 			for (auto& component : InWorld->GetPrimitiveComponents())
+// 			{
+// 				Counter++;
+// 				if (ImGui::Button(std::string("SceneComponent_" + std::to_string(Counter)).data()))
+// 				{
+// 					InWorld->GetCamera()->SetCameraLocation(component->GetLocation() - InWorld->GetCamera()->GetCameraForwardVector() * 4.f);
+// 					InWorld->GetSceneComponentEditor()->SetAttachComponent(InWorld, component);
+// 				}
+// 			}
+// 			ImGui::EndMenu();
+// 		}
+// 		if (ImGui::BeginMenu(std::string("Point light : " + std::to_string(InWorld->GetPointLightSources().size())).data()))
+// 		{
+// 			int Counter = 0;
+// 			for (auto& component : InWorld->GetPointLightSources())
+// 			{
+// 				Counter++;
+// 				if (ImGui::Button(std::string("PointLight_" + std::to_string(Counter)).data()))
+// 				{
+// 					InWorld->GetCamera()->SetCameraLocation(component->GetLocation() - InWorld->GetCamera()->GetCameraForwardVector() * 4.f);
+// 				}
+// 			}
+// 			ImGui::EndMenu();
+// 		}
+// 		if (ImGui::BeginMenu(std::string("Directional light : " + std::to_string(InWorld->GetDirectionalLightSources().size())).data()))
+// 		{
+// 			int Counter = 0;
+// 			for (auto& component : InWorld->GetDirectionalLightSources())
+// 			{
+// 				Counter++;
+// 				if (ImGui::Button(std::string("DirectionalLight_" + std::to_string(Counter)).data()))
+// 				{
+// 					InWorld->GetCamera()->SetCameraLocation(component->GetLocation() - InWorld->GetCamera()->GetCameraForwardVector() * 4.f);
+// 				}
+// 			}
+// 			ImGui::EndMenu();
+// 		}
+// 		if (ImGui::BeginMenu(std::string("Spot light : " + std::to_string(InWorld->GetSpotLightSources().size())).data()))
+// 		{
+// 			int Counter = 0;
+// 			for (auto& component : InWorld->GetSpotLightSources())
+// 			{
+// 				Counter++;
+// 				if (ImGui::Button(std::string("SpotLight_" + std::to_string(Counter)).data()))
+// 				{
+// 					InWorld->GetCamera()->SetCameraLocation(component->GetLocation() - InWorld->GetCamera()->GetCameraForwardVector() * 4.f);
+// 				}
+// 			}
+// 			ImGui::EndMenu();
+// 		}
 		ImGui::Text(std::string().data());
 		ImGui::EndMenu();
 	}
 	ImGui::AlignTextToFramePadding();
 	ImGui::Indent(ImGui::GetWindowWidth() - 320.0f);
-	ImGui::Text(std::string(std::to_string(InWorld->GetSceneComponents().size()) + " components | " + std::to_string(StatViewer::GetDrawcalls()) + " Drawcalls | " + "fps : " + std::to_string((int)(1.0 / InWorld->GetWorldDeltaSecond()))).data());
+	ImGui::Text(std::string(std::to_string(StatViewer::GetDrawcalls()) + " Drawcalls | " + "fps : " + std::to_string((int)(1.0 / InWorld->GetWorldDeltaSecond()))).data());
 	ImGui::EndMainMenuBar();
 }
 

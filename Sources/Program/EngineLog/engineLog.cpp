@@ -4,6 +4,7 @@
 #include <iostream>
 #include <windows.h>
 #include "../UI/EditorWindows/engineLogWindow.h"
+#include <glfw3/glfw3.h>
 
 void EngineLog::PrintLog(LogVerbosity verbosity, std::string LogCategory, std::string message)
 {
@@ -49,5 +50,16 @@ void EngineLog::PrintLog(LogVerbosity verbosity, std::string LogCategory, std::s
 		EngineLogWindow::GetLogWindow()->AddLog(logText.data());
 	}
 
+	if (verbosity == LogVerbosity::Assert)
+	{
+		glfwTerminate();
+		SetConsoleTextAttribute(hConsole, 1);
+		for (int i = 5; i > 0; --i)
+		{
+			std::cout << "closing in " << i << "..." << std::endl;
+			Sleep(1000);
+		}
+		exit(1);
+	}
 }
 

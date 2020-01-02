@@ -1,8 +1,6 @@
 #include "spotLight.h"
-#include "../World/world.h"
 
-SpotLight::SpotLight(World* ParentWorld)
-	: Light(ParentWorld)
+SpotLight::SpotLight(Scene* drawScene)
+	: Light(drawScene)
 {
-	ParentWorld->RegisterSpotLight(this);
 }

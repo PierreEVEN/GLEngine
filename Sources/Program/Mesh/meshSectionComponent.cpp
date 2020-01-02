@@ -1,11 +1,10 @@
 
 #include "../Shader/material.h"
-#include "../World/world.h"
 #include "../Camera/camera.h"
-#include <glfw3/glfw3.h>
 #include "staticMesh.h"
 #include "meshSectionComponent.h"
 #include "../Asset/assetLibrary.h"
+#include <glad/glad.h>
 
 
 #include <bullet3D/BulletCollision/CollisionShapes/btTriangleMesh.h>
@@ -16,6 +15,7 @@
 #include <bullet3D/BulletDynamics/Dynamics/btRigidBody.h>
 #include <bullet3D/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include "../Engine/debugerTool.h"
+#include "staticMeshComponent.h"
 
 void MeshSectionComponent::BuildMesh()
 {
@@ -55,18 +55,33 @@ void MeshSectionComponent::BuildMesh()
 	// vertex bitangent
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+	// vertex color
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, VertexColor));
 
 	glBindVertexArray(0);
+	RebuildLocalBounds();
 }
 
-MeshSectionComponent::MeshSectionComponent(World* inWorld)
-	: SceneComponent(inWorld)
+MeshSectionComponent::MeshSectionComponent(Scene* inScene)
+	: PrimitiveComponent(inScene)
 {
+	materialOverride = nullptr;
+	staticMeshSection = nullptr;
 }
 
-MeshSectionComponent::MeshSectionComponent(World* inWorld, StaticMeshSection* inStaticMeshSection)
-	: MeshSectionComponent(inWorld)
+MeshSectionComponent::MeshSectionComponent(Scene* inScene, StaticMeshComponent* inParentStaticMeshComponent, StaticMeshSection* inStaticMeshSection)
+	: MeshSectionComponent(inScene)
 {
+	if (inParentStaticMeshComponent)
+	{
+		SetLocation(inParentStaticMeshComponent->GetLocation());
+		SetRotation(inParentStaticMeshComponent->GetRotation());
+		SetAngle(inParentStaticMeshComponent->GetAngle());
+		SetForwardVector(inParentStaticMeshComponent->GetForwardVector());
+		SetScale3D(inParentStaticMeshComponent->GetScale3D());
+	}
+	parentStaticMeshComponent = inParentStaticMeshComponent;
 	staticMeshSection = inStaticMeshSection;
 	if (inStaticMeshSection)
 	{
@@ -76,42 +91,42 @@ MeshSectionComponent::MeshSectionComponent(World* inWorld, StaticMeshSection* in
 
 MeshSectionComponent::~MeshSectionComponent()
 {
+	materialOverride = nullptr;
+	staticMeshSection = nullptr;
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 }
 
-void MeshSectionComponent::MarkRenderStateDirty()
+void MeshSectionComponent::Tick()
 {
-	//ProfileStat("Mesh Rendering");
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, GetLocation().ToGLVector());
-	model = glm::rotate(model, glm::radians(GetAngle()), GetForwardVector());
-	model = glm::scale(model, GetScale3D().ToGLVector());
-
+	PrimitiveComponent::Tick();
 	{
-		ProfileStat("Draw material");
-		if (staticMeshSection->material)
+		ProfileStat("Draw mesh material");
+		Material* usedMaterial = materialOverride ? materialOverride : staticMeshSection->material;
+		if (usedMaterial)
 		{
-			staticMeshSection->material->use(GetWorld());
+			usedMaterial->use();
 
 			/** Set materials commons */
-			staticMeshSection->material->setMat4("model", model);
-			StatViewer::AddDrawcall();
+			usedMaterial->setMat4("model", sectionTransform);
 
 			/** Load additional textures */
 			for (unsigned int i = 0; i < staticMeshSection->textures.size(); ++i)
 			{
-				staticMeshSection->material->setInt(std::string("DynamicTexture_") + std::to_string(i), i + staticMeshSection->material->textures.size());
-				StatViewer::AddDrawcall();
-				glActiveTexture(GL_TEXTURE0 + i + staticMeshSection->material->textures.size());
-				glBindTexture(GL_TEXTURE_2D, staticMeshSection->textures[i]->GetTextureID());
+				if (staticMeshSection->textures[i]->GetTextureID() > -1)
+				{
+					ProfileStat("Set material dynamic textures");
+					usedMaterial->setInt(std::string("DynamicTexture_") + std::to_string(i), i + usedMaterial->textures.size());
+					glActiveTexture(GL_TEXTURE0 + i + usedMaterial->textures.size());
+					glBindTexture(GL_TEXTURE_2D, staticMeshSection->textures[i]->GetTextureID());
+				}
 			}
 		}
 		else
 		{
-			MaterialEditorDebuger::GetGridMaterial()->use(GetWorld());
-			MaterialEditorDebuger::GetGridMaterial()->setMat4("model", model);
-			StatViewer::AddDrawcall();
+			/** Draw default material */
+			MaterialEditorDebuger::GetGridMaterial()->use();
+			MaterialEditorDebuger::GetGridMaterial()->setMat4("model", sectionTransform);
 		}
 	}
 
@@ -128,4 +143,62 @@ void MeshSectionComponent::MarkRenderStateDirty()
 	/** Set GL to defaults */
 	glBindVertexArray(0);
 	glActiveTexture(GL_TEXTURE0);
+}
+
+void MeshSectionComponent::RebuildTransformData()
+{
+	sectionTransform = glm::mat4(1.f);
+	sectionTransform = glm::translate(sectionTransform, GetLocation().ToGLVector());
+	sectionTransform = glm::rotate(sectionTransform, glm::radians(GetAngle()), GetForwardVector());
+	sectionTransform = glm::scale(sectionTransform, GetScale3D().ToGLVector());
+	PrimitiveComponent::RebuildTransformData();
+}
+
+void MeshSectionComponent::RebuildLocalBounds()
+{
+	localBounds = staticMeshSection->bounds;
+	PrimitiveComponent::RebuildLocalBounds();
+}
+
+CubemapSectionComponent::CubemapSectionComponent(Scene* inScene, StaticMeshComponent* inParentStaticMeshComponent, StaticMeshSection* inStaticMeshSection)
+	: MeshSectionComponent(inScene, inParentStaticMeshComponent, inStaticMeshSection)
+{
+	drawPriority = DrawPriority::DrawPriority_First;
+}
+
+void CubemapSectionComponent::Tick()
+{
+	PrimitiveComponent::Tick();
+	glDepthMask(GL_FALSE);
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::rotate(model, glm::radians(GetAngle()), GetForwardVector());
+	model = glm::scale(model, GetScale3D().ToGLVector());
+
+	Material* usedMaterial = materialOverride ? materialOverride : GetSectionData()->material;
+	if (usedMaterial)
+	{
+		usedMaterial->use();
+
+		/** Set materials commons */
+		usedMaterial->setMat4("model", model);
+	}
+	else
+	{
+		MaterialEditorDebuger::GetGridMaterial()->use();
+	}
+
+	{
+		/** Draw vertices */
+		ProfileStat("vertex rendering");
+		glBindVertexArray(VAO);
+		StatViewer::AddDrawcall();
+		if (GetSectionData()->sectionIndices.size() > 0)
+			glDrawElements(GL_TRIANGLES, GetSectionData()->sectionIndices.size(), GL_UNSIGNED_INT, 0);
+		else
+			glDrawArrays(GL_TRIANGLES, 0, GetSectionData()->sectionVertices.size());
+	}
+	/** Set GL to defaults */
+	glBindVertexArray(0);
+	glActiveTexture(GL_TEXTURE0);
+	glDepthMask(GL_TRUE);
 }

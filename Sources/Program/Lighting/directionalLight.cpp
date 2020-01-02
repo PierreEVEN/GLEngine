@@ -1,9 +1,7 @@
 #include "directionalLight.h"
-#include "../World/world.h"
 
-DirectionalLight::DirectionalLight(World* ParentWorld)
-	: Light(ParentWorld)
+DirectionalLight::DirectionalLight(Scene* drawScene)
+	: Light(drawScene)
 {
-	ParentWorld->RegisterDirectionalLight(this);
 }
 

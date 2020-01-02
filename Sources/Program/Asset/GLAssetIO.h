@@ -3,6 +3,8 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include "../EngineLog/engineLog.h"
+#include <functional>
 
 class Asset;
 
@@ -25,18 +27,45 @@ private:
 	unsigned int bufferSize;
 	bool bIsDirty;
 	Asset* owner;
+	std::function<void()> updateNotifyCallback;
 protected:
 	SAssetPropertyType propertyType = PropertyTypeNone;
 public:
 	char* propertyValue;
-	SPropertyValue(std::string inPropertyName);
-	SPropertyValue(Asset* inParentAsset, std::ifstream* fileStream, const std::string inPropertyName);
-	bool IsValid() const { return propertyValue; }
-	template<class T> void SetValue(T* value, unsigned int inBufferSize) {
-		propertyValue = (char*)value;
+	SPropertyValue(const std::string& inPropertyName);
+	SPropertyValue(Asset* inParentAsset, std::ifstream* fileStream, const std::string& inPropertyName);
+	bool IsValueValid() const { return propertyValue; }
+	template<class T> void SetValue(T* value, unsigned int inBufferSize)
+	{
+		if (propertyValue)
+		{
+			free(propertyValue);
+			propertyValue = nullptr;
+		}
+		propertyValue = (char*)malloc(inBufferSize);
+		if (value)
+		{
+			memcpy(propertyValue, value, inBufferSize);
+			bufferSize = inBufferSize;
+		}
+		else
+		{
+			propertyValue = nullptr;
+			bufferSize = 0;
+		}
 		MarkPropertyDirty();
+		if (updateNotifyCallback) updateNotifyCallback();
 	}
-	template<class T> T* GetValue() const { return (T*)propertyValue; }
+	void BindCallback(std::function<void()> inCallback) { updateNotifyCallback = inCallback; }
+	template<class T> T* GetValue() const
+	{
+		if (!IsValueValid())
+		{
+			GFullLog(LogVerbosity::Assert, "PropertyValue", "Failed to read value on property " + GetPropertyName());
+			return nullptr;
+		}
+		return (T*)propertyValue;
+	}
 	std::string GetPropertyName() const { return propertyName; }
 	unsigned int GetBufferSize() const { return bufferSize; }
 	Asset* GetOwner() const { return owner; }
@@ -97,14 +126,8 @@ struct SStringPropertyValue : public SPropertyValue
 	{
 		propertyType = PropertyTypeString;
 	}
-	void SetStringValue(std::string inStringValue)
-	{
-		memcpy(propertyValue, inStringValue.data(), inStringValue.size() + 1);
-		MarkPropertyDirty();
-	}
-	std::string GetStringValue() const {
-		return GetValue<const char>(); 
-	}
+	void SetStringValue(std::string inStringValue) { SetValue<const char>(inStringValue.data(), inStringValue.size() + 1); }
+	std::string GetStringValue() const { return GetValue<const char>(); }
 };
 
 struct SAssetRefPropertyValue : public SPropertyValue
@@ -114,14 +137,8 @@ struct SAssetRefPropertyValue : public SPropertyValue
 	{
 		propertyType = PropertyTypeAssetRef;
 	}
-	void SetAssetRef(std::string inStringValue)
-	{
-		memcpy(propertyValue, inStringValue.data(), inStringValue.size() + 1);
-		MarkPropertyDirty();
-	}
-	std::string GetAssetRef() const {
-		return GetValue<const char>();
-	}
+	void SetAssetRef(std::string inStringValue)	{ SetValue<const char>(inStringValue.data(), inStringValue.size() + 1); }
+	std::string GetAssetRef() const { return GetValue<const char>(); }
 };
 
 struct SFileRefPropertyValue : public SPropertyValue
@@ -131,14 +148,8 @@ struct SFileRefPropertyValue : public SPropertyValue
 	{
 		propertyType = PropertyTypeFileRef;
 	}
-	void SetFileRef(std::string inStringValue)
-	{
-		memcpy(propertyValue, inStringValue.data(), inStringValue.size() + 1);
-		MarkPropertyDirty();
-	}
-	std::string GetFileRef() const {
-		return GetValue<const char>();
-	}
+	void SetFileRef(std::string inStringValue) { SetValue<const char>(inStringValue.data(), inStringValue.size() + 1); }
+	std::string GetFileRef() const { return GetValue<const char>(); }
 };
 
 struct SAssetReader
@@ -148,7 +159,7 @@ private:
 	std::ifstream* fileStream;
 public:
 	bool IsValid() const { return fileStream; }
-	std::ifstream* Get() { return fileStream; }
+	inline std::ifstream* Get() const { return fileStream; }
 	SAssetReader(std::string inAssetPath);
 	~SAssetReader();
 };
@@ -175,18 +186,18 @@ private:
 public:
 
 	template <class T> static void AppendField(std::ofstream* outputFileStream, std::string fieldName, T value, unsigned int bufferSize);
-	static bool FindField(std::ifstream* outputFileStream, const std::string propertyName, unsigned int& readerPosition, unsigned int& valueBufferSize);
-	template <class T> static bool ReadFieldValue(std::ifstream* outputFileStream, const unsigned int& position, const unsigned int& bufferSize, T* result);
+	static bool FindField(std::ifstream* outputFileStream, const std::string& propertyName, unsigned int& readerPosition, unsigned int& valueBufferSize);
+	template <class T> static void ReadFieldValue(std::ifstream* outputFileStream, const unsigned int& position, const unsigned int& bufferSize, T* result);
 	static void GenerateFileBody(std::ofstream* newFileStream, std::string newAssetName, std::string assetType);
 	static void SaveAssetProperties(Asset* inAsset);
+	static void SaveUnsavedAsset();
 };
 
 template <class T>
-bool GLAssetIO::ReadFieldValue(std::ifstream* outputFileStream, const unsigned int& position, const unsigned int& bufferSize, T* result)
+void GLAssetIO::ReadFieldValue(std::ifstream* inputFileStream, const unsigned int& position, const unsigned int& bufferSize, T* result)
 {
-	outputFileStream->seekg(position);
-	outputFileStream->read(reinterpret_cast<char*>(result), bufferSize);
-	return true;
+	inputFileStream->seekg(position);
+	inputFileStream->read(reinterpret_cast<char*>(result), bufferSize);
 }
 
 template <class T>
@@ -204,5 +215,5 @@ void GLAssetIO::AppendField(std::ofstream* outputFileStream, std::string fieldNa
 	}
 
 	outputFileStream->write(reinterpret_cast<char*>(&bufferSize), sizeof(unsigned int));
-	outputFileStream->write(reinterpret_cast<char*>(value), bufferSize);
+ 	outputFileStream->write(reinterpret_cast<char*>(value), bufferSize);
 }

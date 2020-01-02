@@ -15,6 +15,7 @@ void ContentBrowser::Draw(World* InWorld)
 	ImGui::Checkbox("show materials ", &bShowMaterials);
 	ImGui::Checkbox("show meshes ", &bShowMesh);
 	ImGui::Checkbox("show textures ", &bShowTextures);
+	ImGui::Checkbox("show cubemaps ", &bShowTextureCubes);
 	ImGui::EndGroup();
 	ImGui::NextColumn();
 	ImGui::BeginChild((windowTitle + "_child").data());
@@ -31,7 +32,6 @@ void ContentBrowser::Draw(World* InWorld)
 				{
 					asset->DrawContentBrowserIcon();
 					ImGui::NextColumn();
-					//ImGui::Button(asset->GetName().data());
 				}
 			}
 			if (bShowTextures)
@@ -40,7 +40,14 @@ void ContentBrowser::Draw(World* InWorld)
 				{
 					asset->DrawContentBrowserIcon();
 					ImGui::NextColumn();
-					//ImGui::Button(asset->GetName().data());
+				}
+			}			
+			if (bShowTextureCubes)
+			{
+				if (TextureCube* foundText = dynamic_cast<TextureCube*>(asset))
+				{
+					asset->DrawContentBrowserIcon();
+					ImGui::NextColumn();
 				}
 			}
 			if (bShowMesh)
@@ -49,13 +56,6 @@ void ContentBrowser::Draw(World* InWorld)
 				{
 					asset->DrawContentBrowserIcon();
 					ImGui::NextColumn();
-					// 				if (ImGui::Button(asset->GetName().data()))
-					// 				{
-					// 					new StaticMeshEditorWindows("mesh editor", foundMesh);
-					// 					StaticMeshComponent* newComp = new StaticMeshComponent(InWorld, foundMesh, {});
-					// 					newComp->SetAngle(90.f);
-					// 					newComp->SetScale3D(SVector3(10.f));
-					// 				}
 				}
 			}
 		}

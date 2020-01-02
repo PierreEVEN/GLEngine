@@ -19,7 +19,7 @@ StatViewer::~StatViewer()
 	{
 		if (elem == statName)
 		{
-			elem.statDelay += GetCurrentDelay();
+			elem.IncrementDelay(GetCurrentDelay());
 			return;
 		}
 	}
@@ -60,7 +60,14 @@ void StatWindow::Draw(World* inWorld)
 	{
 		ImGui::ProgressBar((float)stat.statDelay / (1 / 30.f), ImVec2(barSize, 15));
 		ImGui::SameLine(barSize + 20);
-		ImGui::Text(std::string(std::string(stat.statName) + " : " + std::to_string((stat.statDelay * 1000)) + "ms").data());
+		if (stat.callCount != 1)
+		{
+			ImGui::Text(std::string("(" + std::to_string(stat.callCount) + ")" + std::string(stat.statName) + " : " + std::to_string((stat.statDelay * 1000)) + "ms").data());
+		}
+		else
+		{
+			ImGui::Text(std::string(std::string(stat.statName) + " : " + std::to_string((stat.statDelay * 1000)) + "ms").data());
+		}
 	}
 	ImGui::End();
 }

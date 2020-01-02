@@ -1,2 +1,11 @@
 #include "Light.h"
-#include "../World/world.h"
+
+Light::Light(Scene* drawScene)
+    : SceneComponent(drawScene)
+{
+}
+
+void Light::Tick()
+{
+    SceneComponent::Tick();
+}

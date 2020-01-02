@@ -3,27 +3,41 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include "../MathLibrary/vector3.h"
 
-class World;
+class Scene;
+
+enum DrawPriority
+{
+	DrawPriority_First = 0,
+	DrawPriority_Normal = 1,
+	DrawPriority_Last = 2,
+	DrawPriority_Max = 3
+};
 
 class SceneComponent
 {
 public:
 
-	SceneComponent(World* inWorld);
+	SceneComponent(Scene* inScene);
 	~SceneComponent();
+
+	DrawPriority drawPriority = DrawPriority::DrawPriority_Normal;
 
 protected:
 
-	World* OwningWorld;
+	Scene* renderScene;
 
 	SVector3 location;
 	SRotator rotation;
 	glm::vec3 forwardVector;
 	float angle;
 	SVector3 scale3D;
+	bool bHasTransformBeenModified = true;
 public:
 
-	virtual void MarkRenderStateDirty() {};
+	virtual void RebuildTransformData() { bHasTransformBeenModified = false; }
+
+	void MarkTransformDirty() { bHasTransformBeenModified = true; };
+	virtual void Tick() { if (bHasTransformBeenModified) RebuildTransformData(); };
 
 	virtual void SetLocation(SVector3 newLocation);
 	virtual void SetRotation(SRotator newRotation);
@@ -36,5 +50,8 @@ public:
 	virtual glm::vec3 GetForwardVector() const;
 	virtual float GetAngle() const;
 	virtual SVector3 GetScale3D() const;
-	World* GetWorld();
+	Scene* GetScene();
+
+	virtual void DrawEditorWindow();
+
 };

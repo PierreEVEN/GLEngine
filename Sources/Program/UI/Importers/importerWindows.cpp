@@ -119,9 +119,112 @@ void TextureImporterWindow::CreateObject()
 	if (outputFilePath == "") return;
 	if (outAssetNameString == "") return;
 	std::string uniqueAssetName = AssetLibrary::GenerateNonExistingAssetName(outAssetNameString);
-	AssetImporter::ImportTexture(sourceFilePath, uniqueAssetName, outputFilePath + "/" + uniqueAssetName);
+	AssetImporter::ImportTexture2D(sourceFilePath, uniqueAssetName, outputFilePath + "/" + uniqueAssetName);
 	bKeepOpen = false;
 }
+
+
+
+
+void TextureCubeImporterWindow::Draw(World* inWorld)
+{
+	if (ImGui::Begin("Texture importer", &bKeepOpen))
+	{
+		ImGui::Columns(2, "", true);
+		if (ImGui::Button("Right texture"))
+		{
+			std::string testString = "invalid value";
+			new FileExplorer("File explorer", ".", nullptr, &rightTexturePath, { ".png", ".jpg", ".bmp", ".tif" }, true);
+		}
+		ImGui::NextColumn();
+		ImGui::Text(rightTexturePath.data());
+		ImGui::NextColumn();
+
+		ImGui::Columns(2, "", true);
+		if (ImGui::Button("Left texture"))
+		{
+			std::string testString = "invalid value";
+			new FileExplorer("File explorer", ".", nullptr, &leftTexturePath, { ".png", ".jpg", ".bmp", ".tif" }, true);
+		}
+		ImGui::NextColumn();
+		ImGui::Text(leftTexturePath.data());
+		ImGui::NextColumn();
+
+		ImGui::Columns(2, "", true);
+		if (ImGui::Button("Top texture"))
+		{
+			std::string testString = "invalid value";
+			new FileExplorer("File explorer", ".", nullptr, &topTexturePath, { ".png", ".jpg", ".bmp", ".tif" }, true);
+		}
+		ImGui::NextColumn();
+		ImGui::Text(topTexturePath.data());
+		ImGui::NextColumn();
+
+		ImGui::Columns(2, "", true);
+		if (ImGui::Button("Bottom texture"))
+		{
+			std::string testString = "invalid value";
+			new FileExplorer("File explorer", ".", nullptr, &bottomTexturePath, { ".png", ".jpg", ".bmp", ".tif" }, true);
+		}
+		ImGui::NextColumn();
+		ImGui::Text(bottomTexturePath.data());
+		ImGui::NextColumn();
+
+		ImGui::Columns(2, "", true);
+		if (ImGui::Button("Front texture"))
+		{
+			std::string testString = "invalid value";
+			new FileExplorer("File explorer", ".", nullptr, &frontTexturePath, { ".png", ".jpg", ".bmp", ".tif" }, true);
+		}
+		ImGui::NextColumn();
+		ImGui::Text(frontTexturePath.data());
+		ImGui::NextColumn();
+
+		ImGui::Columns(2, "", true);
+		if (ImGui::Button("Back texture"))
+		{
+			std::string testString = "invalid value";
+			new FileExplorer("File explorer", ".", nullptr, &backTexturePath, { ".png", ".jpg", ".bmp", ".tif" }, true);
+		}
+		ImGui::NextColumn();
+		ImGui::Text(backTexturePath.data());
+		ImGui::NextColumn();
+
+		if (ImGui::Button("output path"))
+		{
+			new FileExplorer("File explorer", ".", nullptr, &outputFilePath, {}, false, true);
+		}
+		ImGui::NextColumn();
+		ImGui::Text(outputFilePath.data());
+		ImGui::Columns(1);
+		ImGui::Separator();
+		ImGui::InputText("Asset name", outAssetNameString, sizeof(outAssetNameString));
+		ImGui::Separator();
+		if (ImGui::Button("confirm"))
+		{
+			CreateObject();
+		}
+		ImGui::End();
+	}
+}
+
+void TextureCubeImporterWindow::CreateObject()
+{
+	if (rightTexturePath == "") return;
+	if (leftTexturePath == "") return;
+	if (topTexturePath == "") return;
+	if (bottomTexturePath == "") return;
+	if (frontTexturePath == "") return;
+	if (backTexturePath == "") return;
+	if (outputFilePath == "") return;
+	if (outAssetNameString == "") return;
+	std::string uniqueAssetName = AssetLibrary::GenerateNonExistingAssetName(outAssetNameString);
+	std::string textures[6] = { rightTexturePath, leftTexturePath, topTexturePath, bottomTexturePath, frontTexturePath, backTexturePath };
+	AssetImporter::ImportTextureCube(textures, uniqueAssetName, outputFilePath + "/" + uniqueAssetName);
+	bKeepOpen = false;
+}
+
+
 
 void ShaderImporterWindow::Draw(World* inWorld)
 {
