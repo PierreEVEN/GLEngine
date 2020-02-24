@@ -7,6 +7,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <assimp/material.h>
+
+/** other */
 #include "Asset/GLAssetIO.h"
 #include <assert.h>
 #include <Texture/texture.h>
