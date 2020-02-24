@@ -1,3 +1,10 @@
-./.vs/
-./Binaries/
-./Output/
+.vs/
+Binaries/
+Output/*
+!Output/assimp-vc141-mt.dll
+!Output/imgui.ini
+
+#keep precompiled libraries in subfolders
+Libs/*
+!Libs/*/
+!Libs/*/
