@@ -6,6 +6,7 @@
 SceneComponent::SceneComponent(Scene* inScene, const STransform& newComponentTransform)
 	: renderScene(inScene)
 {
+	CHECK_GAME_THREAD;
 	assert(inScene);
 	componentWorldTransform = newComponentTransform;
 	inScene->RegisterComponent(this);
@@ -14,16 +15,47 @@ SceneComponent::SceneComponent(Scene* inScene, const STransform& newComponentTra
 SceneComponent::~SceneComponent() 
 {
 	/** Scene component can only be destroyed with DestroyComponent() */
-	if (!bIsBeingDestroyed) GFullLog(LogVerbosity::Assert, "SceneComponent", "Warning, cannot delete scene component without calling DestroyComponent()");
+	if (!CanBeDestroyed()) GLogAssert("Warning, cannot delete scene component before full destruction");
 	GetScene()->UnregisterComponent(this);
+}
+
+bool SceneComponent::IsBeingDestroyed() const
+{
+	return bIsBeingDestroyedGameThread || bIsBeingDestroyedRenderThread;
+}
+
+bool SceneComponent::CanBeDestroyed() const
+{
+	return bIsBeingDestroyedGameThread && bIsBeingDestroyedRenderThread;
+}
+
+void SceneComponent::DestroyOnRenderThread()
+{
+	CHECK_RENDER_THREAD;
+	if (!bIsBeingDestroyedRenderThread)
+	{
+		bIsBeingDestroyedRenderThread = true;
+		DestroyRenderThread();
+	}
+}
+
+void SceneComponent::DestroyOnGameThread()
+{
+	CHECK_GAME_THREAD;
+	if (!bIsBeingDestroyedGameThread)
+	{
+		bIsBeingDestroyedGameThread = true;
+		BeginDestroy();
+	}
 }
 
 void SceneComponent::DestroyComponent()
 {
-	bIsBeingDestroyed = true;
+	CHECK_GAME_THREAD;
+	DestroyOnGameThread();
 }
 
-void SceneComponent::Tick()
+void SceneComponent::Render()
 {
 	if (bHasTransformBeenModified) RebuildTransformData();
 }

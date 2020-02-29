@@ -2,8 +2,11 @@
 
 #include <string>
 
-#define GFullLog(verbosity, category, message) EngineLog::PrintLog(verbosity, category, message)
-#define GDebugLog(message) EngineLog::PrintLog(LogVerbosity::Display, "Debug", message)
+#define GFullLog(verbosity, category, message) EngineLog::PrintLog(verbosity, std::string(category) + " (" + std::to_string(__LINE__) + ") ", message)
+#define GLogDisplay(message) EngineLog::PrintLog(LogVerbosity::Display, typeid(*this).name(), message)
+#define GLogWarning(message) EngineLog::PrintLog(LogVerbosity::Warning, typeid(*this).name(), message)
+#define GLogError(message) EngineLog::PrintLog(LogVerbosity::Error, typeid(*this).name(), message)
+#define GLogAssert(message) EngineLog::PrintLog(LogVerbosity::Assert, std::string(typeid(*this).name()) + " (" + std::to_string(__LINE__) + ")", message)
 
 enum LogVerbosity
 {

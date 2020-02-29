@@ -113,14 +113,14 @@ void AssetImporter::processNode(aiNode *node, const aiScene *scene, std::ofstrea
 void AssetImporter::processMesh(aiMesh *mesh, const aiScene *scene, unsigned int meshIndex, std::ofstream* writer, bool importMaterials, std::string meshName)
 {
 	// data to fill
-	std::vector<Vertex> vertices;
+	std::vector<SVertex> vertices;
 	std::vector<unsigned int> indices;
 
 
 	/** Get vertices */
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
-		Vertex vertex;
+		SVertex vertex;
 		glm::vec3 vector;
 		/** Get vertice coordinate */
 		{
@@ -205,7 +205,7 @@ void AssetImporter::processMesh(aiMesh *mesh, const aiScene *scene, unsigned int
 		}
 	}
 	
-	GLAssetIO::AppendField<Vertex*>(writer, "Section" + std::to_string((int)meshIndex) + "_Vertices", vertices.data(), vertices.size() * sizeof(Vertex));
+	GLAssetIO::AppendField<SVertex*>(writer, "Section" + std::to_string((int)meshIndex) + "_Vertices", vertices.data(), vertices.size() * sizeof(SVertex));
 	GLAssetIO::AppendField<unsigned int*>(writer, "Section" + std::to_string((int)meshIndex) + "_Indices", indices.data(), indices.size() * sizeof(unsigned int));
 
 

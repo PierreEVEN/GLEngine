@@ -177,7 +177,6 @@ StaticMeshEditorWindows::StaticMeshEditorWindows(std::string inWorld, Asset* inA
 	skippedFields.push_back("_Indices");
 
 	staticMeshEditorScene = new AdvancedScene();
-	staticMeshEditorScene->InitializeScene();
 	meshComp = new StaticMeshComponent(staticMeshEditorScene, (AStaticMesh*)inAsset, {  });
 	meshComp->SetRotation(SRotator(90, 0, 0));
 	meshComp->RebuildTransformData();
@@ -192,7 +191,7 @@ void StaticMeshEditorWindows::DrawHeader()
 	staticMeshEditorScene->GetCamera()->Yaw = (float)glfwGetTime() * 5;
 	staticMeshEditorScene->GetCamera()->updateCameraVectors();
 	staticMeshEditorScene->GetCamera()->SetLocation(meshComp->GetWorldBounds().GetOrigin() + staticMeshEditorScene->GetCamera()->GetRotation().GetForwardVector() * meshComp->GetWorldBounds().GetBoundRadius() * -2.5f);
-	staticMeshEditorScene->Draw();
+	//staticMeshEditorScene->Draw();
 	ImGui::Image((ImTextureID*)staticMeshEditorScene->GetColorBuffer(), ImVec2(256, 256), ImVec2(0, 1), ImVec2(1, 0));
 }
 
@@ -200,7 +199,6 @@ MaterialEditorWindow::MaterialEditorWindow(std::string inWorld, Asset* inAsset)
 	: AssetEditorWindow(inWorld, inAsset)
 {
 	materialEditorScene = new AdvancedScene();
-	materialEditorScene->InitializeScene();
 	AStaticMesh* sphereMesh = AssetRegistry::FindAssetByName<AStaticMesh>("SphereMesh");
 	StaticMeshComponent* comp = new StaticMeshComponent(materialEditorScene, sphereMesh, { (Material*)inAsset });
 	comp->SetRotation(SRotator(90, 0, 0));
@@ -218,7 +216,7 @@ void MaterialEditorWindow::DrawHeader()
 	materialEditorScene->GetCamera()->Yaw = (float)glfwGetTime() * 5;
 	materialEditorScene->GetCamera()->updateCameraVectors();
 	materialEditorScene->GetCamera()->SetLocation(materialEditorScene->GetCamera()->GetRotation().GetForwardVector() * -3);
-	materialEditorScene->Draw();
+	//materialEditorScene->Draw();
 	ImGui::Text(std::string("Texture count : " + std::to_string(((Material*)GetAsset())->GetTextureCount())).data());
 	ImGui::Image((ImTextureID*)materialEditorScene->GetColorBuffer(), ImVec2(256, 256), ImVec2(0, 1), ImVec2(1, 0));
 	if (ImGui::Button("Add texture"))

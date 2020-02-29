@@ -12,7 +12,6 @@ std::vector<Asset*> AssetRegistry::registeredAssets;
 
 void AssetRegistry::ImportAssetFromDirectory(std::string RootFolder)
 {
-	ProfileStat(std::string("Import stat from " + RootFolder).data());
 	std::vector<std::string> filesToLoad = AssetLibrary::CollectFilesUnderFolder(RootFolder);
 
 	for (auto& filePath : filesToLoad)

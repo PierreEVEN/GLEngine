@@ -13,7 +13,7 @@ enum aiTextureType;
 class Texture2D;
 class Scene;
 struct BoxSphereBound;
-
+struct SLodData;
 
 class AStaticMesh : public Asset
 {
@@ -21,6 +21,8 @@ private:
 
 	std::vector<Material*> usedMaterial;
 	std::vector<MeshSectionData*> meshSections;
+	SProxyLodGroup MeshGPUData;
+	bool bHasGPUMeshDataBeenCreated = false;
 
 public:
 
@@ -28,14 +30,19 @@ public:
 
 	std::vector<MeshSectionData*> GetSections();
 	std::vector<Material*> GetMaterials();
-
+	
 	BoxSphereBound bounds;
 	void ComputeBounds();
+
 protected:
 
 	virtual void LoadProperties() override;
 
+	virtual void CreateMeshData();
+
 public:
+
+	SProxyLodGroup GetMeshData();
 
 	virtual void UpdateMaterials();
 

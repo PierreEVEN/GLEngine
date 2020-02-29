@@ -7,7 +7,7 @@
 #include <Engine/debugerTool.h>
 #include <Mesh/MeshData.h>
 
-std::vector<Vertex> vertexArray = {};
+std::vector<SVertex> vertexArray = {};
 int currentLineVerticeIndex = 0;
 
 GLDebugDrawer::GLDebugDrawer(Scene* inRenderScene)
@@ -58,31 +58,30 @@ void GLDebugDrawer::RenderDebugDraw()
 {
 	if (currentLineVerticeIndex > 0)
 	{
-		ProfileStat("Draw debug trace");
 		GLuint VBO, VAO;
 		glGenBuffers(1, &VBO);
 		glGenVertexArrays(1, &VAO);
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, currentLineVerticeIndex * sizeof(Vertex), vertexArray.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, currentLineVerticeIndex * sizeof(SVertex), vertexArray.data(), GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)0);
 		// vertex normals
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Normal));
 		// vertex texture coords
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, TexCoords));
 		// vertex tangent
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Tangent));
 		// vertex bitangent
 		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Bitangent));
 		// vertex color
 		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, VertexColor));
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, VertexColor));
 
 		glBindVertexArray(0);
 
@@ -100,12 +99,12 @@ void GLDebugDrawer::RenderDebugDraw()
 
 void GLDebugDrawer::DrawDebugLine(const SVector3& from, const SVector3& to, const SVector3& fromColor, const SVector3& toColor)
 {
-	Vertex posA;
+	SVertex posA;
 	posA.Position = from.ToGLVector();
 	posA.TexCoords = glm::vec2(0);
 	posA.VertexColor = glm::vec4(fromColor.x, fromColor.y, fromColor.z, 1.f);
 
-	Vertex posB;
+	SVertex posB;
 	posB.Position = to.ToGLVector();
 	posB.TexCoords = glm::vec2(1);
 	posB.VertexColor = glm::vec4(toColor.x, toColor.y, toColor.z, 1.f);

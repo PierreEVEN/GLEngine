@@ -19,5 +19,5 @@ public:
 
 	Light(Scene* drawScene);
 	LightParameters lightParams;
-	virtual void Tick() override;
+	virtual void Render() override;
 };

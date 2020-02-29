@@ -13,6 +13,10 @@ unsigned int Texture2D::GetTextureID()
 	CheckData();
 	if (AreDataLoaded())
 	{
+		if (!bIsGPUDataCreated)
+		{
+			CreateGPUData();
+		}
 		return textureID;
 	}
 	else
@@ -33,47 +37,6 @@ void Texture2D::LoadProperties()
 	RegisterProperty(channelCountData);
 	RegisterProperty(textureData);
 	Asset::LoadProperties();
-}
-
-void Texture2D::PostLoadProperties()
-{
-	Asset::PostLoadProperties();
-	SUIntPropertyValue* sizeXData = (SUIntPropertyValue*)GetProperty("TextureSizeX");
-	SUIntPropertyValue* sizeYData = (SUIntPropertyValue*)GetProperty("TextureSizeY");
-	SUIntPropertyValue* channelCountData = (SUIntPropertyValue*)GetProperty("TextureChannelsCount");
-	SPropertyValue* textureData = GetProperty("TextureData");
-	if (!sizeXData->IsValueValid() || !sizeYData->IsValueValid() || !channelCountData->IsValueValid() || !textureData->IsValueValid())
-	{
-		GFullLog(LogVerbosity::Assert, "Texture", "Failed to load texture " + GetName() + " data");
-		return;
-	}
-	unsigned int width = sizeXData->GetUIntValue();
-	unsigned int height = sizeYData->GetUIntValue();
-	unsigned int nrChannels = channelCountData->GetUIntValue();
-	stbi_uc* data = textureData->GetValue<stbi_uc>();
-	GLenum format = GL_RED;
-	if (nrChannels == 1)
-		format = GL_RED;
-	else if (nrChannels == 3)
-		format = GL_RGB;
-	else if (nrChannels == 4)
-		format = GL_RGBA;
-
-	glGenTextures(1, &textureID);
-	//glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	//stbi_image_free(data);
-
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load image, create texture and generate mipmaps
 }
 
 void Texture2D::BuildThumbnail()
@@ -134,6 +97,49 @@ void Texture2D::OnAssetClicked()
 	//@Todo : new TextureEditorWindow(GetName(), this);
 }
 
+void Texture2D::CreateGPUData()
+{
+	CHECK_RENDER_THREAD;
+	if (bIsGPUDataCreated) return;
+	bIsGPUDataCreated = true;
+	SUIntPropertyValue* sizeXData = (SUIntPropertyValue*)GetProperty("TextureSizeX");
+	SUIntPropertyValue* sizeYData = (SUIntPropertyValue*)GetProperty("TextureSizeY");
+	SUIntPropertyValue* channelCountData = (SUIntPropertyValue*)GetProperty("TextureChannelsCount");
+	SPropertyValue* textureData = GetProperty("TextureData");
+	if (!sizeXData->IsValueValid() || !sizeYData->IsValueValid() || !channelCountData->IsValueValid() || !textureData->IsValueValid())
+	{
+		GFullLog(LogVerbosity::Assert, "Texture", "Failed to load texture " + GetName() + " data");
+		return;
+	}
+	unsigned int width = sizeXData->GetUIntValue();
+	unsigned int height = sizeYData->GetUIntValue();
+	unsigned int nrChannels = channelCountData->GetUIntValue();
+	stbi_uc* data = textureData->GetValue<stbi_uc>();
+	GLenum format = GL_RED;
+	if (nrChannels == 1)
+		format = GL_RED;
+	else if (nrChannels == 3)
+		format = GL_RGB;
+	else if (nrChannels == 4)
+		format = GL_RGBA;
+
+	glGenTextures(1, &textureID);
+	//glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	//stbi_image_free(data);
+
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load image, create texture and generate mipmaps
+}
+
 TextureCube::TextureCube(std::string textAssetPath)
 	: Texture2D(textAssetPath) {}
 
@@ -142,6 +148,10 @@ unsigned int TextureCube::GetTextureID()
 	CheckData(true);
 	if (AreDataLoaded())
 	{
+		if (!bIsGPUDataCreated)
+		{
+			CreateGPUData();
+		}
 		return textureCubeID;
 	}
 	else
@@ -172,8 +182,11 @@ void TextureCube::LoadProperties()
 	Asset::LoadProperties();
 }
 
-void TextureCube::PostLoadProperties()
-{
+
+void TextureCube::CreateGPUData() {
+	CHECK_RENDER_THREAD;
+	if (bIsGPUDataCreated) return;
+	bIsGPUDataCreated = true;
 	glGenTextures(1, &textureCubeID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureCubeID);
 

@@ -49,7 +49,7 @@ public:
 	PrimitiveComponent(Scene* inScene);
 	virtual ~PrimitiveComponent();
 
-	virtual void Tick() override;
+	virtual void Render() override;
 	virtual void RebuildTransformData()override;
 	virtual void RebuildLocalBounds() { RebuildWorldBounds(); }
 	virtual void RebuildWorldBounds();

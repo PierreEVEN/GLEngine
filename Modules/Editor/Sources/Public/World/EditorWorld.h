@@ -9,7 +9,12 @@ public:
 	EditorWorld(GLFWwindow* inWindow) : World(inWindow) {}
 
 
-	virtual void TickWorld(double newDeltaSecond) override;
+	virtual void Tick(double newDeltaSecond) override;
+
+	virtual void Initialize() override;
+private:
+
+	void PopCube();
 
 protected:
 

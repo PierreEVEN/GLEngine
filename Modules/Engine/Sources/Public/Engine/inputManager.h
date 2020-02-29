@@ -89,7 +89,7 @@ class InputManager
 	double mouseLocationY;
 	double mouseDeltaX;
 	double mouseDeltaY;
-	std::vector<InputState*> keys;
+	std::vector<InputState*> keys = {};
 	std::vector<KeyBind*> keyBinds;
 
 	Event* mousePositionCallback;

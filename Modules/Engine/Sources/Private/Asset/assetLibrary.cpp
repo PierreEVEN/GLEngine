@@ -1,4 +1,3 @@
-#include <Windows.h>
 #include <vector>
 #include <Asset/asset.h>
 #include <Asset/assetLibrary.h>

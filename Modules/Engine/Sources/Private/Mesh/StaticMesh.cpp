@@ -15,8 +15,7 @@
 
 
 AStaticMesh::AStaticMesh(std::string dataAssetPath)
-	: Asset(dataAssetPath) 
-{
+	: Asset(dataAssetPath) {
 	BindOnAssetLoaded(this, &AStaticMesh::ComputeBounds);
 }
 
@@ -67,7 +66,7 @@ void AStaticMesh::LoadProperties()
 		Material* linkedMat = nullptr;
 
 		MeshSectionData* createdSection = new MeshSectionData(
-			verticesData->GetValue<Vertex>(), verticesData->GetBufferSize() / sizeof(Vertex),
+			verticesData->GetValue<SVertex>(), verticesData->GetBufferSize() / sizeof(SVertex),
 			indicesData->GetValue<unsigned int>(), indicesData->GetBufferSize() / sizeof(unsigned int),
 			linkedMat,
 			{}
@@ -77,6 +76,77 @@ void AStaticMesh::LoadProperties()
 	}
 	UpdateMaterials();
 	Asset::LoadProperties();
+}
+
+void AStaticMesh::CreateMeshData()
+{
+	CHECK_RENDER_THREAD;
+
+	unsigned int SectionIndex = 0;
+	for (const auto& section : meshSections)
+	{
+		unsigned int EBO, VAO, VBO;
+		// create buffers/arrays
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
+
+		glBindVertexArray(VAO);
+		// load data into vertex buffers
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		// A great thing about structs is that their memory layout is sequential for all its items.
+		// The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
+		// again translates to 3/2 floats which translates to a byte array.
+
+		glBufferData(GL_ARRAY_BUFFER, section->verticesCount * sizeof(SVertex), &section->sectionVertices[0], GL_STATIC_DRAW);
+
+		if (section->indicesCount > 0)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, section->indicesCount * sizeof(unsigned int), &section->sectionIndices[0], GL_STATIC_DRAW);
+		}
+
+		// set the vertex attribute pointers
+		// vertex Positions
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)0);
+		// vertex normals
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Normal));
+		// vertex texture coords
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, TexCoords));
+		// vertex tangent
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Tangent));
+		// vertex bitangent
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Bitangent));
+		// vertex color
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, VertexColor));
+
+		glBindVertexArray(0);
+
+		MeshGPUData.SetMeshData(SectionIndex, SProxySectionData(VBO, VAO, EBO, section->indicesCount, SectionIndex), 0);
+		SectionIndex++;
+	}
+}
+
+SProxyLodGroup AStaticMesh::GetMeshData()
+{
+	CHECK_RENDER_THREAD;
+	if (AreDataLoaded())
+	{
+		if (!bHasGPUMeshDataBeenCreated)
+		{
+			bHasGPUMeshDataBeenCreated = true;
+			CreateMeshData();
+		}
+		return MeshGPUData;
+	}
+	GLogAssert("This static mesh hasn't been loaded yet");
+	return {};
 }
 
 void AStaticMesh::UpdateMaterials()
@@ -112,24 +182,24 @@ void AStaticMesh::BuildThumbnail()
 
 	SPropertyValue* thumbnailProperty = GetBaseProperty("thumbnailTexture");
 	Scene* thumbnailScene = new AdvancedScene();
-	thumbnailScene->InitializeScene();
-	thumbnailScene->Draw();
+	thumbnailScene->InitializeSceneGT();
+	thumbnailScene->Render();
 	StaticMeshComponent* comp = new StaticMeshComponent(thumbnailScene, this, {});
 	comp->SetRotation(SRotator(90, 0, 0));
-	thumbnailScene->Draw();
+	thumbnailScene->Render();
 	comp->RebuildTransformData();
-	thumbnailScene->Draw();
+	thumbnailScene->Render();
 	DirectionalLight* dirLight = new DirectionalLight(thumbnailScene);
 	dirLight->lightParams.ambiant = glm::vec4(1);
 	thumbnailScene->UpdateFramebufferSize(THUMBNAIL_RESOLUTION, THUMBNAIL_RESOLUTION);
 	thumbnailScene->GetCamera()->Pitch = 45;
 	thumbnailScene->GetCamera()->Yaw = 35;
 	thumbnailScene->GetCamera()->updateCameraVectors();
-	thumbnailScene->Draw();
-	thumbnailScene->Draw();
+	thumbnailScene->Render();
+	thumbnailScene->Render();
 	thumbnailScene->GetCamera()->SetLocation(comp->GetWorldBounds().GetOrigin() + thumbnailScene->GetCamera()->GetRotation().GetForwardVector() * comp->GetWorldBounds().GetBoundRadius() * -2.5);
-	thumbnailScene->Draw();
-	thumbnailScene->Draw();
+	thumbnailScene->Render();
+	thumbnailScene->Render();
 	float* renderTexture = (float*)malloc(THUMBNAIL_RESOLUTION * THUMBNAIL_RESOLUTION * 3 * sizeof(float));
 	glBindTexture(GL_TEXTURE_2D, thumbnailScene->GetColorBuffer());
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, renderTexture);

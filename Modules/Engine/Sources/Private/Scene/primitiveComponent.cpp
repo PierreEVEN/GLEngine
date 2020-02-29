@@ -28,18 +28,16 @@ PrimitiveComponent::~PrimitiveComponent()
 {
 }
 
-void PrimitiveComponent::Tick()
+void PrimitiveComponent::Render()
 {
-	SceneComponent::Tick();
+	SceneComponent::Render();
 
 	if (GetScene()->GetDebugDrawFlag() == ESceneDebugDrawFlag::DrawBoxBounds)
 	{
-		ProfileStat("PushVertex");
 		GetScene()->GetDebugDrawer()->drawBox(GetWorldBounds().GetBoxMin().ToBulletVector(), GetWorldBounds().GetBoxMax().ToBulletVector(), SVector3(0, .4f, 1).ToBulletVector());
 	}
 	else if (GetScene()->GetDebugDrawFlag() == ESceneDebugDrawFlag::DrawSphereBounds)
 	{
-		ProfileStat("PushVertex");
 		GetScene()->GetDebugDrawer()->drawSphere(GetWorldBounds().GetOrigin().ToBulletVector(), GetWorldBounds().GetBoundRadius(), SVector3(.5f, 1, 0).ToBulletVector());
 	}
 
@@ -61,7 +59,6 @@ void PrimitiveComponent::RebuildTransformData()
 
 void PrimitiveComponent::RebuildWorldBounds()
 {
-	ProfileStat("Build bounds");
 	SVector3 min = GetLocalBounds().GetBoxMin();
 	SVector3 max = GetLocalBounds().GetBoxMax();
 	glm::mat4 model = glm::mat4(1.0f);

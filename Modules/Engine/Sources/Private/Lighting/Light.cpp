@@ -5,7 +5,7 @@ Light::Light(Scene* drawScene)
 {
 }
 
-void Light::Tick()
+void Light::Render()
 {
-    SceneComponent::Tick();
+    SceneComponent::Render();
 }

@@ -14,6 +14,8 @@
 #include <UI/EditorWindows/contentBrowser.h>
 #include <Scene/scene.h>
 #include <Engine/engine.h>
+#include <UI/EditorWindows/WorldSettingsWindow.h>
+#include <Engine/ThreadHandler.h>
 
 std::vector<ImFloatingWindow*> WindowManager::elementsArray;
 
@@ -78,6 +80,10 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 	}
 	if (ImGui::BeginMenu("Window"))
 	{
+		if (ImGui::Button("World settings"))
+		{
+			new WorldSettingsWindow("World settings", InWorld);
+		}
 		if (ImGui::Button("New content browser"))
 		{
 			new ContentBrowser("Content browser");
@@ -144,8 +150,8 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 		ImGui::EndMenu();
 	}
 	ImGui::AlignTextToFramePadding();
-	ImGui::Indent(ImGui::GetWindowWidth() - 320.0f);
-	ImGui::Text(std::string(std::to_string(StatViewer::GetDrawcalls()) + " Drawcalls | " + "fps : " + std::to_string((int)(1.0 / InWorld->GetWorldDeltaSecond()))).data());
+	ImGui::Indent(ImGui::GetWindowWidth() - 520.0f);
+	ImGui::Text(std::string(std::to_string(StatViewer::GetDrawcalls()) + " Drawcalls | " + "fps (GameThread/RenderThread) : " + std::to_string((int)(1.0 / ThreadHandler::GetGameThreadDeltaTime())) + " / " + std::to_string((int)(1.0 / ThreadHandler::GetRenderThreadDeltaTime()))).data());
 	ImGui::EndMainMenuBar();
 }
 

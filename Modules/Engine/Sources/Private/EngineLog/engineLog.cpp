@@ -6,6 +6,12 @@
 #include "EngineLog/engineLog.h"
 #include <UI/engineLogWindow.h>
 
+
+#include <sys/types.h>
+#include <string>
+#include <sstream>
+#include <cstdlib>
+
 void EngineLog::PrintLog(LogVerbosity verbosity, std::string LogCategory, std::string message)
 {
 	std::time_t t = std::time(0);   // get time now
@@ -54,11 +60,18 @@ void EngineLog::PrintLog(LogVerbosity verbosity, std::string LogCategory, std::s
 	{
 		glfwTerminate();
 		SetConsoleTextAttribute(hConsole, 1);
+#ifdef WIN32 
+		if (IsDebuggerPresent())
+		{
+			__debugbreak(); exit(-1);
+		}
+#endif
 		for (int i = 5; i > 0; --i)
 		{
 			std::cout << "closing in " << i << "..." << std::endl;
 			Sleep(1000);
 		}
+		SetConsoleTextAttribute(hConsole, 7);
 		exit(1);
 	}
 }

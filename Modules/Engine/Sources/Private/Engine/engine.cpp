@@ -10,6 +10,7 @@
 #include <World/world.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <Engine/ThreadHandler.h>
 
 bool bIsGladLoaded = false;
 bool bIsOpenglInitialized = false;
@@ -24,15 +25,11 @@ Engine* GEngine = nullptr;
 
 void Engine::Initialize()
 {
-	ProfileStat("");
-	StartOpenGL();
 
-	InitializeImGui(openGLMainWindow);
-	CreateUI();
+	ProfileStat("EngineStartup");
 
 	LoadAssets();
 
-	CreatePrimaryWorld();
 	GFullLog(LogVerbosity::Display, "Engine", "Complete engine startup (" + std::to_string(ReadCurrentStat()) + "ms)");
 	StartGameThread();
 }
@@ -63,7 +60,8 @@ void Engine::StartOpenGL()
 	if (bIsOpenglInitialized) return;
 	bIsOpenglInitialized = true;
 
-	ProfileStat("");
+
+	ProfileStat("EngineStartup");
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -83,7 +81,8 @@ void Engine::CloseOpenGL()
 {
 	World::ClearWorlds();
 
-	ProfileStat("");
+
+	ProfileStat("EngineShutdown");
 	glfwTerminate();
 	GFullLog(LogVerbosity::Display, "Engine", "Close OpenGL GLFW (" + std::to_string(ReadCurrentStat()) + "ms)");
 }
@@ -95,7 +94,8 @@ void Engine::InitializeGlad()
 	StartOpenGL();
 	CreateOpenGLMainWindow();
 
-	ProfileStat("");
+
+	ProfileStat("EngineStartup");
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		GFullLog(LogVerbosity::Assert, "Engine", "Failed to create Glad");
@@ -108,7 +108,8 @@ void Engine::CreateOpenGLMainWindow()
 
 	StartOpenGL();
 
-	ProfileStat("");
+
+	ProfileStat("EngineStartup");
 	openGLMainWindow = glfwCreateWindow(1600, 900, "GLEngine 1.0", NULL, NULL);
 	if (openGLMainWindow == NULL)
 	{
@@ -126,7 +127,8 @@ void Engine::InitializeImGui(GLFWwindow* parentWindow)
 {
 	if (bIsImGuiInitialized) return;
 
-	ProfileStat("");
+
+	ProfileStat("EngineStartup");
 	bIsImGuiInitialized = true;
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -143,7 +145,7 @@ void Engine::InitializeImGui(GLFWwindow* parentWindow)
 }
 void Engine::CloseImGui()
 {
-	ProfileStat("");
+	ProfileStat("EngineShutdown");
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
@@ -156,7 +158,7 @@ void Engine::CloseImGui()
 
 void Engine::CreatePrimaryWorld()
 {
-	ProfileStat("");
+	ProfileStat("EngineStartup");
 	CreateOpenGLMainWindow();
 	CreateWorld(openGLMainWindow);
 	Material::InitializeMaterials();
@@ -181,7 +183,7 @@ void Engine::AsyncLoop()
 			DeltaSecond = 1.0 / 10.f;
 		}
 		LastTickTime = glfwGetTime();
-		World::UpdateWorlds(DeltaSecond);
+		World::TickWorlds(DeltaSecond);
 		StatViewer::FlushStats();
 		StatViewer::FlushDrawcallsCount();
 
@@ -198,15 +200,34 @@ void Engine::StartGameThread()
 {
 	GFullLog(LogVerbosity::Display, "Engine", "Start tick loop");
 
-	AsyncLoop();
+	new ThreadHandler();
+	ThreadHandler::Get()->StartGameThread();
+	ThreadHandler::Get()->StartRenderThread();
 
-	CloseImGui();
-	CloseOpenGL();
+	while (!DoesWantToShutDown()) {}
+
+	delete ThreadHandler::Get();
+
 }
 
 std::thread::id Engine::GetGameThreadID()
 {
 	return GameThreadID;
+}
+
+bool Engine::DoesWantToShutDown()
+{
+	return Engine::Get()->bRequestClose;
+}
+
+void Engine::LoadOpenGL_RT()
+{
+	StartOpenGL();
+
+	InitializeImGui(openGLMainWindow);
+	CreateUI();
+
+	CreatePrimaryWorld();
 }
 
 Engine::Engine()

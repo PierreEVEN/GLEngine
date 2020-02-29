@@ -9,12 +9,12 @@
 void EditorEngine::LoadAssets()
 {
 	{
-		ProfileStat("");
+		ProfileStat("AssetLoading");
 		AssetRegistry::ImportAssetFromDirectory("./Sources/EngineContent");
 		GFullLog(LogVerbosity::Display, "Engine", "Import engine content (" + std::to_string(ReadCurrentStat()) + "ms)");
 	}
 	{
-		ProfileStat("");
+		ProfileStat("AssetLoading");
 		AssetRegistry::ImportAssetFromDirectory("./Sources/Assets");
 		GFullLog(LogVerbosity::Display, "Engine", "Import game content (" + std::to_string(ReadCurrentStat()) + "ms)");
 	}
@@ -30,6 +30,5 @@ void EditorEngine::CreateUI()
 void EditorEngine::CreateWorld(GLFWwindow* inWindow)
 {
 	EditorWorld* createdWorld = new EditorWorld(inWindow);
-	createdWorld->Initialize();
 }
 

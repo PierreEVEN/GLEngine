@@ -169,6 +169,7 @@
     <ClInclude Include="Sources\Public\Engine\engine.h" /> 
     <ClInclude Include="Sources\Public\Engine\eventManager.h" /> 
     <ClInclude Include="Sources\Public\Engine\inputManager.h" /> 
+    <ClInclude Include="Sources\Public\Engine\ThreadHandler.h" /> 
     <ClInclude Include="Sources\Public\EngineLog\engineLog.h" /> 
     <ClInclude Include="Sources\Public\Lighting\directionalLight.h" /> 
     <ClInclude Include="Sources\Public\Lighting\Light.h" /> 
@@ -180,13 +181,13 @@
     <ClInclude Include="Sources\Public\Mesh\InstancedMeshComponent.h" /> 
     <ClInclude Include="Sources\Public\Mesh\MeshComponent.h" /> 
     <ClInclude Include="Sources\Public\Mesh\MeshData.h" /> 
-    <ClInclude Include="Sources\Public\Mesh\meshSectionComponent.h" /> 
     <ClInclude Include="Sources\Public\Mesh\StaticMesh.h" /> 
     <ClInclude Include="Sources\Public\Mesh\StaticMeshComponent.h" /> 
     <ClInclude Include="Sources\Public\Physic\physicDebugViewer.h" /> 
     <ClInclude Include="Sources\Public\Scene\primitiveComponent.h" /> 
     <ClInclude Include="Sources\Public\Scene\scene.h" /> 
     <ClInclude Include="Sources\Public\Scene\sceneComponent.h" /> 
+    <ClInclude Include="Sources\Public\Scene\SceneMeshProxy.h" /> 
     <ClInclude Include="Sources\Public\Shader\material.h" /> 
     <ClInclude Include="Sources\Public\Shader\shaderLoader.h" /> 
     <ClInclude Include="Sources\Public\Shader\shader_s.h" /> 
@@ -206,6 +207,7 @@
     <ClCompile Include="Sources\Private\Engine\engine.cpp" /> 
     <ClCompile Include="Sources\Private\Engine\eventManager.cpp" /> 
     <ClCompile Include="Sources\Private\Engine\inputManager.cpp" /> 
+    <ClCompile Include="Sources\Private\Engine\ThreadHandler.cpp" /> 
     <ClCompile Include="Sources\Private\EngineLog\engineLog.cpp" /> 
     <ClCompile Include="Sources\Private\Lighting\directionalLight.cpp" /> 
     <ClCompile Include="Sources\Private\Lighting\Light.cpp" /> 
@@ -215,13 +217,14 @@
     <ClCompile Include="Sources\Private\Mesh\CubemapComponent.cpp" /> 
     <ClCompile Include="Sources\Private\Mesh\InstancedMeshComponent.cpp" /> 
     <ClCompile Include="Sources\Private\Mesh\MeshComponent.cpp" /> 
-    <ClCompile Include="Sources\Private\Mesh\meshSectionComponent.cpp" /> 
+    <ClCompile Include="Sources\Private\Mesh\MeshData.cpp" /> 
     <ClCompile Include="Sources\Private\Mesh\StaticMesh.cpp" /> 
     <ClCompile Include="Sources\Private\Mesh\StaticMeshComponent.cpp" /> 
     <ClCompile Include="Sources\Private\Physic\physicDebugViewer.cpp" /> 
     <ClCompile Include="Sources\Private\Scene\primitiveComponent.cpp" /> 
     <ClCompile Include="Sources\Private\Scene\scene.cpp" /> 
     <ClCompile Include="Sources\Private\Scene\sceneComponent.cpp" /> 
+    <ClCompile Include="Sources\Private\Scene\SceneMeshProxy.cpp" /> 
     <ClCompile Include="Sources\Private\Shader\material.cpp" /> 
     <ClCompile Include="Sources\Private\Shader\shaderLoader.cpp" /> 
     <ClCompile Include="Sources\Private\Texture\texture.cpp" /> 

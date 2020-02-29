@@ -2,7 +2,7 @@
 
 #include "vector3.h"
 
-class MeshSectionComponent;
+class MeshComponent;
 class Scene;
 
 struct SHitResult
@@ -12,7 +12,7 @@ struct SHitResult
 	SVector3 posEnd;
 	SVector3 impactLocation;
 	SVector3 impactNormal;
-	MeshSectionComponent* hitSection = nullptr;
+	MeshComponent* hitSection = nullptr;
 	int instanceIndex = -1;
 };
 

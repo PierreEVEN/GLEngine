@@ -2,6 +2,7 @@
 #pragma once
 
 #include <EnginePCH.h>
+#include "SceneMeshProxy.h"
 
 #define DEFAULT_BACKGROUND_CLEAR_COLOR 0, 0, 0, 1
 
@@ -59,27 +60,42 @@ private:
 	unsigned int sceneRenderBufferObject = -1;
 	/** Create framebuffer at beginning */
 	bool bIsFramebufferValid = false;
+
+	bool bHasBeenInitializedGT = false;
+	bool bHasBeenInitializedRT = false;
+
+
+	/** Scene registered proxies */
+	std::forward_list<SceneMeshProxy*> meshProxies;
+	/** Scene registered scene components on render thread*/
+	std::forward_list<SceneComponent*> SceneComponents;
+
 public:
 
 	/** Constructors & destroctors */
 	Scene() {}
 	virtual ~Scene();
-
-	/** Scene registered scene components */
-	std::vector<SceneComponent*> components;
-
-	/** Register scene component */
+	
+	/** Register and unregister scene component on GameThread */
 	virtual void RegisterComponent(SceneComponent* inComponent);
-	/** Unregister scene component */
 	virtual void UnregisterComponent(SceneComponent* inComponent);
+	/** Register and unregister scene mesh Proxy on Render Thread*/
+	virtual void RegisterSceneMeshProxy(SceneMeshProxy* inProxy);
+	virtual void UnregisterSceneMeshProxy(SceneMeshProxy* inProxy);
+
+	virtual std::forward_list<SceneComponent*> GetSceneComponents() const { return SceneComponents; }
 
 	/** Set debug display mode */
 	void SetDisplayMode(ESceneDebugDrawMode inMode);
-	
+
 	/** Initialize scene after creation */
-	virtual void InitializeScene();
+	virtual void InitializeSceneRT();
+	/** Initialize scene after creation */
+	virtual void InitializeSceneGT();
 	/** Render scene in buffer */
-	virtual void Draw();
+	virtual void Render();
+	/** Render scene in buffer */
+	virtual void Tick(const double& inDeltaTime);
 	/** Transform viewport space position to world direction */
 	SVector3 PixelToWorldDirection(float screenAbsolutePosX, float screenAbsolutePosY) const;
 
@@ -143,7 +159,7 @@ public:
 	virtual void MiddleMouseClickOnScene(int posX, int posY) {}
 
 	/** Overrided from parent */
-	virtual void InitializeScene() override;
+	virtual void InitializeSceneGT() override;
 private:
 
 	/** Current viewport location X & Y */
@@ -153,75 +169,4 @@ private:
 	void CreateCubemap();
 	/** Background cubemap */
 	CubemapComponent* skybox = nullptr;
-};
-
-/************************************************************************/
-/* A SceneComponentIterator is used to iterate on all scene components  */                                                                  
-/* of a scene by class.													*/
-/* Progression start from end to beginning								*/
-/* Usage :																*/
-/* for (SceneComponentIterator<class> ite(DrawScene); ite; ite++) {...} */
-/************************************************************************/
-
-template<class T> class SceneComponentIterator
-{
-private:
-	/** Current array progression index */
-	int currentIndex;
-	/** Handled scene */
-	Scene* drawScene;
-public:
-
-	/** Default constructor */
-	SceneComponentIterator(Scene* inScene)
-		: drawScene(inScene), currentIndex(inScene->components.size())
-	{
-		MoveToNextElement();
-	}
-
-	/** True if current element is valid */
-	__forceinline explicit operator bool() const
-	{
-		return currentIndex >= 0 && currentIndex < (int)drawScene->components.size() && drawScene->components[currentIndex];
-	}
-
-	/** true if current element isn't valid */
-	__forceinline bool operator ! () const
-	{
-		return !(bool)*this;
-	}
-
-	/** get current element */
-	__forceinline T* operator -> () const
-	{
-		return (T*)drawScene->components[currentIndex];
-	}
-
-	/** Get current element pointer */
-	__forceinline T* operator * () const
-	{
-		return (T*)drawScene->components[currentIndex];
-	}
-
-	/** Get to next element */
-	__forceinline void operator++ (int)
-	{
-		MoveToNextElement();
-	}
-
-	/** Find next element, or close iterator if end is reached */
-	__forceinline void MoveToNextElement()
-	{
-		while (--currentIndex >= 0)
-		{
-			if (currentIndex >= 0 && currentIndex < (int)drawScene->components.size())
-			{
-				SceneComponent* usedComp = drawScene->components[currentIndex];
-				if (dynamic_cast<T*>(usedComp))
-				{
-					break;
-				}
-			}
-		}
-	}
 };

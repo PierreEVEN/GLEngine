@@ -43,9 +43,11 @@ public:
 	virtual ~World();
 
 	/** Initializer has to be called once the world is created. */
-	void Initialize();
-	/** Update world every frame with current delta second */
-	virtual void TickWorld(double newDeltaSecond);
+	virtual void Initialize();
+	/** Update world every frame with current delta second on Game Thread*/
+	virtual void Tick(double newDeltaSecond);
+	/** Redraw world */
+	virtual void Render();
 
 	/** Get last delta second */
 	double GetWorldDeltaSecond() const { return worldDeltaSecond; }
@@ -60,8 +62,10 @@ public:
 	static std::vector<World*> GetWorlds();
 	/** Get a world from GLFW Window */
 	static World* FindWorld(GLFWwindow* InWindows);
-	/** Refresh all registered worlds */
-	static void UpdateWorlds(double deltaSecond);
+	/** Refresh all registered worlds on game thread */
+	static void TickWorlds(double deltaSecond);
+	/** Refresh all registered worlds on render thread */
+	static void RenderWorlds();
 	/** Destroy all existing worlds */
 	static void ClearWorlds();
 	/** called on windows size changed */

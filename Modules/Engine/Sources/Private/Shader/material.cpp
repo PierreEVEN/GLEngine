@@ -41,6 +41,20 @@ Material::Material(std::string textAssetPath)
 {
 }
 
+unsigned int Material::GetShaderID()
+{
+	CHECK_RENDER_THREAD;
+	if (ShaderID == -1 && AreDataLoaded())
+	{
+		if (!compiler)
+		{
+			GFullLog(LogVerbosity::Assert, "Material", "invalid shader compiler");
+		}
+		ShaderID = compiler->Get();
+	}
+	return ShaderID;
+}
+
 void Material::LoadProperties()
 {
 	SAssetReader reader(GetPath());
@@ -69,16 +83,6 @@ void Material::LoadProperties()
 	Asset::LoadProperties();
 }
 
-void Material::PostLoadProperties()
-{
-	Asset::PostLoadProperties();
-	if (!compiler)
-	{
-		GFullLog(LogVerbosity::Assert, "Material", "invalid shader compiler");
-	}
-	ShaderID = compiler->Get();
-}
-
 void Material::AddTexture(Texture2D* inTexture /*= nullptr*/)
 {
 	SAssetRefPropertyValue* newTextureRef = new SAssetRefPropertyValue(this, nullptr, "Texture_" + std::to_string(GetTextureCount()));
@@ -99,27 +103,22 @@ unsigned int Material::GetTextureCount()
 
 void Material::use()
 {
+	CHECK_RENDER_THREAD;
 	if (AreDataLoaded())
 	{
 		if (lastUsedMaterial != this)
 		{
-			lastUsedMaterial = this;
-
-			//std::cout << (bIsWaitingForDataAsyncLoad ? "wait for async load" : "finnished async load") << std::endl;
-			//std::cout << (bIsLoadingData ? "loading data" : "finnished data load") << std::endl;
-			ProfileStat("Switch material");
+			bool bIsComplete = false;
 			{
-				glUseProgram(ShaderID);
-				ProfileStat("UBO Binding");
-				unsigned int block_index = glGetUniformBlockIndex(ShaderID, "shader_data");
+				glUseProgram(GetShaderID());
+				unsigned int block_index = glGetUniformBlockIndex(GetShaderID(), "shader_data");
 				GLuint binding_point_index = 0;
 				glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, ubo);
-				glUniformBlockBinding(ShaderID, block_index, binding_point_index);
+				glUniformBlockBinding(GetShaderID(), block_index, binding_point_index);
 			}
 
 			if (textures.size() > 0)
 			{
-				ProfileStat("set shader textures");
 				for (unsigned int textureIndex = 0; textureIndex < textures.size(); ++textureIndex)
 				{
 					if (textures[textureIndex])
@@ -138,6 +137,7 @@ void Material::use()
 								glActiveTexture(GL_TEXTURE0 + textureIndex);
 								glBindTexture(GL_TEXTURE_2D, textures[textureIndex]->GetTextureID());
 							}
+							bIsComplete = true;
 						}
 						else
 						{
@@ -146,6 +146,11 @@ void Material::use()
 					}
 				}
 			}
+			else
+			{
+				bIsComplete = true;
+			}
+			if (bIsComplete) lastUsedMaterial = this;
 		}
 	}
 	else
@@ -165,7 +170,6 @@ void Material::InitializeMaterials()
 
 void Material::UpdateMaterialDefaults(Scene* DrawScene)
 {
-	ProfileStat("UBO Structure update");
 	DefaultShaderData shader_data;
 	shader_data.viewMatrix = DrawScene->GetCamera()->GetViewMatrix();
 	shader_data.worldProjection = DrawScene->GetProjection();
@@ -174,9 +178,9 @@ void Material::UpdateMaterialDefaults(Scene* DrawScene)
 	std::vector<PointLight*> pointLights = {};
 	std::vector<DirectionalLight*> directionalLights = {};
 	std::vector<SpotLight*> spotLights = {};
-	for (SceneComponentIterator<DirectionalLight> ite(DrawScene); ite; ite++) directionalLights.push_back(*ite);
-	for (SceneComponentIterator<PointLight> ite(DrawScene); ite; ite++) pointLights.push_back(*ite);
-	for (SceneComponentIterator<SpotLight> ite(DrawScene); ite; ite++) spotLights.push_back(*ite);
+	for (auto& element : DrawScene->GetSceneComponents()) if (dynamic_cast<DirectionalLight*>(element)) directionalLights.push_back(dynamic_cast<DirectionalLight*>(element));
+	for (auto& element : DrawScene->GetSceneComponents()) if (dynamic_cast<PointLight*>(element))  pointLights.push_back(dynamic_cast<PointLight*>(element));
+	for (auto& element : DrawScene->GetSceneComponents()) if (dynamic_cast<SpotLight*>(element))  spotLights.push_back(dynamic_cast<SpotLight*>(element));
 	shader_data.directionalLightCount = directionalLights.size();
 	shader_data.pointLightCount = pointLights.size();
 	shader_data.spotLightCount = spotLights.size();
@@ -204,76 +208,76 @@ void Material::UpdateMaterialDefaults(Scene* DrawScene)
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
 }
 
-void Material::setBool(const std::string &name, bool value) const
+void Material::setBool(const std::string &name, bool value)
 {
 	StatViewer::AddDrawcall();
-	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), (int)value);
+	glUniform1i(glGetUniformLocation(GetShaderID(), name.c_str()), (int)value);
 }
 
-void Material::setInt(const std::string &name, int value) const
+void Material::setInt(const std::string &name, int value)
 {
 	StatViewer::AddDrawcall();
-	glUniform1i(glGetUniformLocation(ShaderID, name.c_str()), value);
+	glUniform1i(glGetUniformLocation(GetShaderID(), name.c_str()), value);
 }
 
-void Material::setFloat(const std::string &name, float value) const
+void Material::setFloat(const std::string &name, float value)
 {
 	StatViewer::AddDrawcall();
-	glUniform1f(glGetUniformLocation(ShaderID, name.c_str()), value);
+	glUniform1f(glGetUniformLocation(GetShaderID(), name.c_str()), value);
 }
 
-void Material::setVec2(const std::string &name, const glm::vec2 &value) const
+void Material::setVec2(const std::string &name, const glm::vec2 &value)
 {
 	StatViewer::AddDrawcall();
-	glUniform2fv(glGetUniformLocation(ShaderID, name.c_str()), 1, &value[0]);
+	glUniform2fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, &value[0]);
 }
 
-void Material::setVec2(const std::string &name, float x, float y) const
+void Material::setVec2(const std::string &name, float x, float y)
 {
 	StatViewer::AddDrawcall();
-	glUniform2f(glGetUniformLocation(ShaderID, name.c_str()), x, y);
+	glUniform2f(glGetUniformLocation(GetShaderID(), name.c_str()), x, y);
 }
 
-void Material::setVec3(const std::string &name, const glm::vec3 &value) const
+void Material::setVec3(const std::string &name, const glm::vec3 &value)
 {
 	StatViewer::AddDrawcall();
-	glUniform3fv(glGetUniformLocation(ShaderID, name.c_str()), 1, &value[0]);
+	glUniform3fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, &value[0]);
 }
 
-void Material::setVec3(const std::string &name, float x, float y, float z) const
+void Material::setVec3(const std::string &name, float x, float y, float z)
 {
 	StatViewer::AddDrawcall();
-	glUniform3f(glGetUniformLocation(ShaderID, name.c_str()), x, y, z);
+	glUniform3f(glGetUniformLocation(GetShaderID(), name.c_str()), x, y, z);
 }
 
-void Material::setVec4(const std::string &name, const glm::vec4 &value) const
+void Material::setVec4(const std::string &name, const glm::vec4 &value)
 {
 	StatViewer::AddDrawcall();
-	glUniform4fv(glGetUniformLocation(ShaderID, name.c_str()), 1, &value[0]);
+	glUniform4fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, &value[0]);
 }
 
-void Material::setVec4(const std::string &name, float x, float y, float z, float w) const
+void Material::setVec4(const std::string &name, float x, float y, float z, float w)
 {
 	StatViewer::AddDrawcall();
-	glUniform4f(glGetUniformLocation(ShaderID, name.c_str()), x, y, z, w);
+	glUniform4f(glGetUniformLocation(GetShaderID(), name.c_str()), x, y, z, w);
 }
 
-void Material::setMat2(const std::string &name, const glm::mat2 &mat) const
+void Material::setMat2(const std::string &name, const glm::mat2 &mat)
 {
 	StatViewer::AddDrawcall();
-	glUniformMatrix2fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	glUniformMatrix2fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void Material::setMat3(const std::string &name, const glm::mat3 &mat) const
+void Material::setMat3(const std::string &name, const glm::mat3 &mat)
 {
 	StatViewer::AddDrawcall();
-	glUniformMatrix3fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	glUniformMatrix3fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void Material::setMat4(const std::string &name, const glm::mat4 &mat) const
+void Material::setMat4(const std::string &name, const glm::mat4 &mat)
 {
 	StatViewer::AddDrawcall();
-	glUniformMatrix4fv(glGetUniformLocation(ShaderID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
 ImColor Material::GetAssetColor()
@@ -297,7 +301,7 @@ void Material::BuildThumbnail()
 	CheckData();
 	SPropertyValue* thumbnailProperty = GetBaseProperty("thumbnailTexture");
 	Scene* thumbnailScene = new AdvancedScene();
-	thumbnailScene->InitializeScene();
+	thumbnailScene->InitializeSceneGT();
 	AStaticMesh* sphereMesh = AssetRegistry::FindAssetByName<AStaticMesh>("SphereMesh");
 	sphereMesh->CheckData();
 	for (auto& texture : textures)
@@ -307,9 +311,9 @@ void Material::BuildThumbnail()
 	StaticMeshComponent* comp = new StaticMeshComponent(thumbnailScene, sphereMesh, { this });
 	comp->SetRotation(SRotator(90, 0, 0));
 	comp->RebuildTransformData();
-	thumbnailScene->Draw();
-	thumbnailScene->Draw();
-	thumbnailScene->Draw();
+	thumbnailScene->Render();
+	thumbnailScene->Render();
+	thumbnailScene->Render();
 	DirectionalLight* dirLight = new DirectionalLight(thumbnailScene);
 	dirLight->lightParams.ambiant = glm::vec4(1);
 	thumbnailScene->GetCamera()->Pitch = 45;
@@ -317,10 +321,10 @@ void Material::BuildThumbnail()
 	thumbnailScene->GetCamera()->updateCameraVectors();
 	thumbnailScene->GetCamera()->SetLocation(comp->GetWorldBounds().GetOrigin() + thumbnailScene->GetCamera()->GetRotation().GetForwardVector() * comp->GetWorldBounds().GetBoundRadius() * -1.6);
 	thumbnailScene->UpdateFramebufferSize(THUMBNAIL_RESOLUTION, THUMBNAIL_RESOLUTION);
-	thumbnailScene->Draw();
-	thumbnailScene->Draw();
-	thumbnailScene->Draw();
-	thumbnailScene->Draw();
+	thumbnailScene->Render();
+	thumbnailScene->Render();
+	thumbnailScene->Render();
+	thumbnailScene->Render();
 	float* renderTexture = (float*)malloc(THUMBNAIL_RESOLUTION * THUMBNAIL_RESOLUTION * 3 * sizeof(float));
 	glBindTexture(GL_TEXTURE_2D, thumbnailScene->GetColorBuffer());
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, renderTexture);

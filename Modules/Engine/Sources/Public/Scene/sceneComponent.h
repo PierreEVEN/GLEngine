@@ -16,8 +16,10 @@ class SceneComponent
 {
 private:
 
-	/** is Component being destroyed */
-	bool bIsBeingDestroyed = false;
+	/** Wait for full destructions */
+	bool bIsBeingDestroyedRenderThread = false;
+	bool bIsBeingDestroyedGameThread = false;
+
 	/** Does we need to rebuild transform data next frame */
 	bool bHasTransformBeenModified = true;
 
@@ -26,6 +28,8 @@ private:
 
 	/** Owning scene */
 	Scene* renderScene;
+
+protected:
 
 public:
 
@@ -36,17 +40,26 @@ public:
 
 	DrawPriority drawPriority = DrawPriority::DrawPriority_Normal;
 
-	bool IsBeingDestroyed() const { return bIsBeingDestroyed; }
-
+	bool IsBeingDestroyed() const;
+	bool CanBeDestroyed() const;
+	void DestroyOnRenderThread();
+	void DestroyOnGameThread();
 	void DestroyComponent();
 
+	virtual void DestroyRenderThread() {}
+	virtual void BeginDestroy() {}
+	virtual void FinnishDestroy() {}
+
+	bool CanBeDeleted() const { return bIsBeingDestroyedRenderThread && bIsBeingDestroyedGameThread; }
+	bool HasDestructionProcessBeenStarted() const { return bIsBeingDestroyedRenderThread || bIsBeingDestroyedGameThread; }
 public:
 
 	void MarkTransformDirty() { bHasTransformBeenModified = true; };
 
 	virtual void RebuildTransformData() { bHasTransformBeenModified = false; }
 
-	virtual void Tick();
+	virtual void Tick(const double& inDeltaTime) {}
+	virtual void Render();
 
 	virtual void SetLocation(SVector3 newLocation);
 	virtual void SetRotation(SRotator newRotation);

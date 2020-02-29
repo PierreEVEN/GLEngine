@@ -15,7 +15,7 @@
 #define GIZMO_ARROW_LENGTH .5f
 #define GIZMO_ARROW_RADIUS .15f
 
-void AddCylinder(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator rotation, float radius, float length, glm::vec4 color, unsigned int resolution = 5, bool bIncludeEnd = false, bool bDoubleSided = false)
+void AddCylinder(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator rotation, float radius, float length, glm::vec4 color, unsigned int resolution = 5, bool bIncludeEnd = false, bool bDoubleSided = false)
 {
 	unsigned int startVertexIndex = vArray->size();
 	for (unsigned int i = 0; i < resolution; ++i)
@@ -31,11 +31,11 @@ void AddCylinder(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriang
 		vTriangle->push_back(startVertexIndex + i * (bIncludeEnd ? 10 : 4) + 2);
 		vTriangle->push_back(startVertexIndex + i * (bIncludeEnd ? 10 : 4) + 3);
 		
-		vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
-		vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius + rotation.GetForwardVector() * length).ToGLVector(), color));
+		vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
+		vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius + rotation.GetForwardVector() * length).ToGLVector(), color));
 
-		vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
-		vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius + rotation.GetForwardVector() * length).ToGLVector(), color));
+		vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
+		vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius + rotation.GetForwardVector() * length).ToGLVector(), color));
 
 		if (bIncludeEnd)
 		{
@@ -47,13 +47,13 @@ void AddCylinder(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriang
 			vTriangle->push_back(startVertexIndex + i * 10 + 8);
 			vTriangle->push_back(startVertexIndex + i * 10 + 9);
 
-			vArray->push_back(Vertex(location.ToGLVector(), color));
-			vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
-			vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex(location.ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
 
-			vArray->push_back(Vertex((location + rotation.GetForwardVector() * length).ToGLVector(), color));
-			vArray->push_back(Vertex((location + rotation.GetForwardVector() * length + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
-			vArray->push_back(Vertex((location + rotation.GetForwardVector() * length + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetForwardVector() * length).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetForwardVector() * length + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetForwardVector() * length + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
 		}
 	}
 	if (bDoubleSided)
@@ -72,11 +72,11 @@ void AddCylinder(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriang
 			vTriangle->push_back(startVertexIndex + i * (bIncludeEnd ? 10 : 4) + 1);
 			vTriangle->push_back(startVertexIndex + i * (bIncludeEnd ? 10 : 4) + 3);
 
-			vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
-			vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius + rotation.GetForwardVector() * length).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius + rotation.GetForwardVector() * length).ToGLVector(), color));
 
-			vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
-			vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius + rotation.GetForwardVector() * length).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius + rotation.GetForwardVector() * length).ToGLVector(), color));
 
 			if (bIncludeEnd)
 			{
@@ -88,18 +88,18 @@ void AddCylinder(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriang
 				vTriangle->push_back(startVertexIndex + i * 10 + 7);
 				vTriangle->push_back(startVertexIndex + i * 10 + 9);
 
-				vArray->push_back(Vertex(location.ToGLVector(), color));
-				vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
-				vArray->push_back(Vertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
+				vArray->push_back(SVertex(location.ToGLVector(), color));
+				vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
+				vArray->push_back(SVertex((location + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
 
-				vArray->push_back(Vertex((location + rotation.GetForwardVector() * length).ToGLVector(), color));
-				vArray->push_back(Vertex((location + rotation.GetForwardVector() * length + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
-				vArray->push_back(Vertex((location + rotation.GetForwardVector() * length + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
+				vArray->push_back(SVertex((location + rotation.GetForwardVector() * length).ToGLVector(), color));
+				vArray->push_back(SVertex((location + rotation.GetForwardVector() * length + rotation.GetUpVector() * sin(index) * radius + rotation.GetRightVector() * cos(index) * radius).ToGLVector(), color));
+				vArray->push_back(SVertex((location + rotation.GetForwardVector() * length + rotation.GetUpVector() * sin(nextIndex) * radius + rotation.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
 			}
 		}
 	}
 }
-void AddPlane(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator rotation, float sizeX, float sizeY, glm::vec4 color, unsigned int resolutionX = 1, unsigned int resolutionY = 1, bool bDoubleSided = false)
+void AddPlane(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator rotation, float sizeX, float sizeY, glm::vec4 color, unsigned int resolutionX = 1, unsigned int resolutionY = 1, bool bDoubleSided = false)
 {
 	unsigned int startVertexIndex = vArray->size();
 	for (unsigned int x = 0; x < resolutionX; ++x)
@@ -119,10 +119,10 @@ void AddPlane(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle,
 			vTriangle->push_back(startVertexIndex + x * resolutionX * (bDoubleSided ? 8 : 4) + y * (bDoubleSided ? 8 : 4) + 3);
 			vTriangle->push_back(startVertexIndex + x * resolutionX * (bDoubleSided ? 8 : 4) + y * (bDoubleSided ? 8 : 4) + 2);
 
-			vArray->push_back(Vertex((location + rotation.GetForwardVector() * posX + rotation.GetRightVector() * posY).ToGLVector(), color));
-			vArray->push_back(Vertex((location + rotation.GetForwardVector() * nextPosX + rotation.GetRightVector() * posY).ToGLVector(), color));
-			vArray->push_back(Vertex((location + rotation.GetForwardVector() * posX + rotation.GetRightVector() * nextPosY).ToGLVector(), color));
-			vArray->push_back(Vertex((location + rotation.GetForwardVector() * nextPosX + rotation.GetRightVector() * nextPosY).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetForwardVector() * posX + rotation.GetRightVector() * posY).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetForwardVector() * nextPosX + rotation.GetRightVector() * posY).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetForwardVector() * posX + rotation.GetRightVector() * nextPosY).ToGLVector(), color));
+			vArray->push_back(SVertex((location + rotation.GetForwardVector() * nextPosX + rotation.GetRightVector() * nextPosY).ToGLVector(), color));
 
 			if (bDoubleSided)
 			{
@@ -134,16 +134,16 @@ void AddPlane(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle,
 				vTriangle->push_back(startVertexIndex + x * resolutionX * 8 + y * 8 + 2);
 				vTriangle->push_back(startVertexIndex + x * resolutionX * 8 + y * 8 + 3);
 
-				vArray->push_back(Vertex((location + rotation.GetForwardVector() * posX + rotation.GetRightVector() * posY).ToGLVector(), color));
-				vArray->push_back(Vertex((location + rotation.GetForwardVector() * nextPosX + rotation.GetRightVector() * posY).ToGLVector(), color));
-				vArray->push_back(Vertex((location + rotation.GetForwardVector() * posX + rotation.GetRightVector() * nextPosY).ToGLVector(), color));
-				vArray->push_back(Vertex((location + rotation.GetForwardVector() * nextPosX + rotation.GetRightVector() * nextPosY).ToGLVector(), color));
+				vArray->push_back(SVertex((location + rotation.GetForwardVector() * posX + rotation.GetRightVector() * posY).ToGLVector(), color));
+				vArray->push_back(SVertex((location + rotation.GetForwardVector() * nextPosX + rotation.GetRightVector() * posY).ToGLVector(), color));
+				vArray->push_back(SVertex((location + rotation.GetForwardVector() * posX + rotation.GetRightVector() * nextPosY).ToGLVector(), color));
+				vArray->push_back(SVertex((location + rotation.GetForwardVector() * nextPosX + rotation.GetRightVector() * nextPosY).ToGLVector(), color));
 
 			}
 		}
 	}
 }
-void AddSphere(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, float radius, glm::vec4 color, unsigned int resolutionZ = 12, unsigned int resolutionX = 6)
+void AddSphere(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, float radius, glm::vec4 color, unsigned int resolutionZ = 12, unsigned int resolutionX = 6)
 {
 	unsigned int startVertexIndex = vArray->size();
 
@@ -168,14 +168,14 @@ void AddSphere(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle
 			float length = sin(indexX);
 			float nextLength = sin(nextIndexX);
 
-			vArray->push_back(Vertex((location + SVector3(sin(indexZ) * length, cos(indexZ) * length, cos(indexX)) * radius).ToGLVector(), color));
-			vArray->push_back(Vertex((location + SVector3(sin(indexZ) * nextLength, cos(indexZ) * nextLength, cos(nextIndexX)) * radius).ToGLVector(), color));
-			vArray->push_back(Vertex((location + SVector3(sin(nextIndexZ) * length, cos(nextIndexZ) * length, cos(indexX)) * radius).ToGLVector(), color));
-			vArray->push_back(Vertex((location + SVector3(sin(nextIndexZ) * nextLength, cos(nextIndexZ) * nextLength, cos(nextIndexX)) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + SVector3(sin(indexZ) * length, cos(indexZ) * length, cos(indexX)) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + SVector3(sin(indexZ) * nextLength, cos(indexZ) * nextLength, cos(nextIndexX)) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + SVector3(sin(nextIndexZ) * length, cos(nextIndexZ) * length, cos(indexX)) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + SVector3(sin(nextIndexZ) * nextLength, cos(nextIndexZ) * nextLength, cos(nextIndexX)) * radius).ToGLVector(), color));
 		}
 	}
 }
-void AddCone(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator direction, float radius, float height, glm::vec4 color, unsigned int resolution = 12, bool bAddBottom = false)
+void AddCone(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator direction, float radius, float height, glm::vec4 color, unsigned int resolution = 12, bool bAddBottom = false)
 {
 	unsigned int startVertexIndex = vArray->size();
 
@@ -188,23 +188,23 @@ void AddCone(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle, 
 		vTriangle->push_back(startVertexIndex + i * (bAddBottom ? 6 : 3) + 2);
 		vTriangle->push_back(startVertexIndex + i * (bAddBottom ? 6 : 3) + 1);
 
-		vArray->push_back(Vertex((location + direction.GetForwardVector() * height).ToGLVector(), color));
-		vArray->push_back(Vertex((location + SVector3(direction.GetRightVector() * sin(index)) * radius + SVector3(direction.GetUpVector() * cos(index)) * radius).ToGLVector(), color));
-		vArray->push_back(Vertex((location + SVector3(direction.GetRightVector() * sin(nextIndex)) * radius + SVector3(direction.GetUpVector() * cos(nextIndex)) * radius).ToGLVector(), color));
+		vArray->push_back(SVertex((location + direction.GetForwardVector() * height).ToGLVector(), color));
+		vArray->push_back(SVertex((location + SVector3(direction.GetRightVector() * sin(index)) * radius + SVector3(direction.GetUpVector() * cos(index)) * radius).ToGLVector(), color));
+		vArray->push_back(SVertex((location + SVector3(direction.GetRightVector() * sin(nextIndex)) * radius + SVector3(direction.GetUpVector() * cos(nextIndex)) * radius).ToGLVector(), color));
 
 		if (bAddBottom)
 		{
 			vTriangle->push_back(startVertexIndex + i * 6 + 3);
 			vTriangle->push_back(startVertexIndex + i * 6 + 5);
 			vTriangle->push_back(startVertexIndex + i * 6 + 4);
-			vArray->push_back(Vertex((location).ToGLVector(), color));
-			vArray->push_back(Vertex((location + direction.GetUpVector() * sin(index) * radius + direction.GetRightVector() * cos(index) * radius).ToGLVector(), color));
-			vArray->push_back(Vertex((location + direction.GetUpVector() * sin(nextIndex) * radius + direction.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex((location).ToGLVector(), color));
+			vArray->push_back(SVertex((location + direction.GetUpVector() * sin(index) * radius + direction.GetRightVector() * cos(index) * radius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + direction.GetUpVector() * sin(nextIndex) * radius + direction.GetRightVector() * cos(nextIndex) * radius).ToGLVector(), color));
 		}
 	}
 
 }
-void AddDisk(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator direction, float innerRadius, float outterRadius, glm::vec4 color, unsigned int resolution = 12, bool bDoubleSided = false)
+void AddDisk(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator direction, float innerRadius, float outterRadius, glm::vec4 color, unsigned int resolution = 12, bool bDoubleSided = false)
 {
 	unsigned int startVertexIndex = vArray->size();
 
@@ -221,10 +221,10 @@ void AddDisk(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle, 
 		vTriangle->push_back(startVertexIndex + i * 4 + 3);
 		vTriangle->push_back(startVertexIndex + i * 4 + 2);
 
-		vArray->push_back(Vertex((location + direction.GetUpVector() * innerRadius * sin(index) + direction.GetRightVector() * cos(index) * innerRadius).ToGLVector(), color));
-		vArray->push_back(Vertex((location + direction.GetUpVector() * innerRadius * sin(nextIndex) + direction.GetRightVector() * cos(nextIndex) * innerRadius).ToGLVector(), color));
-		vArray->push_back(Vertex((location + direction.GetUpVector() * outterRadius * sin(index) + direction.GetRightVector() * cos(index) * outterRadius).ToGLVector(), color));
-		vArray->push_back(Vertex((location + direction.GetUpVector() * outterRadius * sin(nextIndex) + direction.GetRightVector() * cos(nextIndex) * outterRadius).ToGLVector(), color));
+		vArray->push_back(SVertex((location + direction.GetUpVector() * innerRadius * sin(index) + direction.GetRightVector() * cos(index) * innerRadius).ToGLVector(), color));
+		vArray->push_back(SVertex((location + direction.GetUpVector() * innerRadius * sin(nextIndex) + direction.GetRightVector() * cos(nextIndex) * innerRadius).ToGLVector(), color));
+		vArray->push_back(SVertex((location + direction.GetUpVector() * outterRadius * sin(index) + direction.GetRightVector() * cos(index) * outterRadius).ToGLVector(), color));
+		vArray->push_back(SVertex((location + direction.GetUpVector() * outterRadius * sin(nextIndex) + direction.GetRightVector() * cos(nextIndex) * outterRadius).ToGLVector(), color));
 	}
 	if (bDoubleSided)
 	{
@@ -243,14 +243,14 @@ void AddDisk(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle, 
 			vTriangle->push_back(startVertexIndex + i * 4 + 2);
 			vTriangle->push_back(startVertexIndex + i * 4 + 3);
 
-			vArray->push_back(Vertex((location + direction.GetUpVector() * innerRadius * sin(index) + direction.GetRightVector() * cos(index) * innerRadius).ToGLVector(), color));
-			vArray->push_back(Vertex((location + direction.GetUpVector() * innerRadius * sin(nextIndex) + direction.GetRightVector() * cos(nextIndex) * innerRadius).ToGLVector(), color));
-			vArray->push_back(Vertex((location + direction.GetUpVector() * outterRadius * sin(index) + direction.GetRightVector() * cos(index) * outterRadius).ToGLVector(), color));
-			vArray->push_back(Vertex((location + direction.GetUpVector() * outterRadius * sin(nextIndex) + direction.GetRightVector() * cos(nextIndex) * outterRadius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + direction.GetUpVector() * innerRadius * sin(index) + direction.GetRightVector() * cos(index) * innerRadius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + direction.GetUpVector() * innerRadius * sin(nextIndex) + direction.GetRightVector() * cos(nextIndex) * innerRadius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + direction.GetUpVector() * outterRadius * sin(index) + direction.GetRightVector() * cos(index) * outterRadius).ToGLVector(), color));
+			vArray->push_back(SVertex((location + direction.GetUpVector() * outterRadius * sin(nextIndex) + direction.GetRightVector() * cos(nextIndex) * outterRadius).ToGLVector(), color));
 		}
 	}
 }
-void AddCube(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator rotation, float sizeX, float sizeY, float sizeZ, glm::vec4 color)
+void AddCube(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator rotation, float sizeX, float sizeY, float sizeZ, glm::vec4 color)
 {
 	unsigned int startVertexIndex = vArray->size();
 
@@ -302,15 +302,15 @@ void AddCube(std::vector<Vertex>* vArray, std::vector<unsigned int>* vTriangle, 
 	vTriangle->push_back(startVertexIndex + 6);
 	vTriangle->push_back(startVertexIndex + 7);
 
-	vArray->push_back(Vertex((location).ToGLVector(), color));//Root	0
-	vArray->push_back(Vertex((location + rotation.GetForwardVector() * sizeX).ToGLVector(), color));//Root+X	 1
-	vArray->push_back(Vertex((location + rotation.GetRightVector() * sizeY).ToGLVector(), color));//Root+Y	2
-	vArray->push_back(Vertex((location + rotation.GetForwardVector() * sizeX + rotation.GetRightVector() * sizeY).ToGLVector(), color)); //Root+XY	3
+	vArray->push_back(SVertex((location).ToGLVector(), color));//Root	0
+	vArray->push_back(SVertex((location + rotation.GetForwardVector() * sizeX).ToGLVector(), color));//Root+X	 1
+	vArray->push_back(SVertex((location + rotation.GetRightVector() * sizeY).ToGLVector(), color));//Root+Y	2
+	vArray->push_back(SVertex((location + rotation.GetForwardVector() * sizeX + rotation.GetRightVector() * sizeY).ToGLVector(), color)); //Root+XY	3
 
-	vArray->push_back(Vertex((location + rotation.GetUpVector() * sizeZ).ToGLVector(), color)); //Root + Z	4
-	vArray->push_back(Vertex((location + rotation.GetUpVector() * sizeZ + rotation.GetForwardVector() * sizeX).ToGLVector(), color)); //Root+ZX	5
-	vArray->push_back(Vertex((location + rotation.GetUpVector() * sizeZ + rotation.GetRightVector() * sizeY).ToGLVector(), color)); // Root+ZY	6
-	vArray->push_back(Vertex((location + rotation.GetUpVector() * sizeZ + rotation.GetForwardVector() * sizeX + rotation.GetRightVector() * sizeY).ToGLVector(), color)); // Root+ZXY	7
+	vArray->push_back(SVertex((location + rotation.GetUpVector() * sizeZ).ToGLVector(), color)); //Root + Z	4
+	vArray->push_back(SVertex((location + rotation.GetUpVector() * sizeZ + rotation.GetForwardVector() * sizeX).ToGLVector(), color)); //Root+ZX	5
+	vArray->push_back(SVertex((location + rotation.GetUpVector() * sizeZ + rotation.GetRightVector() * sizeY).ToGLVector(), color)); // Root+ZY	6
+	vArray->push_back(SVertex((location + rotation.GetUpVector() * sizeZ + rotation.GetForwardVector() * sizeX + rotation.GetRightVector() * sizeY).ToGLVector(), color)); // Root+ZXY	7
 
 
 }
@@ -358,7 +358,7 @@ EditorGizmo::EditorGizmo(EditorScene* inScene)
 		glBindVertexArray(TranslationVAO);
 		// load data into vertex buffers
 		glBindBuffer(GL_ARRAY_BUFFER, TranslationVBO);
-		glBufferData(GL_ARRAY_BUFFER, TranslationVerticesArray.size() * sizeof(Vertex), TranslationVerticesArray.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, TranslationVerticesArray.size() * sizeof(SVertex), TranslationVerticesArray.data(), GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TranlsationEBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, TranslationTrianglesArray.size() * sizeof(unsigned int), TranslationTrianglesArray.data(), GL_STATIC_DRAW);
@@ -367,22 +367,22 @@ EditorGizmo::EditorGizmo(EditorScene* inScene)
 		// set the vertex attribute pointers
 		// vertex Positions
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)0);
 		// vertex normals
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Normal));
 		// vertex texture coords
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, TexCoords));
 		// vertex tangent
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Tangent));
 		// vertex bitangent
 		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Bitangent));
 		// vertex color
 		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, VertexColor));
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, VertexColor));
 		glBindVertexArray(0);
 	}
 	{
@@ -394,7 +394,7 @@ EditorGizmo::EditorGizmo(EditorScene* inScene)
 		glBindVertexArray(RotationVAO);
 		// load data into vertex buffers
 		glBindBuffer(GL_ARRAY_BUFFER, RotationVBO);
-		glBufferData(GL_ARRAY_BUFFER, RotationVerticesArray.size() * sizeof(Vertex), RotationVerticesArray.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, RotationVerticesArray.size() * sizeof(SVertex), RotationVerticesArray.data(), GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RotationEBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, RotationTriangleArray.size() * sizeof(unsigned int), RotationTriangleArray.data(), GL_STATIC_DRAW);
@@ -403,22 +403,22 @@ EditorGizmo::EditorGizmo(EditorScene* inScene)
 		// set the vertex attribute pointers
 		// vertex Positions
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)0);
 		// vertex normals
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Normal));
 		// vertex texture coords
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, TexCoords));
 		// vertex tangent
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Tangent));
 		// vertex bitangent
 		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Bitangent));
 		// vertex color
 		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, VertexColor));
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, VertexColor));
 		glBindVertexArray(0);
 	}
 	{
@@ -430,7 +430,7 @@ EditorGizmo::EditorGizmo(EditorScene* inScene)
 		glBindVertexArray(ScaleVAO);
 		// load data into vertex buffers
 		glBindBuffer(GL_ARRAY_BUFFER, ScaleVBO);
-		glBufferData(GL_ARRAY_BUFFER, ScaleVerticesArray.size() * sizeof(Vertex), ScaleVerticesArray.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, ScaleVerticesArray.size() * sizeof(SVertex), ScaleVerticesArray.data(), GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ScaleEBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ScaleTriangleArray.size() * sizeof(unsigned int), ScaleTriangleArray.data(), GL_STATIC_DRAW);
@@ -439,22 +439,22 @@ EditorGizmo::EditorGizmo(EditorScene* inScene)
 		// set the vertex attribute pointers
 		// vertex Positions
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)0);
 		// vertex normals
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Normal));
 		// vertex texture coords
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, TexCoords));
 		// vertex tangent
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Tangent));
 		// vertex bitangent
 		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Bitangent));
 		// vertex color
 		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, VertexColor));
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, VertexColor));
 		glBindVertexArray(0);
 	}
 	drawPriority = DrawPriority_Last;
@@ -465,69 +465,69 @@ EditorGizmo::EditorGizmo(EditorScene* inScene)
 	inScene->GetParentWorld()->GetInputManager()->AddInput(new KeyBind(inScene->GetParentWorld()->GetInputManager(), { Key(GLFW_KEY_E) }, ActionType_JustPress, this, &EditorGizmo::SetScaleMode));
 	inScene->GetParentWorld()->GetInputManager()->BindOnMousePositionChanged(this, &EditorGizmo::Drag);
 }
-
-void EditorGizmo::Tick()
-{
-	SceneComponent::Tick();
-	if (!attachedComponent) return;
-	if (gizmoMode == EGizmoMode::Rotate)
-	{
-		SetRotation(SRotator(0, LocalRotation.GetPitch(), LocalRotation.GetYaw()));
-	}
-	else
-	{
-		if (GetRotation() != attachedComponent->GetRotation()) SetRotation(attachedComponent->GetRotation());
-	}
-	glm::mat4 gizmoTransform = glm::mat4(1.f);
-	gizmoTransform = glm::translate(gizmoTransform, GetLocation().ToGLVector());
-	gizmoTransform = gizmoTransform * glm::mat4_cast(glm::quat((float)GetRotation().w, (float)GetRotation().x, (float)GetRotation().y, (float)GetRotation().z));
-	gizmoTransform = glm::scale(gizmoTransform, GetScale3D().ToGLVector());
-
-	SVector3 traceDirection = GetScene()->PixelToWorldDirection(((EditorScene*)GetScene())->GetCursorPositionX(), ((EditorScene*)GetScene())->GetCursorPositionY()).ToGLVector();
-	SVector3 xPos = GetLocation() + GetRotation().GetForwardVector() * GIZMO_LENGTH;
-	SVector3 yPos = GetLocation () + GetRotation().GetRightVector() * GIZMO_LENGTH;
-	SVector3 zPos = GetLocation() + GetRotation().GetUpVector() * GIZMO_LENGTH;
-
-	SVector3 cameraPos = GetScene()->GetCamera()->GetLocation();
-	SVector3 traceEndPos = cameraPos + traceDirection * 1000000.f;
-
-	float distanceX = (float)WorldInteractionLibrary::GetSegmentDistanceFromSegment(cameraPos, traceEndPos, GetLocation(), xPos);
-	float distanceY = (float)WorldInteractionLibrary::GetSegmentDistanceFromSegment(cameraPos, traceEndPos, GetLocation(), yPos);
-	float distanceZ = (float)WorldInteractionLibrary::GetSegmentDistanceFromSegment(cameraPos, traceEndPos, GetLocation(), zPos);
-
-	MaterialEditorDebuger::GetGizmoMaterial()->use();
-	MaterialEditorDebuger::GetGizmoMaterial()->setMat4("model", gizmoTransform);
-	MaterialEditorDebuger::GetGizmoMaterial()->setInt("gizmoMode", (int)gizmoMode);
-	if (gizmoMode == EGizmoMode::Translate || gizmoMode == EGizmoMode::Scale)
-	{
-		MaterialEditorDebuger::GetGizmoMaterial()->setInt("direction", bIsDraging ? (int)gizmoTranslationType : (int)GetTranslationTypeFromCamera(GetScene()->GetCamera()->GetLocation(), traceDirection));
-	}
-	else
-	{
-		MaterialEditorDebuger::GetGizmoMaterial()->setInt("direction", bIsDraging ? (int)gizmoTranslationType : (int)GetRotationTypeFromCamera(GetScene()->GetCamera()->GetLocation(), traceDirection));
-	}
-	/** Draw vertices */
-	if (gizmoMode == EGizmoMode::Translate)
-	{
-		glBindVertexArray(TranslationVAO);
-		glDrawElements(GL_TRIANGLES, TranslationTrianglesArray.size(), GL_UNSIGNED_INT, 0);
-	}
-	else if (gizmoMode == EGizmoMode::Rotate)
-	{
-		glBindVertexArray(RotationVAO);
-		glDrawElements(GL_TRIANGLES, RotationTriangleArray.size(), GL_UNSIGNED_INT, 0);
-	}
-	else if (gizmoMode == EGizmoMode::Scale)
-	{
-		glBindVertexArray(ScaleVAO);
-		glDrawElements(GL_TRIANGLES, ScaleTriangleArray.size(), GL_UNSIGNED_INT, 0);
-	}
-	StatViewer::AddDrawcall();
-
-	/** Set GL to defaults */
-	glBindVertexArray(0);
-	glActiveTexture(GL_TEXTURE0);
-}
+// 
+// void EditorGizmo::Tick()
+// {
+// 	SceneComponent::Tick();
+// 	if (!attachedComponent) return;
+// 	if (gizmoMode == EGizmoMode::Rotate)
+// 	{
+// 		SetRotation(SRotator(0, LocalRotation.GetPitch(), LocalRotation.GetYaw()));
+// 	}
+// 	else
+// 	{
+// 		if (GetRotation() != attachedComponent->GetRotation()) SetRotation(attachedComponent->GetRotation());
+// 	}
+// 	glm::mat4 gizmoTransform = glm::mat4(1.f);
+// 	gizmoTransform = glm::translate(gizmoTransform, GetLocation().ToGLVector());
+// 	gizmoTransform = gizmoTransform * glm::mat4_cast(glm::quat((float)GetRotation().w, (float)GetRotation().x, (float)GetRotation().y, (float)GetRotation().z));
+// 	gizmoTransform = glm::scale(gizmoTransform, GetScale3D().ToGLVector());
+// 
+// 	SVector3 traceDirection = GetScene()->PixelToWorldDirection(((EditorScene*)GetScene())->GetCursorPositionX(), ((EditorScene*)GetScene())->GetCursorPositionY()).ToGLVector();
+// 	SVector3 xPos = GetLocation() + GetRotation().GetForwardVector() * GIZMO_LENGTH;
+// 	SVector3 yPos = GetLocation () + GetRotation().GetRightVector() * GIZMO_LENGTH;
+// 	SVector3 zPos = GetLocation() + GetRotation().GetUpVector() * GIZMO_LENGTH;
+// 
+// 	SVector3 cameraPos = GetScene()->GetCamera()->GetLocation();
+// 	SVector3 traceEndPos = cameraPos + traceDirection * 1000000.f;
+// 
+// 	float distanceX = (float)WorldInteractionLibrary::GetSegmentDistanceFromSegment(cameraPos, traceEndPos, GetLocation(), xPos);
+// 	float distanceY = (float)WorldInteractionLibrary::GetSegmentDistanceFromSegment(cameraPos, traceEndPos, GetLocation(), yPos);
+// 	float distanceZ = (float)WorldInteractionLibrary::GetSegmentDistanceFromSegment(cameraPos, traceEndPos, GetLocation(), zPos);
+// 
+// 	MaterialEditorDebuger::GetGizmoMaterial()->use();
+// 	MaterialEditorDebuger::GetGizmoMaterial()->setMat4("model", gizmoTransform);
+// 	MaterialEditorDebuger::GetGizmoMaterial()->setInt("gizmoMode", (int)gizmoMode);
+// 	if (gizmoMode == EGizmoMode::Translate || gizmoMode == EGizmoMode::Scale)
+// 	{
+// 		MaterialEditorDebuger::GetGizmoMaterial()->setInt("direction", bIsDraging ? (int)gizmoTranslationType : (int)GetTranslationTypeFromCamera(GetScene()->GetCamera()->GetLocation(), traceDirection));
+// 	}
+// 	else
+// 	{
+// 		MaterialEditorDebuger::GetGizmoMaterial()->setInt("direction", bIsDraging ? (int)gizmoTranslationType : (int)GetRotationTypeFromCamera(GetScene()->GetCamera()->GetLocation(), traceDirection));
+// 	}
+// 	/** Draw vertices */
+// 	if (gizmoMode == EGizmoMode::Translate)
+// 	{
+// 		glBindVertexArray(TranslationVAO);
+// 		glDrawElements(GL_TRIANGLES, TranslationTrianglesArray.size(), GL_UNSIGNED_INT, 0);
+// 	}
+// 	else if (gizmoMode == EGizmoMode::Rotate)
+// 	{
+// 		glBindVertexArray(RotationVAO);
+// 		glDrawElements(GL_TRIANGLES, RotationTriangleArray.size(), GL_UNSIGNED_INT, 0);
+// 	}
+// 	else if (gizmoMode == EGizmoMode::Scale)
+// 	{
+// 		glBindVertexArray(ScaleVAO);
+// 		glDrawElements(GL_TRIANGLES, ScaleTriangleArray.size(), GL_UNSIGNED_INT, 0);
+// 	}
+// 	StatViewer::AddDrawcall();
+// 
+// 	/** Set GL to defaults */
+// 	glBindVertexArray(0);
+// 	glActiveTexture(GL_TEXTURE0);
+// }
 
 void EditorGizmo::SetCanDrag(bool bInDrag)
 {

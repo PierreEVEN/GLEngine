@@ -190,13 +190,13 @@
     <ClInclude Include="Sources\Public\Scene\EditorScene.h" /> 
     <ClInclude Include="Sources\Public\UI\AssetImporterWindow.h" /> 
     <ClInclude Include="Sources\Public\UI\EditorConsole.h" /> 
-    <ClInclude Include="Sources\Public\UI\ProfilerWindow.h" /> 
     <ClInclude Include="Sources\Public\UI\EditorWindows\assetEditor.h" /> 
     <ClInclude Include="Sources\Public\UI\EditorWindows\assetSelector.h" /> 
     <ClInclude Include="Sources\Public\UI\EditorWindows\contentBrowser.h" /> 
     <ClInclude Include="Sources\Public\UI\EditorWindows\EditorWindow.h" /> 
     <ClInclude Include="Sources\Public\UI\EditorWindows\fileExplorer.h" /> 
     <ClInclude Include="Sources\Public\UI\EditorWindows\sceneComponentEditor.h" /> 
+    <ClInclude Include="Sources\Public\UI\EditorWindows\WorldSettingsWindow.h" /> 
     <ClInclude Include="Sources\Public\World\EditorWorld.h" /> 
   </ItemGroup> 
   <ItemGroup> 
@@ -208,13 +208,13 @@
     <ClCompile Include="Sources\Private\Scene\EditorScene.cpp" /> 
     <ClCompile Include="Sources\Private\UI\AssetImporterWindow.cpp" /> 
     <ClCompile Include="Sources\Private\UI\EditorConsole.cpp" /> 
-    <ClCompile Include="Sources\Private\UI\ProfilerWindow.cpp" /> 
     <ClCompile Include="Sources\Private\UI\EditorWindows\assetEditor.cpp" /> 
     <ClCompile Include="Sources\Private\UI\EditorWindows\assetSelector.cpp" /> 
     <ClCompile Include="Sources\Private\UI\EditorWindows\contentBrowser.cpp" /> 
     <ClCompile Include="Sources\Private\UI\EditorWindows\EditorWindow.cpp" /> 
     <ClCompile Include="Sources\Private\UI\EditorWindows\fileExplorer.cpp" /> 
     <ClCompile Include="Sources\Private\UI\EditorWindows\sceneComponentEditor.cpp" /> 
+    <ClCompile Include="Sources\Private\UI\EditorWindows\WorldSettingsWindow.cpp" /> 
     <ClCompile Include="Sources\Private\World\EditorWorld.cpp" /> 
   </ItemGroup> 
 </Project> 

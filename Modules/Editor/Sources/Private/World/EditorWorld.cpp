@@ -11,16 +11,33 @@
 #include <Lighting/spotLight.h>
 #include <Shader/material.h>
 
-void EditorWorld::TickWorld(double newDeltaSecond)
+void EditorWorld::Tick(double newDeltaSecond)
 {
 	processInput();
-	World::TickWorld(newDeltaSecond);
+	World::Tick(newDeltaSecond);
+}
+
+void EditorWorld::Initialize()
+{
+	World::Initialize();
+
+	GetInputManager()->AddInput(new KeyBind(GetInputManager(), { GLFW_KEY_Q }, ActionType_JustPress, this, &EditorWorld::PopCube));
+	GetInputManager()->AddInput(new KeyBind(GetInputManager(), { GLFW_KEY_E }, ActionType_Press, this, &EditorWorld::PopCube));
+}
+
+void EditorWorld::PopCube()
+{
+
+	if (AStaticMesh* CubeMesh = AssetRegistry::FindAssetByName<AStaticMesh>("CubeMesh"))
+	{
+		StaticMeshComponent* newObj = new StaticMeshComponent(GetScene(), CubeMesh, {});
+		newObj->SetLocation(GetScene()->GetCamera()->GetLocation() + GetScene()->GetCamera()->GetRotation().GetForwardVector() * glm::vec3(10.f));
+	}
 }
 
 Scene* EditorWorld::CreateScene()
 {
 	Scene* createdScene = new EditorScene(this);
-	createdScene->InitializeScene();
 	return createdScene;
 }
 
@@ -38,15 +55,6 @@ void EditorWorld::processInput() {
 	{
 		GetScene()->GetCamera()->SwitchCaptureMouse();
 		GetInputManager()->SetCaptureMouse(GetScene()->GetCamera()->bDoesCaptureMouse);
-	}
-
-	if (glfwGetKey(GetWindow(), GLFW_KEY_Q) == GLFW_PRESS)
-	{
-		if (AStaticMesh* CubeMesh = AssetRegistry::FindAssetByName<AStaticMesh>("CubeMesh"))
-		{
-			StaticMeshComponent* newObj = new StaticMeshComponent(GetScene(), CubeMesh, {});
-			newObj->SetLocation(GetScene()->GetCamera()->GetLocation() + GetScene()->GetCamera()->GetRotation().GetForwardVector() * glm::vec3(10.f));
-		}
 	}
 
 	if (glfwGetKey(GetWindow(), GLFW_KEY_W) == GLFW_PRESS)

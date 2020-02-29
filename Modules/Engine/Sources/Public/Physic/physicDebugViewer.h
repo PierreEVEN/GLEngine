@@ -4,7 +4,7 @@
 #include <LinearMath/btIDebugDraw.h>
 
 class World;
-struct Vertex;
+struct SVertex;
 struct SVector3;
 class Scene;
 

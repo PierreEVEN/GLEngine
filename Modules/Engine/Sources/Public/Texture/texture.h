@@ -8,6 +8,12 @@ class Texture2D : public Asset
 {
 	unsigned int textureID = -1;
 
+
+protected:
+
+	bool bIsGPUDataCreated = false;
+	virtual void CreateGPUData();
+
 public:
 
 	Texture2D(std::string textAssetPath);
@@ -15,7 +21,6 @@ public:
 	virtual unsigned int GetTextureID();
 
 	virtual void LoadProperties() override;
-	virtual void PostLoadProperties() override;
 
 	virtual void BuildThumbnail() override;
 	virtual ImColor GetAssetColor();
@@ -28,7 +33,8 @@ class TextureCube : public Texture2D
 	unsigned int textureCubeID = -1;
 
 	virtual void LoadProperties() override;
-	virtual void PostLoadProperties() override;
+
+	virtual void CreateGPUData() override;
 
 public:
 

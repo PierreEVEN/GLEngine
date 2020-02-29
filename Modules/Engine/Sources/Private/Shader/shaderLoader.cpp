@@ -40,6 +40,9 @@ ShaderLoader::ShaderLoader(const char* vertexShaderPath, const char* fragmentSha
 
 int ShaderLoader::Get()
 {
+
+	//CHECK_RENDER_THREAD;
+
 	const char* vShaderCode = vertexCode.c_str();
 	const char * fShaderCode = fragmentCode.c_str();
 

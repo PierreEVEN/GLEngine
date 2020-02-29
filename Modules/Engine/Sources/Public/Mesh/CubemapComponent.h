@@ -1,16 +1,21 @@
 
 #pragma once
 
-#include "meshSectionComponent.h"
+#include "MeshComponent.h"
 
-class CubemapComponent : public MeshSectionComponent
+class CubemapComponent : public MeshComponent
 {
+private:
+
+	void CreateMesh();
+
+	bool bHasMeshDataBeenInitialized = false;
 
 public:
 
-	CubemapComponent(Scene* inScene, StaticMeshComponent* inParentStaticMeshComponent, MeshSectionData* inStaticMeshSection);
+	CubemapComponent(Scene* inScene);
 
-	virtual void Tick() override;
+	virtual void Render() override;
 
 	virtual void RebuildLocalBounds() override {}
 };

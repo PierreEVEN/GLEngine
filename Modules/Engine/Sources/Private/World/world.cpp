@@ -29,6 +29,7 @@ World::~World() {
 }
 
 void World::Initialize() {
+	CHECK_GAME_THREAD;
 	/** World cannot be initialized twice */
 	if (bHasBeenInitialized) GFullLog(LogVerbosity::Assert, "World", "This world is already initialized");
 	bHasBeenInitialized = true;
@@ -42,7 +43,6 @@ void World::Initialize() {
 
 Scene* World::CreateScene() {
 	Scene* createdScene = new Scene();
-	createdScene->InitializeScene();
 	return createdScene;
 }
 
@@ -74,14 +74,29 @@ World* World::FindWorld(GLFWwindow* InWindows) {
 	return nullptr;
 }
 
-void World::TickWorld(double newDeltaSecond) {
+void World::Tick(double newDeltaSecond) {
+
+	CHECK_GAME_THREAD;
+
+	if (!bHasBeenInitialized) Initialize();
+
 	worldDeltaSecond = newDeltaSecond;
 
 	/** Get inputs */
-	GetInputManager()->ProcessInputs();
+	if (GetInputManager()) GetInputManager()->ProcessInputs();
 
+	if (GetScene())
+	{
+		StatReader::AddStatValue("test", "groupTest", worldDeltaSecond);
+		GetScene()->Tick(worldDeltaSecond);
+	}
+}
+
+void World::Render()
+{
+	if (!GetScene()) return;
 	/** Redraw Scene */
-	GetScene()->Draw();
+	GetScene()->Render();
 
 	/** Draw interface */
 	ImGui_ImplOpenGL3_NewFrame();
@@ -97,9 +112,16 @@ void World::TickWorld(double newDeltaSecond) {
 	}
 }
 
-void World::UpdateWorlds(double deltaSecond) {
+void World::TickWorlds(double deltaSecond) {
 	for (unsigned int worldIndex = 0; worldIndex < GWorlds.size(); ++worldIndex) {
-		GWorlds[worldIndex]->TickWorld(deltaSecond);
+		GWorlds[worldIndex]->Tick(deltaSecond);
+	}
+}
+
+void World::RenderWorlds()
+{
+	for (unsigned int worldIndex = 0; worldIndex < GWorlds.size(); ++worldIndex) {
+		GWorlds[worldIndex]->Render();
 	}
 }
 

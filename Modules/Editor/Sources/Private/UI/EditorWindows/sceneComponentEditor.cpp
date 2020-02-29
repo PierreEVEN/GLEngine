@@ -4,7 +4,6 @@
 #include <World/world.h>
 #include <Engine/inputManager.h>
 #include <MathLibrary/worldInteraction.h>
-#include <Mesh/meshSectionComponent.h>
 #include <Camera/camera.h>
 #include <Mesh/staticMeshComponent.h>
 #include <Scene/scene.h>
@@ -21,12 +20,12 @@ void SceneComponentEditor::ClickInScene()
 {
 	SVector3 traceDirection = parentWorld->GetScene()->PixelToWorldDirection(((AdvancedScene*)parentWorld->GetScene())->GetCursorPositionX(), ((AdvancedScene*)parentWorld->GetScene())->GetCursorPositionY());
 	SHitResult result = WorldInteractionLibrary::TraceScene(parentWorld->GetScene(), parentWorld->GetScene()->GetCamera()->GetLocation(), parentWorld->GetScene()->GetCamera()->GetLocation() + traceDirection * 1000000);
-	if (result.bHitComponent && result.hitSection->parentStaticMeshComponent)
-	{
-		SetAttachComponent(result.hitSection->parentStaticMeshComponent);
-		return;
-	}
-	//SetAttachComponent(nullptr);
+// 	if (result.bHitComponent && result.hitSection->parentStaticMeshComponent)
+// 	{
+// 		SetAttachComponent(result.hitSection->parentStaticMeshComponent);
+// 		return;
+// 	}
+// 	//SetAttachComponent(nullptr);
 }
 
 void SceneComponentEditor::Draw(World* inWorld)

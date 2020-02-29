@@ -16,14 +16,6 @@ Scene::~Scene()
 	glDeleteFramebuffers(1, &framebuffer);
 	glDeleteTextures(1, &textureColorbuffer);
 	glDeleteRenderbuffers(1, &sceneRenderBufferObject);
-	for (auto& component : components)
-	{
-		component->DestroyComponent();
-	}
-	for (int i = components.size() - 1; i >= 0; --i)
-	{
-		delete components[i];
-	}
 }
 
 void Scene::CreateFramebuffer()
@@ -67,17 +59,23 @@ GLDebugDrawer* Scene::CreateDebugDrawer()
 	return new GLDebugDrawer(this);
 }
 
-void Scene::InitializeScene()
+void Scene::InitializeSceneGT()
 {
+	bHasBeenInitializedGT = true;
+	SceneComponents = {};
+	debugDrawer = CreateDebugDrawer();
+	sceneCamera = CreateCamera();
+}
+
+void Scene::InitializeSceneRT()
+{
+	bHasBeenInitializedRT = true;
 	defaultBackgroundColor = glm::vec4(DEFAULT_BACKGROUND_CLEAR_COLOR);
-	components = {};
 	framebuffer = -1;
 	textureColorbuffer = -1;
 	sceneRenderBufferObject = -1;
 	bIsFramebufferValid = false;
 	CreateFramebuffer();
-	debugDrawer = CreateDebugDrawer();
-	sceneCamera = CreateCamera();
 }
 
 Camera* Scene::CreateCamera()
@@ -106,27 +104,36 @@ SVector3 Scene::PixelToWorldDirection(float screenAbsolutePosX, float screenAbso
 	return glm::normalize(dir);
 }
 
-void Scene::RegisterComponent(SceneComponent* inComponent)
-{
-	components.push_back(inComponent);
+void Scene::RegisterComponent(SceneComponent* inComponent) {
+	CHECK_GAME_THREAD;
+	SceneComponents.emplace_front(inComponent);
 }
 
-void Scene::UnregisterComponent(SceneComponent* inComponent)
-{
-	for (unsigned int i = 0; i < components.size(); ++i)
-	{
-		if (components[i] == inComponent)
-		{
-			components.erase(components.begin() + i);
-			return;
-		}
-	}
+void Scene::UnregisterComponent(SceneComponent* inComponent) {
+	CHECK_GAME_THREAD;
+	SceneComponents.remove(inComponent);
 }
 
-void Scene::SetDisplayMode(ESceneDebugDrawMode inMode)
-{
-	switch (inMode)
-	{
+void Scene::RegisterSceneMeshProxy(SceneMeshProxy* inProxy) {
+	CHECK_RENDER_THREAD;
+	meshProxies.emplace_front(inProxy);
+}
+
+void Scene::UnregisterSceneMeshProxy(SceneMeshProxy* inProxy) {
+	CHECK_RENDER_THREAD;
+	meshProxies.remove(inProxy);
+}
+
+void Scene::SetDisplayMode(ESceneDebugDrawMode inMode) {
+	debugDrawMode = inMode;
+}
+
+void Scene::Render() {
+	CHECK_RENDER_THREAD;
+
+	if (!bHasBeenInitializedRT) InitializeSceneRT();
+
+	switch (debugDrawMode) {
 	case ESceneDebugDrawMode::Lit: glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
 	case ESceneDebugDrawMode::Wireframe: glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -134,14 +141,11 @@ void Scene::SetDisplayMode(ESceneDebugDrawMode inMode)
 	case ESceneDebugDrawMode::Points: glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 		break;
 	}
-}
 
-void Scene::Draw()
-{
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_STENCIL_TEST);
 	glEnable(GL_CULL_FACE);
-	ProfileStat("Draw scene");
+
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
 	if (lastGLScreenSizeX != sceneScreenWidth || lastGLScreenSizeY != sceneScreenHeight)
@@ -150,48 +154,68 @@ void Scene::Draw()
 		lastGLScreenSizeY = sceneScreenHeight;
 		glViewport(0, 0, sceneScreenWidth, sceneScreenHeight);
 	}
+
 	glClearColor(defaultBackgroundColor.x, defaultBackgroundColor.y, defaultBackgroundColor.z, defaultBackgroundColor.w);
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	Material::UpdateMaterialDefaults(this);
-	for (int i = 0; i < DrawPriority::DrawPriority_Max; ++i)
+
+	for (auto& sceneComponent : SceneComponents)
+	{
+		if (sceneComponent->IsBeingDestroyed())
+		{
+			sceneComponent->DestroyOnRenderThread();
+			continue;
+		}
+		else
+		{
+			sceneComponent->Render();
+		}
+	}
+
+	/** Draw mesh proxies */
+	for (int priorityIndex = 0; priorityIndex < DrawPriority::DrawPriority_Max; ++priorityIndex)
 	{
 		glClear(GL_DEPTH_BUFFER_BIT);
-		for (SceneComponentIterator<SceneComponent> ite(this); ite; ite++)
+
+		for (auto& proxy : meshProxies)
 		{
-			if ((*ite)->drawPriority == i)
+			if (proxy->GetDrawPriority() == priorityIndex)
 			{
-				if (!(*ite)->IsBeingDestroyed())
+				if (proxy->IsVisible())
 				{
-					(*ite)->Tick();
+					proxy->Draw();
 				}
 			}
 		}
-		if (i == DrawPriority::DrawPriority_Normal)
-		{
-			GetDebugDrawer()->RenderDebugDraw();
-		}
-
-		for (int i = components.size() - 1; i >= 0; --i)
-		{
-			if (components[i]->IsBeingDestroyed())
-			{
-				delete components[i];
-			}
-		}
 	}
+
 	glDisable(GL_FRAMEBUFFER_SRGB);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void Scene::Tick(const double& inDeltaTime)
+{
+	CHECK_GAME_THREAD;
+
+	if (!bHasBeenInitializedGT) InitializeSceneGT();
+
+	for (auto& component : SceneComponents)
+	{
+		if (component->CanBeDeleted())
+		{
+			delete component;
+		}
+		else
+		{
+			component->Tick(inDeltaTime);
+		}
+	}
+}
+
 AdvancedScene::~AdvancedScene()
 {
-	if (skybox)
-	{
-		skybox->DestroyComponent();
-		delete skybox;
-	}
 }
 
 void AdvancedScene::SetSceneWindowLocation(int posX, int posY)
@@ -213,12 +237,12 @@ float AdvancedScene::GetCursorPositionY()
 void AdvancedScene::SetCubemapMaterial(Material* cubemapMaterial)
 {
 	if (!skybox) CreateCubemap();
-	if (skybox) skybox->materialOverride = cubemapMaterial;
+	if (skybox) skybox->SetMaterial(0, cubemapMaterial);
 }
 
-void AdvancedScene::InitializeScene()
+void AdvancedScene::InitializeSceneGT()
 {
-	Scene::InitializeScene();
+	Scene::InitializeSceneGT();
 	if (Material* SkyboxMaterial = AssetRegistry::FindAssetByName<Material>("CubemapMaterial")) {
 		SetCubemapMaterial(SkyboxMaterial);
 	}
@@ -229,7 +253,7 @@ void AdvancedScene::CreateCubemap()
 	if (AStaticMesh* cubeMesh = AssetRegistry::FindAssetByName<AStaticMesh>("CubeMesh"))
 	{
 		cubeMesh->CheckData();
-		skybox = new CubemapComponent(this, nullptr, cubeMesh->GetSections()[0]);
+		skybox = new CubemapComponent(this);
 		skybox->SetRotation(SRotator(270, 0, 0));
 	}
 	else

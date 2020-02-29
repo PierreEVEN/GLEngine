@@ -3,7 +3,7 @@
 #include <Scene/primitiveComponent.h>
 
 class EditorScene;
-struct Vertex;
+struct SVertex;
 struct SVector3;
 
 enum class EGizmoTranslationType
@@ -34,14 +34,14 @@ public:
 	unsigned int TranslationVAO, TranlsationEBO, TranslationVBO;
 	unsigned int RotationVAO, RotationEBO, RotationVBO;
 	unsigned int ScaleVAO, ScaleEBO, ScaleVBO;
-	std::vector<Vertex> TranslationVerticesArray;
+	std::vector<SVertex> TranslationVerticesArray;
 	std::vector<unsigned int> TranslationTrianglesArray;
-	std::vector<Vertex> RotationVerticesArray;
+	std::vector<SVertex> RotationVerticesArray;
 	std::vector<unsigned int> RotationTriangleArray;
-	std::vector<Vertex> ScaleVerticesArray;
+	std::vector<SVertex> ScaleVerticesArray;
 	std::vector<unsigned int> ScaleTriangleArray;
 	EditorGizmo(EditorScene* inScene);
-	virtual void Tick() override;
+	//virtual void Tick() override;
 	SceneComponent* attachedComponent = nullptr;
 	void SetCanDrag(bool bInDrag);
 	void BeginDrag();
