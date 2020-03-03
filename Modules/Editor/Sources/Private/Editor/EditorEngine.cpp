@@ -8,16 +8,8 @@
 
 void EditorEngine::LoadAssets()
 {
-	{
-		ProfileStat("AssetLoading");
-		AssetRegistry::ImportAssetFromDirectory("./Sources/EngineContent");
-		GFullLog(LogVerbosity::Display, "Engine", "Import engine content (" + std::to_string(ReadCurrentStat()) + "ms)");
-	}
-	{
-		ProfileStat("AssetLoading");
-		AssetRegistry::ImportAssetFromDirectory("./Sources/Assets");
-		GFullLog(LogVerbosity::Display, "Engine", "Import game content (" + std::to_string(ReadCurrentStat()) + "ms)");
-	}
+	AssetRegistry::ImportAssetFromDirectory("./Sources/EngineContent");
+	AssetRegistry::ImportAssetFromDirectory("./Sources/Assets");
 }
 
 void EditorEngine::CreateUI()

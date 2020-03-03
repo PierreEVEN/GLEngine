@@ -3,52 +3,33 @@
 #include <EnginePCH.h>
 #include <UI/FloatingWindow.h>
 
-#define ProfileStat(StatName) StatViewer newViewer = StatViewer(StatName)
+#define ProfileStat(StatName, StatGroup) StatCycleTimer newViewer = StatCycleTimer(StatName, StatGroup)
 
 #define ReadCurrentStat() (newViewer.GetCurrentDelay())
 
-struct StatHistory
-{
-	StatHistory(const char* inStatName, double inStatDelay) : statName(inStatName), statDelay(inStatDelay) {}
-	const char* statName = "";
-	double statDelay = 0.0;
-	int callCount = 1;
-	void IncrementDelay(double inDelay)
-	{
-		statDelay += inDelay;
-		callCount++;
-	}
-
-	bool operator==(const char* inStatName)
-	{
-		return inStatName == statName;
-	}
-};
-
-struct StatViewer
+struct StatCycleTimer
 {
 	std::chrono::steady_clock::time_point startTime;
 	const char* statName;
-	StatViewer(const char* inStatName);
-	virtual ~StatViewer();
+	const char* statGroup;
+	StatCycleTimer(const char* inStatName, const char* inStatGroup);
+	virtual ~StatCycleTimer();
 	double GetCurrentDelay() const;
-	static void AddDrawcall();
-	static int GetDrawcalls();
-	static void FlushStats();
-	static void FlushDrawcallsCount();
 };
 
-struct StatReader
+class StatReader
 {
+private:
 	float* Values = nullptr;
-	float max;
-	float min;
-	float avg;
-	double Lifetime = 0.0;
-	double LastUseTime = 0.0;
+	float maxValue;
+	float minValue;
+	float avgValue;
+	float CurrentFrameValue = 0.f;
+	double LastUpdateTime = 0.0;
 	double UpdateInterval = -1.0;
 	unsigned int HistoryLength = 1;
-	unsigned int callCount = 0;
+	unsigned int CurrentCallCount = 0;
+	unsigned int LastFrameCallCount = 0;
 	std::string statName = "None";
 	std::string statGroup = "Default";
 	unsigned int CursorPosition = 0;
@@ -56,25 +37,30 @@ struct StatReader
 	std::thread::id myThread;
 
 	void ClearValues();
-	void Flush();
+	void CycleStat();
+	void StoreNewValue(const float& inValue);
+
 public:
 
-	StatReader(std::string Name, std::string Group);
+	StatReader(std::string Name, std::string Group, unsigned int inHistoryPrecision = 60, double inMaxUpdateInterval = 1/60.0);
 	~StatReader();
 
-	FORCEINLINE bool IsPersistent() const { return Lifetime <= 0.0; }
 	FORCEINLINE bool KeepHistory() const { return HistoryLength > 1; }
 
-	static void RegisterStatParameters(std::string Name, std::string Group, double inLifetime = 2.0, unsigned int inHistoryPrecision = 1, double maxUpdateInterval = -1.0);
+	void SetStatParameters(std::string Name, std::string Group, unsigned int inHistoryPrecision = 1, double maxUpdateInterval = -1.0);
+	void SetStatParameters(unsigned int inHistoryPrecision = 1, double maxUpdateInterval = -1.0) { SetStatParameters(statName, statGroup, inHistoryPrecision, maxUpdateInterval); }
 	static void AddStatValue(std::string Name, std::string Group, float value);
-	static void FlushStats();
+	static void CycleStats();
+	static StatReader* GetStatReader(const std::string& Name, const std::string& Group);
 
 
-
-
-	bool ShouldBeDestroyed() const { return (!IsPersistent() && LastUseTime + Lifetime < glfwGetTime()); }
 	float* GetValues() const { return Values; }
+	float GetMin() const { return minValue; }
+	float GetMax() const { return maxValue; }
+	float GetAverage() const { return avgValue; }
+	unsigned int GetOffset() const { return CursorPosition; }
 	unsigned int GetHistoryLength() const { return HistoryLength; }
+	unsigned int GetCallCount() const { return LastFrameCallCount; }
 	std::string GetName() const { return statName; }
 	std::string GetGroupe() const { return statGroup; }
 };
@@ -87,7 +73,9 @@ private:
 
 	void AddValueToArray(const float& inValue, float* inArray, unsigned int elements, float& inMax);
 
-	void DisplayPlots(float* values, const unsigned int& elements, const float& inMax, std::string title, std::string description);
+	void DisplayPlots(float* values, const unsigned int& elements, const float& inMin, const float& inMax, std::string title, std::string description);
+
+	void DrawGroup(const std::string& statGroup);
 
 public:
 

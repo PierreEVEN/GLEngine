@@ -3,147 +3,107 @@
 #include <Engine/debugerTool.h>
 #include <vector>
 
-std::vector<StatHistory> statHistory = {};
 std::forward_list<StatReader*> ReaderMap = {};
 
 int drawCallsCount = 0;
 int currentDrawCalls = 0;
 
-StatViewer::StatViewer(const char* inStatName)
-	: statName(inStatName)
+StatCycleTimer::StatCycleTimer(const char* inStatName, const char* inStatGroup)
+	: statName(inStatName), statGroup(inStatGroup)
 {
 	startTime = std::chrono::high_resolution_clock::now();
 }
 
-StatViewer::~StatViewer()
+StatCycleTimer::~StatCycleTimer()
 {
-	for(auto& elem : statHistory)
-	{
-		if (elem == statName)
-		{
-			elem.IncrementDelay(GetCurrentDelay());
-			return;
-		}
-	}
-	statHistory.push_back(StatHistory(statName, GetCurrentDelay()));
+	StatReader::AddStatValue(statName, statGroup, GetCurrentDelay() * 1000.0);
 }
 
-double StatViewer::GetCurrentDelay() const
-{
+double StatCycleTimer::GetCurrentDelay() const {
 	return std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - startTime).count();
 }
 
-void StatViewer::AddDrawcall()
-{
-	currentDrawCalls++;
+
+StatReader::StatReader(std::string Name, std::string Group, unsigned int inHistoryPrecision, double inMaxUpdateInterval) {
+	SetStatParameters(Name, Group, inHistoryPrecision, inMaxUpdateInterval);
+	ReaderMap.emplace_front(this);
+	myThread = std::this_thread::get_id();
+	LastUpdateTime = 0.0;
+	if (!Values) Values = (float*)malloc(sizeof(float) * HistoryLength);
 }
 
-int StatViewer::GetDrawcalls()
-{
-	return drawCallsCount;
-}
+StatReader::~StatReader() {}
 
-void StatViewer::FlushStats()
-{
-	statHistory.clear();
-}
-
-void StatViewer::FlushDrawcallsCount()
-{
-	drawCallsCount = currentDrawCalls;
-	currentDrawCalls = 0;
-}
-
-void StatReader::ClearValues()
-{
+void StatReader::ClearValues() {
 	for (unsigned int i = 0; i < HistoryLength; ++i)
 	{
 		Values[i] = 0;
 	}
 }
 
-void StatReader::Flush()
-{
-
+void StatReader::CycleStat() {
+	if (std::this_thread::get_id() != myThread) GLogAssert("Cannot cycle stat from other thread");
+	StoreNewValue(CurrentFrameValue);
+	CurrentFrameValue = 0.f;
+	LastFrameCallCount = CurrentCallCount;
+	CurrentCallCount = 0;
 }
 
-StatReader::StatReader(std::string Name, std::string Group)
-	: statName(Name), statGroup(Group) {
-	ReaderMap.emplace_front(this);
-	myThread = std::this_thread::get_id();
+void StatReader::StoreNewValue(const float& inValue) {
+	if (UpdateInterval > 0.0 && LastUpdateTime + UpdateInterval > glfwGetTime()) return;
+	LastUpdateTime = glfwGetTime();
+	CursorPosition = (CursorPosition + 1) % HistoryLength;
+	if (!Values) {
+		Values = (float*)malloc(sizeof(float) * HistoryLength);
+		ClearValues();
+	}
+	Values[CursorPosition] = inValue;
+	maxValue = inValue;
+	minValue = inValue;
+	avgValue = 0;
+	for (unsigned int i = 0; i < HistoryLength; ++i)
+	{
+		if (Values[i] > maxValue) maxValue = Values[i];
+		if (Values[i] < minValue) minValue = Values[i];
+		avgValue += Values[i];
+	}
+	avgValue /= HistoryLength;
 }
 
-StatReader::~StatReader()
-{
-	ReaderMap.remove(this);
+void StatReader::SetStatParameters(std::string Name, std::string Group, unsigned int inHistoryPrecision, double maxUpdateInterval) {
+	statName = Name;
+	statGroup = Group;
+	if (HistoryLength != inHistoryPrecision) {
+		if (Values) free(Values);
+		HistoryLength = inHistoryPrecision;
+		Values = (float*)malloc(sizeof(float) * HistoryLength);
+		ClearValues();
+	}
+	UpdateInterval = maxUpdateInterval;
 }
 
-void StatReader::RegisterStatParameters(std::string Name, std::string Group, double inLifetime, unsigned int inHistoryPrecision, double maxUpdateInterval)
-{
-	StatReader* foundReader = nullptr;
-	for (auto& reader : ReaderMap)
-	{
-		if (Name == reader->statName && Group == reader->statGroup)
-		{
-			foundReader = reader;
-		}
-	}
-	if (!foundReader) foundReader = new StatReader(Name, Group);
-
-	foundReader->Lifetime = inLifetime;
-	foundReader->LastUseTime = glfwGetTime();
-	if (foundReader->HistoryLength != inHistoryPrecision)
-	{
-		if (foundReader->Values) free(foundReader->Values);
-		foundReader->HistoryLength = inHistoryPrecision;
-		foundReader->Values = (float*)malloc(sizeof(float) * foundReader->HistoryLength);
-		foundReader->ClearValues();
-	}
-	foundReader->UpdateInterval = maxUpdateInterval;
+void StatReader::AddStatValue(std::string Name, std::string Group, float value) {
+	StatReader* foundReader = GetStatReader(Name, Group);
+	foundReader->CurrentFrameValue += value;
+	foundReader->CurrentCallCount++;
 }
 
-void StatReader::AddStatValue(std::string Name, std::string Group, float value)
-{
-	StatReader* foundReader = nullptr;
-	for (auto& reader : ReaderMap)
-	{
-		if (Name == reader->statName && Group == reader->statGroup && reader->myThread == std::this_thread::get_id())
-		{
-			foundReader = reader;
-		}
-	}
-	if (foundReader && foundReader->UpdateInterval > 0.0 && foundReader->LastUseTime + foundReader->UpdateInterval > glfwGetTime()) return;
-
-	if (!foundReader)
-	{
-		foundReader = new StatReader(Name, Group);
-		std::cout << "created stat Reader" << std::endl;
-	}
-
-	foundReader->CursorPosition = (foundReader->CursorPosition + 1) % foundReader->HistoryLength;
-	if (!foundReader->Values)
-	{
-		foundReader->Values = (float*)malloc(sizeof(float) * foundReader->HistoryLength);
-		foundReader->ClearValues();
-	}
-	foundReader->Values[foundReader->CursorPosition] = value;
-	foundReader->LastUseTime = glfwGetTime();
-	std::cout << "Set value" << std::endl;
-}
-
-void StatReader::FlushStats()
-{
-	for (auto& reader : ReaderMap)
-	{
-		if (std::this_thread::get_id() == reader->myThread)
-		{
-			reader->Flush();
+void StatReader::CycleStats() {
+	for (auto& reader : ReaderMap) {
+		if (std::this_thread::get_id() == reader->myThread) {
+			reader->CycleStat();
 		}
 	}
 }
 
-void StatWindow::UpdateData()
-{
+StatReader* StatReader::GetStatReader(const std::string& Name, const std::string& Group) {
+	for (auto& reader : ReaderMap) {
+		if (Name == reader->statName && Group == reader->statGroup && reader->myThread == std::this_thread::get_id()) return reader;
+	}
+	return new StatReader(Name, Group);
+}
+
+void StatWindow::UpdateData() {
 	if (glfwGetTime() < LastDeltaSecond + RefreshRate) return;
 	LastDeltaSecond = glfwGetTime();
 
@@ -151,13 +111,10 @@ void StatWindow::UpdateData()
 	AddValueToArray((float)ThreadHandler::GetRenderThreadDeltaTime(), RenderThreadDeltaSecond, sizeof(RenderThreadDeltaSecond) / sizeof(float), RenderThreadDeltaSecondMax);
 }
 
-void StatWindow::AddValueToArray(const float& inValue, float* inArray, unsigned int elements, float& inMax)
-{
-	if (elements > 0)
-	{
+void StatWindow::AddValueToArray(const float& inValue, float* inArray, unsigned int elements, float& inMax) {
+	if (elements > 0) {
 		inMax = inValue;
-		for (unsigned int pos = 1; pos < elements; ++pos)
-		{
+		for (unsigned int pos = 1; pos < elements; ++pos) {
 			if (inArray[pos] > inMax) inMax = inArray[pos];
 			inArray[pos - 1] = inArray[pos];
 		}
@@ -165,8 +122,8 @@ void StatWindow::AddValueToArray(const float& inValue, float* inArray, unsigned 
 	}
 }
 
-void StatWindow::DisplayPlots(float* values, const unsigned int& elements, const float& inMax, std::string title, std::string description) {
-	ImGui::PlotLines(title.data(), values, elements, 0, description.data(), 0.0, inMax, ImVec2(0, 20));
+void StatWindow::DisplayPlots(float* values, const unsigned int& elements, const float& inMin, const float& inMax, std::string title, std::string description) {
+	ImGui::PlotLines(title.data(), values, elements, 0, description.data(), inMin, inMax, ImVec2(0, 20));
 }
 
 StatWindow::StatWindow(std::string inWindowsTitle)
@@ -180,47 +137,60 @@ void StatWindow::Draw(World* inWorld) {
 	UpdateData();
 	if (ImGui::Begin(windowTitle.data(), &bKeepOpen))
 	{
-		DisplayPlots(GameThreadDeltaSecond, IM_ARRAYSIZE(GameThreadDeltaSecond), GameThreadDeltaSecondMax,
-			std::string("GameThread - " + std::to_string((int)(1 / ThreadHandler::GetGameThreadDeltaTime())) + " fps "),
-			std::string(std::to_string(ThreadHandler::GetGameThreadDeltaTime()) + " ms " + " ( max : " + std::to_string(GameThreadDeltaSecondMax) + " ms )"));
-		DisplayPlots(RenderThreadDeltaSecond, IM_ARRAYSIZE(RenderThreadDeltaSecond), RenderThreadDeltaSecondMax,
-			std::string("RenderThread - " + std::to_string((int)(1 / ThreadHandler::GetRenderThreadDeltaTime())) + " fps"),
-			std::string(std::to_string(ThreadHandler::GetRenderThreadDeltaTime()) + " ms " + " ( max : " + std::to_string(RenderThreadDeltaSecondMax) + " ms )"));
-
-
+		std::forward_list<std::string> StatGroups;
 		for (auto& reader : ReaderMap)
 		{
+			if ((std::find(StatGroups.begin(), StatGroups.end(), reader->GetGroupe()) == StatGroups.end()))	StatGroups.emplace_front(reader->GetGroupe());
+		}
+		for (const auto& name : StatGroups)
+		{
+			DrawGroup(name);
+		}
+		ImGui::End();
+	}
+}
+
+void StatWindow::DrawGroup(const std::string& statGroup)
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+	ImGui::Columns(1);
+	ImGui::Text((" ---" + statGroup + "---").data());
+	ImGui::Columns(2);
+	ImGui::Separator();
+	ImGui::Text("Name");
+	ImGui::NextColumn();
+	ImGui::Text("Value");
+	ImGui::NextColumn();
+	ImGui::Separator();
+
+	for (auto& reader : ReaderMap)
+	{
+		if (reader->GetGroupe() == statGroup)
+		{
+			ImGui::Text((reader->GetName() + " (" + std::to_string(reader->GetCallCount()) + ")").data());
+			ImGui::NextColumn();
 			if (reader->KeepHistory())
 			{
-				DisplayPlots(reader->GetValues(), reader->GetHistoryLength(), 1.0, reader->GetName(), "");
+				ImGui::PlotLines("", reader->GetValues(), reader->GetHistoryLength(), reader->GetOffset(), std::to_string(reader->GetAverage()).data(), reader->GetMin(), reader->GetMax(), ImVec2(0, 20));
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+					ImGui::TextUnformatted(("Max : " + std::to_string(reader->GetMax())).data());
+					ImGui::TextUnformatted(("Min : " + std::to_string(reader->GetMin())).data());
+					ImGui::PopTextWrapPos();
+					ImGui::EndTooltip();
+				}
 			}
 			else
 			{
-				ImGui::Text(std::string("(" + std::to_string(reader->callCount) + ")" + std::string(reader->GetName()) + " : " + std::to_string((reader->GetValues()[0])) + "ms").data());
+				ImGui::Text(std::string("(" + std::to_string(reader->GetCallCount()) + ")" + std::to_string((reader->GetValues()[0])) + "ms").data());
 			}
-			if (reader->ShouldBeDestroyed())
-			{
-				std::cout << "delete reader" << std::endl;
-				ReaderMap.remove(reader);
-				delete reader;
-			}
+			ImGui::NextColumn();
 		}
-
-// 		float barSize = 200;
-// 		for (const auto& stat : statHistory)
-// 		{
-// 
-// 			ImGui::ProgressBar((float)stat.statDelay / (1 / 30.f), ImVec2(barSize, 15));
-// 			ImGui::SameLine(barSize + 20);
-// 			if (stat.callCount != 1)
-// 			{
-// 				ImGui::Text(std::string("(" + std::to_string(stat.callCount) + ")" + std::string(stat.statName) + " : " + std::to_string((stat.statDelay * 1000)) + "ms").data());
-// 			}
-// 			else
-// 			{
-// 				ImGui::Text(std::string(std::string(stat.statName) + " : " + std::to_string((stat.statDelay * 1000)) + "ms").data());
-// 			}
-// 		}
-		ImGui::End();
 	}
+	ImGui::Columns(1);
+	ImGui::Separator();
+	ImGui::PopStyleVar();
+	ImGui::Dummy(ImVec2(0.0f, 15.0f));
 }

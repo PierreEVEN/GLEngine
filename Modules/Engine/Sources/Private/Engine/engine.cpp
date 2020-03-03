@@ -26,11 +26,10 @@ Engine* GEngine = nullptr;
 void Engine::Initialize()
 {
 
-	ProfileStat("EngineStartup");
 
 	LoadAssets();
 
-	GFullLog(LogVerbosity::Display, "Engine", "Complete engine startup (" + std::to_string(ReadCurrentStat()) + "ms)");
+	GFullLog(LogVerbosity::Display, "Engine", "Complete engine startup");
 	StartGameThread();
 }
 
@@ -61,7 +60,6 @@ void Engine::StartOpenGL()
 	bIsOpenglInitialized = true;
 
 
-	ProfileStat("EngineStartup");
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -72,7 +70,7 @@ void Engine::StartOpenGL()
 #if DISABLE_DOUBLE_BUFFERING
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
 #endif
-	GFullLog(LogVerbosity::Display, "Engine", "Initialize OpenGL GLFW (" + std::to_string(ReadCurrentStat()) + "ms)");
+	GFullLog(LogVerbosity::Display, "Engine", "Initialize OpenGL GLFW");
 
 	CreateOpenGLMainWindow();
 	InitializeGlad();
@@ -82,9 +80,8 @@ void Engine::CloseOpenGL()
 	World::ClearWorlds();
 
 
-	ProfileStat("EngineShutdown");
 	glfwTerminate();
-	GFullLog(LogVerbosity::Display, "Engine", "Close OpenGL GLFW (" + std::to_string(ReadCurrentStat()) + "ms)");
+	GFullLog(LogVerbosity::Display, "Engine", "Close OpenGL GLFW");
 }
 void Engine::InitializeGlad()
 {
@@ -95,12 +92,11 @@ void Engine::InitializeGlad()
 	CreateOpenGLMainWindow();
 
 
-	ProfileStat("EngineStartup");
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		GFullLog(LogVerbosity::Assert, "Engine", "Failed to create Glad");
 	}
-	GFullLog(LogVerbosity::Display, "Engine", "Initialize glad (" + std::to_string(ReadCurrentStat()) + "ms)");
+	GFullLog(LogVerbosity::Display, "Engine", "Initialize glad");
 }
 void Engine::CreateOpenGLMainWindow()
 {
@@ -109,14 +105,13 @@ void Engine::CreateOpenGLMainWindow()
 	StartOpenGL();
 
 
-	ProfileStat("EngineStartup");
 	openGLMainWindow = glfwCreateWindow(1600, 900, "GLEngine 1.0", NULL, NULL);
 	if (openGLMainWindow == NULL)
 	{
 		GFullLog(LogVerbosity::Assert, "Engine", "Failed to create GLFW window");
 	}
 	glfwMakeContextCurrent(openGLMainWindow);
-	GFullLog(LogVerbosity::Display, "Engine", "Create main window (" + std::to_string(ReadCurrentStat()) + "ms)");
+	GFullLog(LogVerbosity::Display, "Engine", "Create main window");
 }
 
 /************************************************************************/
@@ -127,8 +122,6 @@ void Engine::InitializeImGui(GLFWwindow* parentWindow)
 {
 	if (bIsImGuiInitialized) return;
 
-
-	ProfileStat("EngineStartup");
 	bIsImGuiInitialized = true;
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -141,15 +134,14 @@ void Engine::InitializeImGui(GLFWwindow* parentWindow)
 	ImGui_ImplOpenGL3_Init("#version 130");
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
-	GFullLog(LogVerbosity::Display, "Engine", "Initialize ImGui (" + std::to_string(ReadCurrentStat()) + "ms)");
+	GFullLog(LogVerbosity::Display, "Engine", "Initialize ImGui");
 }
 void Engine::CloseImGui()
 {
-	ProfileStat("EngineShutdown");
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
-	GFullLog(LogVerbosity::Display, "Engine", "Close ImGui (" + std::to_string(ReadCurrentStat()) + "ms)");
+	GFullLog(LogVerbosity::Display, "Engine", "Close ImGui");
 }
 
 /************************************************************************/
@@ -158,11 +150,10 @@ void Engine::CloseImGui()
 
 void Engine::CreatePrimaryWorld()
 {
-	ProfileStat("EngineStartup");
 	CreateOpenGLMainWindow();
 	CreateWorld(openGLMainWindow);
 	Material::InitializeMaterials();
-	GFullLog(LogVerbosity::Display, "Engine", "Create primary world (" + std::to_string(ReadCurrentStat()) + "ms)");
+	GFullLog(LogVerbosity::Display, "Engine", "Create primary world");
 }
 
 /************************************************************************/
@@ -184,8 +175,6 @@ void Engine::AsyncLoop()
 		}
 		LastTickTime = glfwGetTime();
 		World::TickWorlds(DeltaSecond);
-		StatViewer::FlushStats();
-		StatViewer::FlushDrawcallsCount();
 
 #if DISABLE_DOUBLE_BUFFERING
 		glFlush();

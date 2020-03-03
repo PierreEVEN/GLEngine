@@ -151,7 +151,7 @@ void EditorWindow::DrawMainToolbar(World* InWorld)
 	}
 	ImGui::AlignTextToFramePadding();
 	ImGui::Indent(ImGui::GetWindowWidth() - 520.0f);
-	ImGui::Text(std::string(std::to_string(StatViewer::GetDrawcalls()) + " Drawcalls | " + "fps (GameThread/RenderThread) : " + std::to_string((int)(1.0 / ThreadHandler::GetGameThreadDeltaTime())) + " / " + std::to_string((int)(1.0 / ThreadHandler::GetRenderThreadDeltaTime()))).data());
+	ImGui::Text(std::string("fps (GameThread/RenderThread) : " + std::to_string((int)(1.0 / ThreadHandler::GetGameThreadDeltaTime())) + " / " + std::to_string((int)(1.0 / ThreadHandler::GetRenderThreadDeltaTime()))).data());
 	ImGui::EndMainMenuBar();
 }
 

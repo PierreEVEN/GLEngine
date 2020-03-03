@@ -23,6 +23,7 @@ void InputManager::SetCaptureMouse(bool bSetCaptureMouse)
 
 void InputManager::ProcessInputs()
 {
+	ProfileStat("Process inputs", "Inputs");
 	for (InputState* key : keys)
 	{
 		if (!key->GetKey().IsMouseButton())

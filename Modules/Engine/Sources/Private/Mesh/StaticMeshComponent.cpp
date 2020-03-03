@@ -15,7 +15,7 @@ StaticMeshComponent::StaticMeshComponent(Scene* inScene, AStaticMesh* inMeshData
 StaticMeshComponent::~StaticMeshComponent() {}
 
 void StaticMeshComponent::Render() {
-	if (!bHasMeshDataBeenInitialized && meshData->AreDataLoaded())
+	if (!bHasMeshDataBeenInitialized && meshData->CheckData(true))
 	{
 		bHasMeshDataBeenInitialized = true;
 

@@ -129,6 +129,7 @@ void AStaticMesh::CreateMeshData()
 		glBindVertexArray(0);
 
 		MeshGPUData.SetMeshData(SectionIndex, SProxySectionData(VBO, VAO, EBO, section->indicesCount, SectionIndex), 0);
+		MeshGPUData.SetMaterial(SectionIndex, section->material, 0);
 		SectionIndex++;
 	}
 }

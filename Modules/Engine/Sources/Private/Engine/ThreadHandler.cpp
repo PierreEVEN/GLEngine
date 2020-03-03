@@ -3,6 +3,7 @@
 #include <Engine/engine.h>
 #include <World/world.h>
 #include <Asset/asset.h>
+#include "Engine/debugerTool.h"
 
 ThreadHandler* ThreadHandlerReference = nullptr;
 double LastGameThreadTickTime = 0.0;
@@ -74,19 +75,22 @@ void ThreadHandler::CloseThreads() {
 
 void ThreadHandler::GameThread()
 {
+	StatReader::GetStatReader("GameThread", "Thread summary")->SetStatParameters(60, 1 / 60.0);
 	while (!Engine::DoesWantToShutDown())
 	{
 		Asset::FlushAsyncLoadingAssets();
-		//if (glfwGetTime() - LastGameThreadTickTime < 1.0 / 60.f) continue;
 		GameThreadDeltaSecond = glfwGetTime() - LastGameThreadTickTime;
 		LastGameThreadTickTime = glfwGetTime();
 
 		World::TickWorlds(GameThreadDeltaSecond);
+		StatReader::AddStatValue("GameThread", "Thread summary", GameThreadDeltaSecond * 1000.0);
+		StatReader::CycleStats();
 	}
 }
 
 void ThreadHandler::RenderThread()
 {
+	StatReader::GetStatReader("RenderThread", "Thread summary")->SetStatParameters(60, 1 / 60.0);
 	Engine::Get()->LoadOpenGL_RT();
 	while (!Engine::DoesWantToShutDown())
 	{
@@ -102,6 +106,9 @@ void ThreadHandler::RenderThread()
 		glfwSwapBuffers(openGLMainWindow);
 #endif
 		glfwPollEvents();
+
+		StatReader::AddStatValue("RenderThread", "Thread summary", RenderThreadDeltaSecond * 1000.0);
+		StatReader::CycleStats();
 	}
 
 	Engine::Get()->CloseImGui();

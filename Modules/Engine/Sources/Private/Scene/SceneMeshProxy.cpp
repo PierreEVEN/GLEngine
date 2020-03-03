@@ -5,31 +5,34 @@
 
 void SceneMeshProxy::Draw()
 {
-	Material* usedMaterial = ProxyData.GetMaterial(0, 0);
-	if (usedMaterial)
+	for (unsigned int i = 0; i < ProxyData.GetSectionCount(0); ++i)
 	{
-		usedMaterial->use();
-		usedMaterial->setMat4("model", RenderTransform);
-	}
-	else
-	{
-		/** Draw default material */
-		MaterialEditorDebuger::GetGridMaterial()->use();
-		MaterialEditorDebuger::GetGridMaterial()->setMat4("model", RenderTransform);
-	}
+		Material* usedMaterial = ProxyData.GetMaterial(0, i);
+		if (usedMaterial)
+		{
+			usedMaterial->use();
+			usedMaterial->setMat4("model", RenderTransform);
+		}
+		else
+		{
+			/** Draw default material */
+			MaterialEditorDebuger::GetGridMaterial()->use();
+			MaterialEditorDebuger::GetGridMaterial()->setMat4("model", RenderTransform);
+		}
 
-	unsigned int vao = ProxyData.GetVao(0, 0);
-	unsigned int triangles = ProxyData.GetTriangleCount(0, 0);
+		unsigned int vao = ProxyData.GetVao(0, i);
+		unsigned int triangles = ProxyData.GetTriangleCount(0, i);
 
-	if (vao >= 0 && triangles > 0)
-	{
-		/** Draw vertices */
-		glBindVertexArray(vao);
-		glDrawElements(GL_TRIANGLES, triangles, GL_UNSIGNED_INT, 0);
+		if (vao >= 0 && triangles > 0)
+		{
+			/** Draw vertices */
+			glBindVertexArray(vao);
+			glDrawElements(GL_TRIANGLES, triangles, GL_UNSIGNED_INT, 0);
 
-		/** Set GL to defaults */
-		glBindVertexArray(0);
-		glActiveTexture(GL_TEXTURE0);
+			/** Set GL to defaults */
+			glBindVertexArray(0);
+			glActiveTexture(GL_TEXTURE0);
+		}
 	}
 }
 

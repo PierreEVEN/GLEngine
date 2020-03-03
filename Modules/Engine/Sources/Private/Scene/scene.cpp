@@ -105,7 +105,6 @@ SVector3 Scene::PixelToWorldDirection(float screenAbsolutePosX, float screenAbso
 }
 
 void Scene::RegisterComponent(SceneComponent* inComponent) {
-	CHECK_GAME_THREAD;
 	SceneComponents.emplace_front(inComponent);
 }
 
@@ -129,6 +128,8 @@ void Scene::SetDisplayMode(ESceneDebugDrawMode inMode) {
 }
 
 void Scene::Render() {
+
+	ProfileStat("Render Scene", "Scene Rendering");
 	CHECK_RENDER_THREAD;
 
 	if (!bHasBeenInitializedRT) InitializeSceneRT();
@@ -170,6 +171,7 @@ void Scene::Render() {
 		}
 		else
 		{
+			ProfileStat("Render Components", "Scene Rendering");
 			sceneComponent->Render();
 		}
 	}
@@ -185,6 +187,7 @@ void Scene::Render() {
 			{
 				if (proxy->IsVisible())
 				{
+					ProfileStat("Render proxy", "Scene Rendering");
 					proxy->Draw();
 				}
 			}

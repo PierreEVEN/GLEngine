@@ -170,6 +170,7 @@ void Material::InitializeMaterials()
 
 void Material::UpdateMaterialDefaults(Scene* DrawScene)
 {
+	ProfileStat("Push default material attributes", "Scene Rendering");
 	DefaultShaderData shader_data;
 	shader_data.viewMatrix = DrawScene->GetCamera()->GetViewMatrix();
 	shader_data.worldProjection = DrawScene->GetProjection();
@@ -210,73 +211,61 @@ void Material::UpdateMaterialDefaults(Scene* DrawScene)
 
 void Material::setBool(const std::string &name, bool value)
 {
-	StatViewer::AddDrawcall();
 	glUniform1i(glGetUniformLocation(GetShaderID(), name.c_str()), (int)value);
 }
 
 void Material::setInt(const std::string &name, int value)
 {
-	StatViewer::AddDrawcall();
 	glUniform1i(glGetUniformLocation(GetShaderID(), name.c_str()), value);
 }
 
 void Material::setFloat(const std::string &name, float value)
 {
-	StatViewer::AddDrawcall();
 	glUniform1f(glGetUniformLocation(GetShaderID(), name.c_str()), value);
 }
 
 void Material::setVec2(const std::string &name, const glm::vec2 &value)
 {
-	StatViewer::AddDrawcall();
 	glUniform2fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, &value[0]);
 }
 
 void Material::setVec2(const std::string &name, float x, float y)
 {
-	StatViewer::AddDrawcall();
 	glUniform2f(glGetUniformLocation(GetShaderID(), name.c_str()), x, y);
 }
 
 void Material::setVec3(const std::string &name, const glm::vec3 &value)
 {
-	StatViewer::AddDrawcall();
 	glUniform3fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, &value[0]);
 }
 
 void Material::setVec3(const std::string &name, float x, float y, float z)
 {
-	StatViewer::AddDrawcall();
 	glUniform3f(glGetUniformLocation(GetShaderID(), name.c_str()), x, y, z);
 }
 
 void Material::setVec4(const std::string &name, const glm::vec4 &value)
 {
-	StatViewer::AddDrawcall();
 	glUniform4fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, &value[0]);
 }
 
 void Material::setVec4(const std::string &name, float x, float y, float z, float w)
 {
-	StatViewer::AddDrawcall();
 	glUniform4f(glGetUniformLocation(GetShaderID(), name.c_str()), x, y, z, w);
 }
 
 void Material::setMat2(const std::string &name, const glm::mat2 &mat)
 {
-	StatViewer::AddDrawcall();
 	glUniformMatrix2fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
 void Material::setMat3(const std::string &name, const glm::mat3 &mat)
 {
-	StatViewer::AddDrawcall();
 	glUniformMatrix3fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
 void Material::setMat4(const std::string &name, const glm::mat4 &mat)
 {
-	StatViewer::AddDrawcall();
 	glUniformMatrix4fv(glGetUniformLocation(GetShaderID(), name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 

@@ -122,6 +122,7 @@ struct SProxySectionGroup {
 		}
 		Sections.push_back(newMeshData);
 	}
+	FORCEINLINE unsigned int GetSectionCount() const { return Sections.size(); }
 	FORCEINLINE unsigned int GetVao(const unsigned int& inSectionIndex) const {
 		for (const auto& section : Sections) {
 			if (section.GetSectionIndex() == inSectionIndex) {
@@ -223,6 +224,11 @@ struct SProxyLodGroup {
 		return max;
 	}
 	FORCEINLINE bool IsEmpty() const { return bIsEmpty; }
+	FORCEINLINE unsigned int GetSectionCount(const unsigned int& inLodLevel) const { 
+		for (const auto& lod : ProxyLodsMesh) {
+			if (lod.GetLodLevel() == inLodLevel) return lod.GetSectionCount();
+		}
+	}
 
 	void CopyDataToSceneMeshProxy(SceneMeshProxy* inProxy);
 	void CopyFromAdditive(const SProxyLodGroup& inMeshData)

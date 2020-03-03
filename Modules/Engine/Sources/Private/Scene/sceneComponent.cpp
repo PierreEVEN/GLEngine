@@ -6,7 +6,6 @@
 SceneComponent::SceneComponent(Scene* inScene, const STransform& newComponentTransform)
 	: renderScene(inScene)
 {
-	CHECK_GAME_THREAD;
 	assert(inScene);
 	componentWorldTransform = newComponentTransform;
 	inScene->RegisterComponent(this);

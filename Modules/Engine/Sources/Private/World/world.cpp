@@ -87,7 +87,6 @@ void World::Tick(double newDeltaSecond) {
 
 	if (GetScene())
 	{
-		StatReader::AddStatValue("test", "groupTest", worldDeltaSecond);
 		GetScene()->Tick(worldDeltaSecond);
 	}
 }
@@ -99,12 +98,15 @@ void World::Render()
 	GetScene()->Render();
 
 	/** Draw interface */
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-	DrawUI();
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	{
+		ProfileStat("Draw interface", "ImGui");
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+		DrawUI();
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
 
 	if (glfwWindowShouldClose(GetWindow()))
 	{
