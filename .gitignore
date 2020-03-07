@@ -1,8 +1,5 @@
 .vs/
 Binaries/
-*.vcxproj
-*.filters
-*.user
 
 #keep required dll and windows configs
 Output/*
