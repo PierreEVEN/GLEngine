@@ -4,6 +4,13 @@ Binaries/
 *.filters
 *.user
 
+
+Tools/ProjectBuilder/*
+!Tools/ProjectBuilder/obj/*
+!Tools/ProjectBuilder/bin/*
+
+
+
 #keep required dll and windows configs
 Output/*
 !Output/assimp-vc141-mt.dll
