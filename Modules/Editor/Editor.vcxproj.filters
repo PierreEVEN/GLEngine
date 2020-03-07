@@ -24,9 +24,6 @@
     <ClCompile Include="Sources\Private\UI\EditorConsole.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Private\UI\ProfilerWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\Private\Editor\EditorTools\EditorGizmo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,15 +60,15 @@
     <ClCompile Include="Sources\Private\UI\EditorWindows\sceneComponentEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Private\UI\EditorWindows\WorldSettingsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\Public\Editor\EditorEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\UI\EditorConsole.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Public\UI\ProfilerWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\Editor\EditorTools\EditorGizmo.h">
@@ -108,6 +105,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\UI\EditorWindows\sceneComponentEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Public\UI\EditorWindows\WorldSettingsWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,0 +1,7 @@
+{
+	"ProjectName": "ImGui",
+	"IncludesPath": "Sources/Public",
+	"ProjectType": "StaticLibrary",
+	"Dependencies": [],	
+	"Libraries": []
+}

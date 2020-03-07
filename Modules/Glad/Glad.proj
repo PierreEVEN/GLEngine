@@ -1,0 +1,7 @@
+{
+	"ProjectName": "Glad",
+	"IncludesPath": "Sources/Public",
+	"ProjectType": "StaticLibrary",
+	"Dependencies": [],	
+	"Libraries": []
+}

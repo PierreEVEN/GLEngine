@@ -1,54 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{1255E73D-5858-41FB-88CF-5BD1E2512432}</ProjectGuid>
+    <ProjectGuid>{Engine}</ProjectGuid>
     <RootNamespace>Engine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -56,44 +58,35 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)\Modules\Stdbi\Sources\Public;$(SolutionDir)\Modules\Bullet3D\src;$(SolutionDir)\Modules\Glad\Sources\Public;$(SolutionDir)\Modules\ImGui\Sources\Public;$(ProjectDir)\Sources\Public\;$(SolutionDir)\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Libs\assimp;$(SolutionDir)\Libs\glfw3;$(SolutionDir)\Libs\bullet3D;$(SolutionDir)\Libs;$(SolutionDir)\Libs\glslangd;$(SolutionDir)\Modules\Bullet3D\bin;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
-    <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)\Modules\Stdbi\Sources\Public;$(SolutionDir)\Modules\Bullet3D\src;$(SolutionDir)\Modules\Glad\Sources\Public;$(SolutionDir)\Modules\ImGui\Sources\Public;$(ProjectDir)\Sources\Public\;$(SolutionDir)\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Libs\assimp;$(SolutionDir)\Libs\glfw3;$(SolutionDir)\Libs\bullet3D;$(SolutionDir)\Libs;$(SolutionDir)\Libs\glslangd;$(SolutionDir)\Modules\Bullet3D\bin;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Libs\</OutDir>
-    <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Libs\</OutDir>
-    <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
-    <IncludePath>$(SolutionDir)\Modules\Stdbi\Sources\Public;$(SolutionDir)\Modules\Bullet3D\src;$(SolutionDir)\Modules\Glad\Sources\Public;$(SolutionDir)\Modules\ImGui\Sources\Public;$(ProjectDir)\Sources\Public\;$(SolutionDir)\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Libs\assimp;$(SolutionDir)\Libs\glfw3;$(SolutionDir)\Libs\bullet3D;$(SolutionDir)\Libs;$(SolutionDir)\Libs\glslangd;$(SolutionDir)\Modules\Bullet3D\bin;$(LibraryPath)</LibraryPath>
+    <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Libs\</OutDir>
-    <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
-    <IncludePath>$(SolutionDir)\Modules\Stdbi\Sources\Public;$(SolutionDir)\Modules\Bullet3D\src;$(SolutionDir)\Modules\Glad\Sources\Public;$(SolutionDir)\Modules\ImGui\Sources\Public;$(ProjectDir)\Sources\Public\;$(SolutionDir)\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Libs\assimp;$(SolutionDir)\Libs\glfw3;$(SolutionDir)\Libs\bullet3D;$(SolutionDir)\Libs;$(SolutionDir)\Libs\glslangd;$(SolutionDir)\Modules\Bullet3D\bin;$(LibraryPath)</LibraryPath>
+    <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>Modules\Engine\Sources/Public;Modules\Glad\Sources/Public;Modules\ImGui\Sources/Public;Modules\Stdbi\Sources/Public;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
@@ -104,133 +97,127 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc141-mt.lib;assimp-vc141-mtd.lib;IrrXMLd.lib;zlibd.lib;zlibstaticd.lib;ImGui.lib;Stdbi.lib;Bullet2FileLoader_Debug.lib;Bullet3Collision_Debug.lib;Bullet3Common_Debug.lib;Bullet3Dynamics_Debug.lib;Bullet3Geometry_Debug.lib;Bullet3OpenCL_clew_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;BulletFileLoader_Debug.lib;BulletInverseDynamics_Debug.lib;BulletInverseDynamicsUtils_Debug.lib;BulletWorldImporter_Debug.lib;BulletXmlWorldImporter_Debug.lib;LinearMath_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc141-mt.lib;assimp-vc141-mtd.lib;IrrXMLd.lib;zlibd.lib;zlibstaticd.lib;ImGui.lib;Stdbi.lib;Bullet2FileLoader_Debug.lib;Bullet3Collision_Debug.lib;Bullet3Common_Debug.lib;Bullet3Dynamics_Debug.lib;Bullet3Geometry_Debug.lib;Bullet3OpenCL_clew_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;BulletFileLoader_Debug.lib;BulletInverseDynamics_Debug.lib;BulletInverseDynamicsUtils_Debug.lib;BulletWorldImporter_Debug.lib;BulletXmlWorldImporter_Debug.lib;LinearMath_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc141-mt.lib;assimp-vc141-mtd.lib;IrrXMLd.lib;zlibd.lib;zlibstaticd.lib;ImGui.lib;Stdbi.lib;Bullet2FileLoader_Debug.lib;Bullet3Collision_Debug.lib;Bullet3Common_Debug.lib;Bullet3Dynamics_Debug.lib;Bullet3Geometry_Debug.lib;Bullet3OpenCL_clew_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;BulletFileLoader_Debug.lib;BulletInverseDynamics_Debug.lib;BulletInverseDynamicsUtils_Debug.lib;BulletWorldImporter_Debug.lib;BulletXmlWorldImporter_Debug.lib;LinearMath_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc141-mt.lib;assimp-vc141-mtd.lib;IrrXMLd.lib;zlibd.lib;zlibstaticd.lib;ImGui.lib;Stdbi.lib;Bullet2FileLoader_Debug.lib;Bullet3Collision_Debug.lib;Bullet3Common_Debug.lib;Bullet3Dynamics_Debug.lib;Bullet3Geometry_Debug.lib;Bullet3OpenCL_clew_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;BulletFileLoader_Debug.lib;BulletInverseDynamics_Debug.lib;BulletInverseDynamicsUtils_Debug.lib;BulletWorldImporter_Debug.lib;BulletXmlWorldImporter_Debug.lib;LinearMath_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Sources\Public\EnginePCH.h" />
+    <ClInclude Include="Sources\Public\Asset\asset.h" />
+    <ClInclude Include="Sources\Public\Asset\assetLibrary.h" />
+    <ClInclude Include="Sources\Public\Asset\AssetRegistry.h" />
+    <ClInclude Include="Sources\Public\Asset\GLAssetIO.h" />
+    <ClInclude Include="Sources\Public\Camera\camera.h" />
+    <ClInclude Include="Sources\Public\Engine\debugerTool.h" />
+    <ClInclude Include="Sources\Public\Engine\engine.h" />
+    <ClInclude Include="Sources\Public\Engine\eventManager.h" />
+    <ClInclude Include="Sources\Public\Engine\inputManager.h" />
+    <ClInclude Include="Sources\Public\Engine\ThreadHandler.h" />
+    <ClInclude Include="Sources\Public\EngineLog\engineLog.h" />
+    <ClInclude Include="Sources\Public\Lighting\directionalLight.h" />
+    <ClInclude Include="Sources\Public\Lighting\Light.h" />
+    <ClInclude Include="Sources\Public\Lighting\pointLight.h" />
+    <ClInclude Include="Sources\Public\Lighting\spotLight.h" />
+    <ClInclude Include="Sources\Public\MathLibrary\vector3.h" />
+    <ClInclude Include="Sources\Public\MathLibrary\worldInteraction.h" />
+    <ClInclude Include="Sources\Public\Mesh\CubemapComponent.h" />
+    <ClInclude Include="Sources\Public\Mesh\InstancedMeshComponent.h" />
+    <ClInclude Include="Sources\Public\Mesh\MeshComponent.h" />
+    <ClInclude Include="Sources\Public\Mesh\MeshData.h" />
+    <ClInclude Include="Sources\Public\Mesh\StaticMesh.h" />
+    <ClInclude Include="Sources\Public\Mesh\StaticMeshComponent.h" />
+    <ClInclude Include="Sources\Public\Physic\physicDebugViewer.h" />
+    <ClInclude Include="Sources\Public\Scene\primitiveComponent.h" />
+    <ClInclude Include="Sources\Public\Scene\scene.h" />
+    <ClInclude Include="Sources\Public\Scene\sceneComponent.h" />
+    <ClInclude Include="Sources\Public\Scene\SceneMeshProxy.h" />
+    <ClInclude Include="Sources\Public\Shader\material.h" />
+    <ClInclude Include="Sources\Public\Shader\shaderLoader.h" />
+    <ClInclude Include="Sources\Public\Shader\shader_s.h" />
+    <ClInclude Include="Sources\Public\Texture\texture.h" />
+    <ClInclude Include="Sources\Public\UI\engineLogWindow.h" />
+    <ClInclude Include="Sources\Public\UI\FloatingWindow.h" />
+    <ClInclude Include="Sources\Public\World\world.h" />
+    <ClInclude Include="Sources\Public\World\worldAsset.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sources\Private\Asset\asset.cpp" />
+    <ClCompile Include="Sources\Private\Asset\assetLibrary.cpp" />
+    <ClCompile Include="Sources\Private\Asset\AssetRegistry.cpp" />
+    <ClCompile Include="Sources\Private\Asset\GLAssetIO.cpp" />
+    <ClCompile Include="Sources\Private\Camera\camera.cpp" />
+    <ClCompile Include="Sources\Private\Engine\debugerTool.cpp" />
+    <ClCompile Include="Sources\Private\Engine\engine.cpp" />
+    <ClCompile Include="Sources\Private\Engine\eventManager.cpp" />
+    <ClCompile Include="Sources\Private\Engine\inputManager.cpp" />
+    <ClCompile Include="Sources\Private\Engine\ThreadHandler.cpp" />
+    <ClCompile Include="Sources\Private\EngineLog\engineLog.cpp" />
+    <ClCompile Include="Sources\Private\Lighting\directionalLight.cpp" />
+    <ClCompile Include="Sources\Private\Lighting\Light.cpp" />
+    <ClCompile Include="Sources\Private\Lighting\pointLight.cpp" />
+    <ClCompile Include="Sources\Private\Lighting\spotLight.cpp" />
+    <ClCompile Include="Sources\Private\MathLibrary\worldInteraction.cpp" />
+    <ClCompile Include="Sources\Private\Mesh\CubemapComponent.cpp" />
+    <ClCompile Include="Sources\Private\Mesh\InstancedMeshComponent.cpp" />
+    <ClCompile Include="Sources\Private\Mesh\MeshComponent.cpp" />
+    <ClCompile Include="Sources\Private\Mesh\MeshData.cpp" />
+    <ClCompile Include="Sources\Private\Mesh\StaticMesh.cpp" />
+    <ClCompile Include="Sources\Private\Mesh\StaticMeshComponent.cpp" />
+    <ClCompile Include="Sources\Private\Physic\physicDebugViewer.cpp" />
+    <ClCompile Include="Sources\Private\Scene\primitiveComponent.cpp" />
+    <ClCompile Include="Sources\Private\Scene\scene.cpp" />
+    <ClCompile Include="Sources\Private\Scene\sceneComponent.cpp" />
+    <ClCompile Include="Sources\Private\Scene\SceneMeshProxy.cpp" />
+    <ClCompile Include="Sources\Private\Shader\material.cpp" />
+    <ClCompile Include="Sources\Private\Shader\shaderLoader.cpp" />
+    <ClCompile Include="Sources\Private\Texture\texture.cpp" />
+    <ClCompile Include="Sources\Private\UI\engineLogWindow.cpp" />
+    <ClCompile Include="Sources\Private\UI\FloatingWindow.cpp" />
+    <ClCompile Include="Sources\Private\World\world.cpp" />
+    <ClCompile Include="Sources\Private\World\worldAsset.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
+  <ImportGroup Label = "ExtensionTargets" >
   </ImportGroup>
- 
-  <ItemGroup> 
-    <ClInclude Include="Sources\Public\EnginePCH.h" /> 
-    <ClInclude Include="Sources\Public\Asset\asset.h" /> 
-    <ClInclude Include="Sources\Public\Asset\assetLibrary.h" /> 
-    <ClInclude Include="Sources\Public\Asset\AssetRegistry.h" /> 
-    <ClInclude Include="Sources\Public\Asset\GLAssetIO.h" /> 
-    <ClInclude Include="Sources\Public\Camera\camera.h" /> 
-    <ClInclude Include="Sources\Public\Engine\debugerTool.h" /> 
-    <ClInclude Include="Sources\Public\Engine\engine.h" /> 
-    <ClInclude Include="Sources\Public\Engine\eventManager.h" /> 
-    <ClInclude Include="Sources\Public\Engine\inputManager.h" /> 
-    <ClInclude Include="Sources\Public\Engine\ThreadHandler.h" /> 
-    <ClInclude Include="Sources\Public\EngineLog\engineLog.h" /> 
-    <ClInclude Include="Sources\Public\Lighting\directionalLight.h" /> 
-    <ClInclude Include="Sources\Public\Lighting\Light.h" /> 
-    <ClInclude Include="Sources\Public\Lighting\pointLight.h" /> 
-    <ClInclude Include="Sources\Public\Lighting\spotLight.h" /> 
-    <ClInclude Include="Sources\Public\MathLibrary\vector3.h" /> 
-    <ClInclude Include="Sources\Public\MathLibrary\worldInteraction.h" /> 
-    <ClInclude Include="Sources\Public\Mesh\CubemapComponent.h" /> 
-    <ClInclude Include="Sources\Public\Mesh\InstancedMeshComponent.h" /> 
-    <ClInclude Include="Sources\Public\Mesh\MeshComponent.h" /> 
-    <ClInclude Include="Sources\Public\Mesh\MeshData.h" /> 
-    <ClInclude Include="Sources\Public\Mesh\StaticMesh.h" /> 
-    <ClInclude Include="Sources\Public\Mesh\StaticMeshComponent.h" /> 
-    <ClInclude Include="Sources\Public\Physic\physicDebugViewer.h" /> 
-    <ClInclude Include="Sources\Public\Scene\primitiveComponent.h" /> 
-    <ClInclude Include="Sources\Public\Scene\scene.h" /> 
-    <ClInclude Include="Sources\Public\Scene\sceneComponent.h" /> 
-    <ClInclude Include="Sources\Public\Scene\SceneMeshProxy.h" /> 
-    <ClInclude Include="Sources\Public\Shader\material.h" /> 
-    <ClInclude Include="Sources\Public\Shader\shaderLoader.h" /> 
-    <ClInclude Include="Sources\Public\Shader\shader_s.h" /> 
-    <ClInclude Include="Sources\Public\Texture\texture.h" /> 
-    <ClInclude Include="Sources\Public\UI\engineLogWindow.h" /> 
-    <ClInclude Include="Sources\Public\UI\FloatingWindow.h" /> 
-    <ClInclude Include="Sources\Public\World\world.h" /> 
-    <ClInclude Include="Sources\Public\World\worldAsset.h" /> 
-  </ItemGroup> 
-  <ItemGroup> 
-    <ClCompile Include="Sources\Private\Asset\asset.cpp" /> 
-    <ClCompile Include="Sources\Private\Asset\assetLibrary.cpp" /> 
-    <ClCompile Include="Sources\Private\Asset\AssetRegistry.cpp" /> 
-    <ClCompile Include="Sources\Private\Asset\GLAssetIO.cpp" /> 
-    <ClCompile Include="Sources\Private\Camera\camera.cpp" /> 
-    <ClCompile Include="Sources\Private\Engine\debugerTool.cpp" /> 
-    <ClCompile Include="Sources\Private\Engine\engine.cpp" /> 
-    <ClCompile Include="Sources\Private\Engine\eventManager.cpp" /> 
-    <ClCompile Include="Sources\Private\Engine\inputManager.cpp" /> 
-    <ClCompile Include="Sources\Private\Engine\ThreadHandler.cpp" /> 
-    <ClCompile Include="Sources\Private\EngineLog\engineLog.cpp" /> 
-    <ClCompile Include="Sources\Private\Lighting\directionalLight.cpp" /> 
-    <ClCompile Include="Sources\Private\Lighting\Light.cpp" /> 
-    <ClCompile Include="Sources\Private\Lighting\pointLight.cpp" /> 
-    <ClCompile Include="Sources\Private\Lighting\spotLight.cpp" /> 
-    <ClCompile Include="Sources\Private\MathLibrary\worldInteraction.cpp" /> 
-    <ClCompile Include="Sources\Private\Mesh\CubemapComponent.cpp" /> 
-    <ClCompile Include="Sources\Private\Mesh\InstancedMeshComponent.cpp" /> 
-    <ClCompile Include="Sources\Private\Mesh\MeshComponent.cpp" /> 
-    <ClCompile Include="Sources\Private\Mesh\MeshData.cpp" /> 
-    <ClCompile Include="Sources\Private\Mesh\StaticMesh.cpp" /> 
-    <ClCompile Include="Sources\Private\Mesh\StaticMeshComponent.cpp" /> 
-    <ClCompile Include="Sources\Private\Physic\physicDebugViewer.cpp" /> 
-    <ClCompile Include="Sources\Private\Scene\primitiveComponent.cpp" /> 
-    <ClCompile Include="Sources\Private\Scene\scene.cpp" /> 
-    <ClCompile Include="Sources\Private\Scene\sceneComponent.cpp" /> 
-    <ClCompile Include="Sources\Private\Scene\SceneMeshProxy.cpp" /> 
-    <ClCompile Include="Sources\Private\Shader\material.cpp" /> 
-    <ClCompile Include="Sources\Private\Shader\shaderLoader.cpp" /> 
-    <ClCompile Include="Sources\Private\Texture\texture.cpp" /> 
-    <ClCompile Include="Sources\Private\UI\engineLogWindow.cpp" /> 
-    <ClCompile Include="Sources\Private\UI\FloatingWindow.cpp" /> 
-    <ClCompile Include="Sources\Private\World\world.cpp" /> 
-    <ClCompile Include="Sources\Private\World\worldAsset.cpp" /> 
-  </ItemGroup> 
-</Project> 
+</Project>

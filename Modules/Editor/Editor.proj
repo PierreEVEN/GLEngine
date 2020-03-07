@@ -1,0 +1,7 @@
+{
+	"ProjectName": "Editor",
+	"IncludesPath": "Sources/Public",
+	"ProjectType": "Library",
+	"Dependencies": [ "Engine", "ProceduralLandscapeLibrary" ],	
+	"Libraries": []
+}

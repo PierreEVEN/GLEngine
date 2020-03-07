@@ -1,0 +1,7 @@
+{
+	"ProjectName": "Stdbi",
+	"IncludesPath": "Sources/Public",
+	"ProjectType": "StaticLibrary",
+	"Dependencies": [],	
+	"Libraries": []
+}
