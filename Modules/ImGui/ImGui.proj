@@ -2,6 +2,7 @@
 	"ProjectName": "ImGui",
 	"IncludesPath": "Sources/Public",
 	"ProjectType": "StaticLibrary",
-	"Dependencies": [],	
-	"Libraries": []
+	"Dependencies": [ "Glad" ],	
+	"Libraries": [],
+	"AdditionalIncludes" : [ "Includes" ],
 }

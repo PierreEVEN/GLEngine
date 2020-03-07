@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{ProceduralLandscapeLibrary}</ProjectGuid>
+    <ProjectGuid>{A1BEC4B9-F16A-4D37-B4E3-8A4EB6680D47}</ProjectGuid>
     <RootNamespace>ProceduralLandscapeLibrary</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -65,25 +65,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>Modules\ProceduralLandscapeLibrary\Sources/Public;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Modules\ProceduralLandscapeLibrary\Sources/Public;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
@@ -156,6 +156,6 @@
     <ClCompile Include="Sources\Private\Mesh\ProceduralLandscapeSection.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label = "ExtensionTargets" >
+  <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

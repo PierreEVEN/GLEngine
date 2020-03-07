@@ -1,7 +1,8 @@
 {
 	"ProjectName": "Editor",
 	"IncludesPath": "Sources/Public",
-	"ProjectType": "Library",
-	"Dependencies": [ "Engine", "ProceduralLandscapeLibrary" ],	
-	"Libraries": []
+	"ProjectType": "Application",
+	"Dependencies": [ "Engine", "ProceduralLandscapeLibrary", "Glad", "ImGui", "Stdbi" ],
+	"Libraries": [ "Libs", ],
+	"AdditionalIncludes" : [ "Includes", "Includes\\Bullet3D\\src" ],
 }

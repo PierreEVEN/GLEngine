@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{ImGui}</ProjectGuid>
+    <ProjectGuid>{5C5B57C1-1FEA-4558-A4C3-12CBC8FD9D66}</ProjectGuid>
     <RootNamespace>ImGui</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -65,25 +65,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>Modules\ImGui\Sources/Public;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Modules\ImGui\Sources/Public;$(SolutionDir)\Modules\Glad\Sources/Public;$(SolutionDir)\Includes;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
@@ -161,6 +161,6 @@
     <ClCompile Include="Sources\Private\imgui_widgets.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label = "ExtensionTargets" >
+  <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{Engine}</ProjectGuid>
+    <ProjectGuid>{0000000E-0000-0000-0000-000000000000}</ProjectGuid>
     <RootNamespace>Engine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -65,25 +65,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>Modules\Engine\Sources/Public;Modules\Glad\Sources/Public;Modules\ImGui\Sources/Public;Modules\Stdbi\Sources/Public;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Modules\Engine\Sources/Public;$(SolutionDir)\Modules\Glad\Sources/Public;$(SolutionDir)\Modules\ImGui\Sources/Public;$(SolutionDir)\Modules\Stdbi\Sources/Public;$(SolutionDir)\Includes;$(SolutionDir)\Includes\Bullet3D\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Libs\</OutDir>
+    <OutDir>$(SolutionDir)\Libs\</OutDir>
     <IntDir>$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
@@ -218,6 +218,6 @@
     <ClCompile Include="Sources\Private\World\worldAsset.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label = "ExtensionTargets" >
+  <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

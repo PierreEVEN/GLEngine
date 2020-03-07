@@ -1,5 +1,8 @@
 .vs/
 Binaries/
+
+
+#keep required dll and windows configs
 Output/*
 !Output/assimp-vc141-mt.dll
 !Output/imgui.ini

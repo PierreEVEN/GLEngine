@@ -3,5 +3,6 @@
 	"IncludesPath": "Sources/Public",
 	"ProjectType": "StaticLibrary",
 	"Dependencies": [ "Glad", "ImGui", "Stdbi"],	
-	"Libraries": []
+	"Libraries": [ ],
+	"AdditionalIncludes" : [ "Includes", "Includes\\Bullet3D\\src" ],
 }

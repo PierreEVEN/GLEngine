@@ -1,114 +1,153 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Sources\Private\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Private\Editor\EditorEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Private\UI\EditorConsole.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Private\Editor\EditorTools\EditorGizmo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Private\Scene\EditorCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Private\Scene\EditorScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Private\World\EditorWorld.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources\Private</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Private\Assets\AssetImporter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources\Private\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Private\Editor\EditorEngine.cpp">
+      <Filter>Sources\Private\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Private\Editor\EditorTools\EditorGizmo.cpp">
+      <Filter>Sources\Private\Editor\EditorTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Private\Scene\EditorCamera.cpp">
+      <Filter>Sources\Private\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Private\Scene\EditorScene.cpp">
+      <Filter>Sources\Private\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Private\UI\AssetImporterWindow.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources\Private\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Private\UI\EditorConsole.cpp">
+      <Filter>Sources\Private\UI</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Private\UI\EditorWindows\assetEditor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources\Private\UI\EditorWindows</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Private\UI\EditorWindows\assetSelector.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources\Private\UI\EditorWindows</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Private\UI\EditorWindows\contentBrowser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources\Private\UI\EditorWindows</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Private\UI\EditorWindows\EditorWindow.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources\Private\UI\EditorWindows</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Private\UI\EditorWindows\fileExplorer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources\Private\UI\EditorWindows</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Private\UI\EditorWindows\sceneComponentEditor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources\Private\UI\EditorWindows</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Private\UI\EditorWindows\WorldSettingsWindow.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources\Private\UI\EditorWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Private\World\EditorWorld.cpp">
+      <Filter>Sources\Private\World</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\Public\Editor\EditorEngine.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Sources\Public\Assets\AssetImporter.h">
+      <Filter>Sources\Public\Assets</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Public\UI\EditorConsole.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Sources\Public\Editor\EditorEngine.h">
+      <Filter>Sources\Public\Editor</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\Editor\EditorTools\EditorGizmo.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sources\Public\Editor\EditorTools</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\Scene\EditorCamera.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sources\Public\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\Scene\EditorScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Public\World\EditorWorld.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Public\Assets\AssetImporter.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sources\Public\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\UI\AssetImporterWindow.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sources\Public\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Public\UI\EditorConsole.h">
+      <Filter>Sources\Public\UI</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\UI\EditorWindows\assetEditor.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sources\Public\UI\EditorWindows</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\UI\EditorWindows\assetSelector.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sources\Public\UI\EditorWindows</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\UI\EditorWindows\contentBrowser.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sources\Public\UI\EditorWindows</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\UI\EditorWindows\EditorWindow.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sources\Public\UI\EditorWindows</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\UI\EditorWindows\fileExplorer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sources\Public\UI\EditorWindows</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\UI\EditorWindows\sceneComponentEditor.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sources\Public\UI\EditorWindows</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Public\UI\EditorWindows\WorldSettingsWindow.h">
-      <Filter>Header Files</Filter>
+      <Filter>Sources\Public\UI\EditorWindows</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Public\World\EditorWorld.h">
+      <Filter>Sources\Public\World</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{Sources}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Private">
+      <UniqueIdentifier>{Sources\Private}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Private\Assets">
+      <UniqueIdentifier>{Sources\Private\Assets}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Private\Editor">
+      <UniqueIdentifier>{Sources\Private\Editor}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Private\Editor\EditorTools">
+      <UniqueIdentifier>{Sources\Private\Editor\EditorTools}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Private\Scene">
+      <UniqueIdentifier>{Sources\Private\Scene}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Private\UI">
+      <UniqueIdentifier>{Sources\Private\UI}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Private\UI\EditorWindows">
+      <UniqueIdentifier>{Sources\Private\UI\EditorWindows}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Private\World">
+      <UniqueIdentifier>{Sources\Private\World}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Public">
+      <UniqueIdentifier>{Sources\Public}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Public\Assets">
+      <UniqueIdentifier>{Sources\Public\Assets}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Public\Editor">
+      <UniqueIdentifier>{Sources\Public\Editor}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Public\Editor\EditorTools">
+      <UniqueIdentifier>{Sources\Public\Editor\EditorTools}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Public\Scene">
+      <UniqueIdentifier>{Sources\Public\Scene}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Public\UI">
+      <UniqueIdentifier>{Sources\Public\UI}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Public\UI\EditorWindows">
+      <UniqueIdentifier>{Sources\Public\UI\EditorWindows}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Public\World">
+      <UniqueIdentifier>{Sources\Public\World}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
