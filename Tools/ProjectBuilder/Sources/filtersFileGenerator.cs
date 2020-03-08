@@ -7,6 +7,88 @@ namespace ProjectBuilder
 {
     class filtersFileGenerator
     {
+        public static String BuildFilterString(ProjectStruct inProject)
+        {
+            List<String> Paths = new List<String>();
+
+            ProjLibrary.BeginXmlEdition();
+            ProjLibrary.BeginXmlCategory("Project", "DefaultTargets=\"Build\" ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"");
+            {
+                ProjLibrary.BeginXmlCategory("ItemGroup");
+                {
+                    foreach (String file in ProjLibrary.GetFilesInDirectory(Path.GetDirectoryName(inProject.ProjectFileAbsolutePath), ".h"))
+                    {
+                        String relativePath = Path.GetRelativePath(Path.GetDirectoryName(inProject.ProjectFileAbsolutePath), file);
+                        ProjLibrary.BeginXmlCategory("ClInclude", "Include=" + "\"" + relativePath + "\"");
+                        {
+                            AddUniquePath(Path.GetDirectoryName(relativePath), ref Paths);
+                            ProjLibrary.AddXmlValue("Filter", Path.GetDirectoryName(relativePath));
+                        }
+                        ProjLibrary.EndXmlCategory("ClInclude");
+                    }
+                }
+                ProjLibrary.EndXmlCategory("ItemGroup");
+                ProjLibrary.BeginXmlCategory("ItemGroup");
+                {
+                    foreach (String file in ProjLibrary.GetFilesInDirectory(Path.GetDirectoryName(inProject.ProjectFileAbsolutePath), ".cpp"))
+                    {
+                        String relativePath = Path.GetRelativePath(Path.GetDirectoryName(inProject.ProjectFileAbsolutePath), file);
+                        ProjLibrary.BeginXmlCategory("ClCompile", "Include=" + "\"" + relativePath + "\"");
+                        {
+                            AddUniquePath(Path.GetDirectoryName(relativePath), ref Paths);
+                            ProjLibrary.AddXmlValue("Filter", Path.GetDirectoryName(relativePath));
+                        }
+                        ProjLibrary.EndXmlCategory("ClCompile");
+                    }
+                }
+                ProjLibrary.EndXmlCategory("ItemGroup");
+                ProjLibrary.BeginXmlCategory("ItemGroup");
+                {
+                    foreach (String file in ProjLibrary.GetFilesInDirectory(Path.GetDirectoryName(inProject.ProjectFileAbsolutePath), ".c"))
+                    {
+                        String relativePath = Path.GetRelativePath(Path.GetDirectoryName(inProject.ProjectFileAbsolutePath), file);
+                        ProjLibrary.BeginXmlCategory("ClCompile", "Include=" + "\"" + relativePath + "\"");
+                        {
+                            AddUniquePath(Path.GetDirectoryName(relativePath), ref Paths);
+                            ProjLibrary.AddXmlValue("Filter", Path.GetDirectoryName(relativePath));
+                        }
+                        ProjLibrary.EndXmlCategory("ClCompile");
+                    }
+                }
+                ProjLibrary.EndXmlCategory("ItemGroup");
+
+                foreach (String dir in ProjLibrary.GetSubfoldersInDirectory(Path.GetDirectoryName(inProject.ProjectFileAbsolutePath)))
+                {
+                    AddUniquePath(Path.GetDirectoryName(Path.GetRelativePath(Path.GetDirectoryName(inProject.ProjectFileAbsolutePath), dir)), ref Paths);
+                }
+
+                ProjLibrary.BeginXmlCategory("ItemGroup");
+                {
+                    foreach (String path in Paths)
+                    {
+                        ProjLibrary.BeginXmlCategory("Filter", "Include=" + "\"" + path + "\"");
+                        {
+                            ProjLibrary.AddXmlValue("UniqueIdentifier", "{" + path + "}");
+                        }
+                        ProjLibrary.EndXmlCategory("Filter");
+
+                    }
+                }
+                ProjLibrary.EndXmlCategory("ItemGroup");
+            }
+            ProjLibrary.EndXmlCategory("Project");
+
+            return ProjLibrary.GetXmlString();
+        }
+
+
+        private static void AddUniquePath(String inPath, ref List<String> inList)
+        {
+            if (inList.Contains(inPath) || inPath == "" || inPath == ".") return;
+            inList.Add(inPath);
+        }
+
+
 
         private String SourceFolder;
         private String ProjectName;
@@ -26,7 +108,7 @@ namespace ProjectBuilder
 
             outFile += "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
             outFile += "<Project ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n";
-
+            
             GenerateSourceFilePaths(ref outFile);
             GenerateIdentifiers(ref outFile);
             outFile += "</Project>\n";

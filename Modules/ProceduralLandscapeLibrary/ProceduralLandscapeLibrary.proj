@@ -1,7 +1,5 @@
 {
 	"ProjectName": "ProceduralLandscapeLibrary",
 	"IncludesPath": "Sources/Public",
-	"ProjectType": "StaticLibrary",
-	"Dependencies": [],	
-	"Libraries": []
+	"ProjectType": "StaticLibrary"
 }

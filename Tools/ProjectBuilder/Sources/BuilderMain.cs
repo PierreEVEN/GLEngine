@@ -7,16 +7,21 @@ namespace ProjectBuilder
     {
         static void Main(string[] args)
         {
-            if (args.Length == 1)
+            SolutionAnalyzer.SetSolutionAbsolutePath(args[0]);// "C:\\Users\\Pierre\\Documents\\GLEngine");
+            foreach(ProjectStruct proj in SolutionAnalyzer.Get().Projects)
             {
-                Console.WriteLine("starting building on " + args[0]);
-                ProjectBuilder proj = new ProjectBuilder(args[0]);//"../../../../../Modules/");
-                proj.Build();
-            }
-            else
-            {
-                ProjectBuilder proj = new ProjectBuilder("../../../../../Modules/");
-                proj.Build();
+                try
+                {
+                    ProjectBuilder.WriteProjectFile(vcxprojFileStringGenerator.BuildVcxprojString(proj), Path.GetDirectoryName(proj.ProjectFileAbsolutePath) + "\\" + proj.ProjectName + ".vcxproj");
+                    ProjectBuilder.WriteProjectFile(userFileStringGenerator.BuildUserFileString(proj), Path.GetDirectoryName(proj.ProjectFileAbsolutePath) + "\\" + proj.ProjectName + ".vcxproj.user");
+                    ProjectBuilder.WriteProjectFile(filtersFileGenerator.BuildFilterString(proj), Path.GetDirectoryName(proj.ProjectFileAbsolutePath) + "\\" + proj.ProjectName + ".vcxproj.filters");
+                    Console.WriteLine("=> Successfully created " + proj.ProjectName + " file");
+
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("Failed to build proj " + proj.ProjectName + " :\n" + e.Message);
+                }
             }
          }
     }

@@ -1,8 +1,7 @@
 {
 	"ProjectName": "Engine",
-	"IncludesPath": "Sources/Public",
+	"IncludesPath": "Sources\\Public",
 	"ProjectType": "StaticLibrary",
-	"Dependencies": [ "Glad", "ImGui", "Stdbi"],	
-	"Libraries": [ ],
+	"Dependencies": [ "Glad", "ImGui", "Stdbi"],
 	"AdditionalIncludes" : [ "Includes", "Includes\\Bullet3D\\src" ],
 }

@@ -13,10 +13,9 @@ Tools/ProjectBuilder/*
 
 #keep required dll and windows configs
 Output/*
-!Output/assimp-vc141-mt.dll
-!Output/imgui.ini
+!Output/*/*/*/assimp-vc142-mtd.dll
+!Output/*/*/*/imgui.ini
 
 #keep precompiled libraries in subfolders
 Libs/*
-!Libs/*/
-!Libs/*/
+!Libs/assimp/*

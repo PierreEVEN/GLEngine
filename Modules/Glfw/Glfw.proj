@@ -1,6 +1,5 @@
 {
-	"ProjectName": "Glad",
+	"ProjectName": "Glfw",
 	"IncludesPath": "Sources\\Public",
-	"Dependencies": [ "Glfw" ],
 	"ProjectType": "StaticLibrary",
 }

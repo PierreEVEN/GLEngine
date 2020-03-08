@@ -1,15 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>ProjectBuilder.BuilderMain</StartupObject>
     <NoWin32Manifest>true</NoWin32Manifest>
     <ApplicationIcon>projectBuilder.ico</ApplicationIcon>
-	<IntermediateOutputPath>..\..\Binaries\projectBuilderTool</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\Binaries\projectBuilderTool</IntermediateOutputPath>
+    <FileUpgradeFlags>40</FileUpgradeFlags>
+    <UpgradeBackupLocation>C:\Users\Pierre\Documents\GLEngine\Backup\</UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
-
 </Project>
