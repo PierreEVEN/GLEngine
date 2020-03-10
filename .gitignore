@@ -5,9 +5,8 @@ Binaries/
 *.user
 
 
-Tools/ProjectBuilder/*
-!Tools/ProjectBuilder/obj/*
-!Tools/ProjectBuilder/bin/*
+Tools/ProjectBuilder/obj
+Tools/ProjectBuilder/Properties
 
 
 
