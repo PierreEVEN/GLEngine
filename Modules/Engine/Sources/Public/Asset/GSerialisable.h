@@ -3,31 +3,22 @@
 
 #include <EnginePCH.h>
 
-class GProperty;
 struct GPropertyLink;
 
 class GSerialisable
 {
-	std::map<std::string, GPropertyLink*> registeredProperties;
+	std::forward_list<GPropertyLink> registeredProperties;
 	
 	unsigned int testProperty;
-
-
+	
 protected:
 
-	template <typename T>
-	void RegisterProperty(T* inProperty) {}
+	void RegisterProperty(const GPropertyLink& inProperty);
+
+	virtual void RegisterProperties();
 
 public:
 
-	GSerialisable()
-	{
-		RegisterProperty<unsigned int>(&testProperty);
-	}
-
-
+	GSerialisable() {}
 	virtual ~GSerialisable() {}
-
-	std::forward_list<GProperty*> Serialize() {}
-	void Deserialize(const std::forward_list<GProperty*>& inProperties) {}
 };
