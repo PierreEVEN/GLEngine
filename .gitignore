@@ -16,5 +16,5 @@ Output/*
 !Output/*/*/*/imgui.ini
 
 #keep precompiled libraries in subfolders
-Libs/*
-!Libs/assimp/*
+Libs/Release
+Libs/Debug
