@@ -23,6 +23,9 @@ namespace ProjectBuilder
                     Console.WriteLine("Failed to build proj " + proj.ProjectName + " :\n" + e.Message);
                 }
             }
+            Console.WriteLine("Job finnished");
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
          }
     }
 }
