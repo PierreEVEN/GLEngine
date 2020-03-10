@@ -11,7 +11,7 @@ Tools/ProjectBuilder/Properties
 
 
 #keep required dll and windows configs
-Output/*
+Output/*/*/*/*
 !Output/*/*/*/assimp-vc142-mtd.dll
 !Output/*/*/*/imgui.ini
 
