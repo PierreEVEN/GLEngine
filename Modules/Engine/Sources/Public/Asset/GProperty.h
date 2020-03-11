@@ -3,9 +3,9 @@
 
 #include <EnginePCH.h>
 
-#define GPROPERTY(var) GPropertyLink(&var, sizeof(var), #var, typeid(var).name(), EPropertyType::PT_Var)
+#define GPROPERTY(var) GProperty(&var, sizeof(var), #var, typeid(var).name(), EPropertyType::PT_Var)
 #define REGISTER_PROPERTY(prop) RegisterProperty(GPROPERTY(prop))
-#define GPROPERTYLIST(var) GPropertyLink(&var, sizeof(var), #var, typeid(var).name(), EPropertyType::PT_List)
+#define GPROPERTYLIST(var) GProperty(&var, sizeof(var), #var, typeid(var).name(), EPropertyType::PT_List)
 #define REGISTER_PROPERTYLIST(prop) RegisterProperty(GPROPERTYLIST(prop))
 
 enum class EPropertyType
@@ -15,22 +15,23 @@ enum class EPropertyType
 };
 
 
-struct GPropertyLink
+struct GProperty
 {
 private:
 
 	std::string propertyName;
 	std::string propertyType;
 	EPropertyType propertyStructure;
-	void* pointerTovar;
 	unsigned int propertyLength;
+	void* pointerTovar;
 
-	void SerializeV1(const char* result, unsigned int& size) const;
 	void ComputeSizeV1(unsigned int& size) const;
+	void SerializeV1(char*& result) const;
+	void DeserializeV1(char*& source);
 
 public:
 
-	GPropertyLink(void* inPointerTovar, const unsigned int& inLength, const std::string& inPropertyName, const std::string& type, const EPropertyType& inPropertyStructure) :
+	GProperty(void* inPointerTovar, const unsigned int& inLength, const std::string& inPropertyName, const std::string& type, const EPropertyType& inPropertyStructure) :
 		pointerTovar(inPointerTovar),
 		propertyLength(inLength),
 		propertyName(inPropertyName),
@@ -38,14 +39,22 @@ public:
 		propertyStructure(inPropertyStructure)
 	{}
 
-	virtual ~GPropertyLink() {}
+	GProperty(char*& source) { Deserialize(source); }
+
+	virtual ~GProperty() {}
 
 	FORCEINLINE std::string GetName() const { return propertyName; }
 
-	bool operator==(const GPropertyLink& inOther) const
+	bool operator==(const GProperty& inOther) const
 	{
 		return std::string(inOther.propertyName) == std::string(propertyName);
 	}
 
-	void Serialize(const char* result, unsigned int& size);
+	void Serialize(char*& result) const;
+
+	void Deserialize(char*& source);
+
+	std::string ToString() const;
+
+	template<typename T> T* Get() { return (T*)pointerTovar; }
 };

@@ -3,21 +3,21 @@
 
 #include <EnginePCH.h>
 
-struct GPropertyLink;
+struct GProperty;
 
 class GSerialisable
 {
-	std::forward_list<GPropertyLink> registeredProperties;
-	
-	unsigned int testProperty;
+	std::map<std::string, GProperty> registeredProperties;
 	
 protected:
 
-	void RegisterProperty(const GPropertyLink& inProperty);
+	void RegisterProperty(const GProperty& inProperty);
 
 	virtual void RegisterProperties();
 
 public:
+
+	GProperty* GetProperty(std::string propertyName);
 
 	GSerialisable() {}
 	virtual ~GSerialisable() {}
