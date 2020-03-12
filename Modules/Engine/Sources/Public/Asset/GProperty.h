@@ -23,7 +23,7 @@ private:
 	std::string propertyType;
 	EPropertyType propertyStructure;
 	unsigned int propertyLength;
-	void* pointerTovar;
+	void* pointerTovar = nullptr;
 
 	void ComputeSizeV1(unsigned int& size) const;
 	void SerializeV1(char*& result) const;
@@ -51,10 +51,12 @@ public:
 	}
 
 	void Serialize(char*& result) const;
-
+	void GetSize(unsigned int& inSize) const;
 	void Deserialize(char*& source);
 
 	std::string ToString() const;
+
+	static std::string GetPropertyName(char*& data);
 
 	template<typename T> T* Get() { return (T*)pointerTovar; }
 };
