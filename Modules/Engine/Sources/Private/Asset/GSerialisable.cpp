@@ -3,6 +3,7 @@
 
 void GSerialisable::RegisterProperty(const GProperty& inProperty) {
 	registeredProperties.insert({ inProperty.GetName(), inProperty });
+
 }
 
 void GSerialisable::Serialize(char*& outData, unsigned int& outLength)
@@ -74,3 +75,16 @@ void GSerialisableTest::RegisterProperties()
 	REGISTER_PROPERTY(prop2);
 	REGISTER_PROPERTY(prop3);
 }
+
+
+/*
+class Heure
+{
+	private int var;
+
+	public Heure(int var)
+	{
+
+	}
+};
+*/
