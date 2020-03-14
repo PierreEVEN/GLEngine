@@ -3,10 +3,8 @@
 #include <World/world.h>
 #include <Mesh/staticMeshComponent.h>
 #include <Asset/AssetRegistry.h>
-#include <MathLibrary/vector3.h>
 #include <Camera/camera.h>
 #include <Asset/GLAssetIO.h>
-#include <Engine/debugerTool.h>
 #include <Mesh/StaticMesh.h>
 #include <UI/EditorWindows/EditorWindow.h>
 #include <UI/AssetImporterWindow.h>
@@ -16,6 +14,7 @@
 #include <Engine/engine.h>
 #include <UI/EditorWindows/WorldSettingsWindow.h>
 #include <Engine/ThreadHandler.h>
+#include <UI/StatWindow.h>
 
 std::vector<ImFloatingWindow*> WindowManager::elementsArray;
 
@@ -244,7 +243,7 @@ std::string WindowManager::GetUnexistingWindowName(std::string inWindowName)
 
 void WindowManager::DrawElements(World* inWorld)
 {
-	for (int i = WindowManager::elementsArray.size() - 1; i >= 0; --i)
+	for (int i = (int)WindowManager::elementsArray.size() - 1; i >= 0; --i)
 	{
 		WindowManager::elementsArray[i]->Draw(inWorld);
 		if (!WindowManager::elementsArray[i]->bKeepOpen)

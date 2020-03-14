@@ -1,0 +1,6 @@
+{
+	"ProjectName": "GObject",
+	"IncludesPath": "Sources\\Public",
+	"ProjectType": "StaticLibrary",
+	"Dependencies": [ "EngineDefaults"],
+}

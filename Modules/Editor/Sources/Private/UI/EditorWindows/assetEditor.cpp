@@ -191,8 +191,10 @@ void StaticMeshEditorWindows::DrawHeader()
 	staticMeshEditorScene->GetCamera()->Yaw = (float)glfwGetTime() * 5;
 	staticMeshEditorScene->GetCamera()->updateCameraVectors();
 	staticMeshEditorScene->GetCamera()->SetLocation(meshComp->GetWorldBounds().GetOrigin() + staticMeshEditorScene->GetCamera()->GetRotation().GetForwardVector() * meshComp->GetWorldBounds().GetBoundRadius() * -2.5f);
-	//staticMeshEditorScene->Draw();
+#pragma warning( push )
+#pragma warning( disable : 4312 )
 	ImGui::Image((ImTextureID*)staticMeshEditorScene->GetColorBuffer(), ImVec2(256, 256), ImVec2(0, 1), ImVec2(1, 0));
+#pragma warning( pop )
 }
 
 MaterialEditorWindow::MaterialEditorWindow(std::string inWorld, Asset* inAsset)
@@ -218,7 +220,10 @@ void MaterialEditorWindow::DrawHeader()
 	materialEditorScene->GetCamera()->SetLocation(materialEditorScene->GetCamera()->GetRotation().GetForwardVector() * -3);
 	//materialEditorScene->Draw();
 	ImGui::Text(std::string("Texture count : " + std::to_string(((Material*)GetAsset())->GetTextureCount())).data());
+#pragma warning( push )
+#pragma warning( disable : 4312 )
 	ImGui::Image((ImTextureID*)materialEditorScene->GetColorBuffer(), ImVec2(256, 256), ImVec2(0, 1), ImVec2(1, 0));
+#pragma warning( pop )
 	if (ImGui::Button("Add texture"))
 	{
 		((Material*)GetAsset())->AddTexture();

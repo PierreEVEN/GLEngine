@@ -1,0 +1,7 @@
+{
+	"ProjectName": "EngineDefaults",
+	"IncludesPath": "Sources\\Public",
+	"Dependencies": [ "Glad" ],
+	"ProjectType": "StaticLibrary",
+	"AdditionalIncludes" : [ "Includes", "Includes\\Bullet3D\\src" ],
+}

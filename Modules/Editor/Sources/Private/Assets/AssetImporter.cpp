@@ -16,7 +16,6 @@
 #include <Shader/shaderLoader.h>
 #include <Asset/assetLibrary.h>
 #include <Shader/material.h>
-#include "EngineLog/engineLog.h"
 #include <Assets/AssetImporter.h>
 #include <Mesh/MeshData.h>
 
@@ -205,8 +204,8 @@ void AssetImporter::processMesh(aiMesh *mesh, const aiScene *scene, unsigned int
 		}
 	}
 	
-	GLAssetIO::AppendField<SVertex*>(writer, "Section" + std::to_string((int)meshIndex) + "_Vertices", vertices.data(), vertices.size() * sizeof(SVertex));
-	GLAssetIO::AppendField<unsigned int*>(writer, "Section" + std::to_string((int)meshIndex) + "_Indices", indices.data(), indices.size() * sizeof(unsigned int));
+	GLAssetIO::AppendField<SVertex*>(writer, "Section" + std::to_string((int)meshIndex) + "_Vertices", vertices.data(), (unsigned int)vertices.size() * sizeof(SVertex));
+	GLAssetIO::AppendField<unsigned int*>(writer, "Section" + std::to_string((int)meshIndex) + "_Indices", indices.data(), (unsigned int)indices.size() * sizeof(unsigned int));
 
 
 	/** Get materials */
@@ -214,7 +213,7 @@ void AssetImporter::processMesh(aiMesh *mesh, const aiScene *scene, unsigned int
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		std::string newMaterial = loadMaterialTextures(material, aiTextureType_DIFFUSE, meshName, (int)meshIndex);
-		GLAssetIO::AppendField<char*>(writer, "Material_" + std::to_string(meshIndex), (char*)newMaterial.data(), newMaterial.size() + 1);
+		GLAssetIO::AppendField<char*>(writer, "Material_" + std::to_string(meshIndex), (char*)newMaterial.data(), (unsigned int)newMaterial.size() + 1);
 	}
 }
 
@@ -247,14 +246,14 @@ void AssetImporter::ImportShader(std::string vertexShaderFilePath, std::string f
 	SAssetWriter writer(newFilePath);
 
 	GLAssetIO::GenerateFileBody(writer.Get(), newShaderName, "Material");
-	GLAssetIO::AppendField<char*>(writer.Get(), "VertexShaderFilePath", (char*)(vertexShaderFilePath.data()), vertexShaderFilePath.size() + 1);
-	GLAssetIO::AppendField<char*>(writer.Get(), "FragmentShaderFilePath", (char*)(fragmentShaderFilePath.data()), fragmentShaderFilePath.size() + 1);
-	unsigned int textureCount = linkedTextures.size();
+	GLAssetIO::AppendField<char*>(writer.Get(), "VertexShaderFilePath", (char*)(vertexShaderFilePath.data()), (unsigned int)vertexShaderFilePath.size() + 1);
+	GLAssetIO::AppendField<char*>(writer.Get(), "FragmentShaderFilePath", (char*)(fragmentShaderFilePath.data()), (unsigned int)fragmentShaderFilePath.size() + 1);
+	unsigned int textureCount = (unsigned int)linkedTextures.size();
 	GLAssetIO::AppendField<unsigned int*>(writer.Get(), "TextureCount", &textureCount, sizeof(unsigned int));
 	
-	for (unsigned int i = 0; i < linkedTextures.size(); ++i)
+	for (unsigned int i = 0; i < (unsigned int)linkedTextures.size(); ++i)
 	{
-		GLAssetIO::AppendField<char*>(writer.Get(), "Texture_" + std::to_string(i), (char*)(linkedTextures[i].data()), linkedTextures[i].size() + 1);
+		GLAssetIO::AppendField<char*>(writer.Get(), "Texture_" + std::to_string(i), (char*)(linkedTextures[i].data()), (unsigned int)linkedTextures[i].size() + 1);
 	}
 	writer.ForceCloseFile();
 	new Material(newFilePath);

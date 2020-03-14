@@ -17,7 +17,7 @@
 
 void AddCylinder(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator rotation, float radius, float length, glm::vec4 color, unsigned int resolution = 5, bool bIncludeEnd = false, bool bDoubleSided = false)
 {
-	unsigned int startVertexIndex = vArray->size();
+	unsigned int startVertexIndex = (unsigned int)vArray->size();
 	for (unsigned int i = 0; i < resolution; ++i)
 	{
 		float index = (i / (float)resolution) * (float)M_PI * 2.f;
@@ -58,7 +58,7 @@ void AddCylinder(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTrian
 	}
 	if (bDoubleSided)
 	{
-		unsigned int startVertexIndex = vArray->size();
+		unsigned int startVertexIndex = (unsigned int)vArray->size();
 		for (unsigned int i = 0; i < resolution; ++i)
 		{
 			float index = (i / (float)resolution) * (float)M_PI * 2.f;
@@ -101,7 +101,7 @@ void AddCylinder(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTrian
 }
 void AddPlane(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator rotation, float sizeX, float sizeY, glm::vec4 color, unsigned int resolutionX = 1, unsigned int resolutionY = 1, bool bDoubleSided = false)
 {
-	unsigned int startVertexIndex = vArray->size();
+	unsigned int startVertexIndex = (unsigned int)vArray->size();
 	for (unsigned int x = 0; x < resolutionX; ++x)
 	{
 		float posX = (sizeX / resolutionX) * x;
@@ -145,7 +145,7 @@ void AddPlane(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle
 }
 void AddSphere(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, float radius, glm::vec4 color, unsigned int resolutionZ = 12, unsigned int resolutionX = 6)
 {
-	unsigned int startVertexIndex = vArray->size();
+	unsigned int startVertexIndex = (unsigned int)vArray->size();
 
 	for (unsigned int x = 0; x < resolutionX; ++x)
 	{
@@ -177,7 +177,7 @@ void AddSphere(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangl
 }
 void AddCone(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator direction, float radius, float height, glm::vec4 color, unsigned int resolution = 12, bool bAddBottom = false)
 {
-	unsigned int startVertexIndex = vArray->size();
+	unsigned int startVertexIndex = (unsigned int)vArray->size();
 
 	for (unsigned int i = 0; i < resolution; ++i)
 	{
@@ -206,7 +206,7 @@ void AddCone(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle,
 }
 void AddDisk(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator direction, float innerRadius, float outterRadius, glm::vec4 color, unsigned int resolution = 12, bool bDoubleSided = false)
 {
-	unsigned int startVertexIndex = vArray->size();
+	unsigned int startVertexIndex = (unsigned int)vArray->size();
 
 	for (unsigned int i = 0; i < resolution; ++i)
 	{
@@ -228,7 +228,7 @@ void AddDisk(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle,
 	}
 	if (bDoubleSided)
 	{
-		startVertexIndex = vArray->size();
+		startVertexIndex = (unsigned int)vArray->size();
 
 		for (unsigned int i = 0; i < resolution; ++i)
 		{
@@ -252,7 +252,7 @@ void AddDisk(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle,
 }
 void AddCube(std::vector<SVertex>* vArray, std::vector<unsigned int>* vTriangle, SVector3 location, SRotator rotation, float sizeX, float sizeY, float sizeZ, glm::vec4 color)
 {
-	unsigned int startVertexIndex = vArray->size();
+	unsigned int startVertexIndex = (unsigned int)vArray->size();
 
 	//Bottom
 	vTriangle->push_back(startVertexIndex);

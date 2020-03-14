@@ -42,7 +42,7 @@ void MeshImporterWindow::Draw(World* inWorld)
 			selectedMaterials.push_back(nullptr);
 		}
 
-		for (int i = selectedMaterials.size() - 1; i >= 0; --i)
+		for (int i = (unsigned int)selectedMaterials.size() - 1; i >= 0; --i)
 		{
 			if (ImGui::BeginMenu((selectedMaterials[i] ? selectedMaterials[i]->GetName().data() : "None")))
 			{
@@ -267,7 +267,7 @@ void ShaderImporterWindow::Draw(World* inWorld)
 			selectedTextures.push_back(nullptr);
 		}
 
-		for (int i = selectedTextures.size() - 1; i >= 0; --i)
+		for (int i = (unsigned int)selectedTextures.size() - 1; i >= 0; --i)
 		{
 			if (ImGui::BeginMenu((selectedTextures[i] ? selectedTextures[i]->GetName().data() : "None")))
 			{
