@@ -6,22 +6,22 @@
 /************************************************************************/
 /* structure : nameLength(uint) | name(char*) | typeLength(uint) | type(char*) | propertyStructure(char) | propertyLength(uint) | property(char* ) */
 
-void GPropertyV1::GetSize(unsigned int& size) const
+void GProperty::ComputeSizeV1(unsigned int& size) const
 {
 	size = 0;
 	size += sizeof(unsigned int);					//structure
 	size += sizeof(unsigned int);					//nameLength
-	size += (unsigned int)propertyName.size() + 1;				//name
+	size += propertyName.size() + 1;				//name
 	size += sizeof(unsigned int);					//typeLength
-	size += (unsigned int)propertyType.size() + 1;				//type
+	size += propertyType.size() + 1;				//type
 	size += sizeof(unsigned int);					//propertyLength
 	size += propertyLength;							//property
 }
 
-void GPropertyV1::Serialize(char*& result) const
+void GProperty::SerializeV1(char*& result) const
 {
 	unsigned int size;
-	GetSize(size);
+	ComputeSizeV1(size);
 	result = (char*)malloc(size);
 	unsigned int currentOffset = 0;
 
@@ -30,7 +30,7 @@ void GPropertyV1::Serialize(char*& result) const
 	currentOffset += sizeof(unsigned int);
 
 	/** nameLength */
-	unsigned int nameLength = (unsigned int)propertyName.size() + 1;
+	unsigned int nameLength = propertyName.size() + 1;
 	memcpy(&result[currentOffset], &nameLength, sizeof(unsigned int));
 	currentOffset += sizeof(unsigned int);
 
@@ -39,7 +39,7 @@ void GPropertyV1::Serialize(char*& result) const
 	currentOffset += nameLength;
 
 	/** typeLength */
-	unsigned int typeLength = (unsigned int)propertyType.size() + 1;
+	unsigned int typeLength = propertyType.size() + 1;
 	memcpy(&result[currentOffset], &typeLength, sizeof(unsigned int));
 	currentOffset += sizeof(unsigned int);
 
@@ -59,7 +59,7 @@ void GPropertyV1::Serialize(char*& result) const
 }
 
 
-void GPropertyV1::Deserialize(char*& source)
+void GProperty::DeserializeV1(char*& source)
 {
 	unsigned int currentOffset = 0;
 
@@ -96,10 +96,29 @@ void GPropertyV1::Deserialize(char*& source)
 	/** property */
 	//pointerTovar = (void*)malloc(propertyLength);
 	memcpy(pointerTovar, &source[currentOffset], propertyLength);
+	std::cout << "deserialized value " << (int*)(pointerTovar) << std::endl;
 	currentOffset += propertyLength;
 }
 
-std::string GPropertyV1::ToString() const
+
+
+
+void GProperty::Serialize(char*& result) const
+{
+	SerializeV1(result);
+}
+
+void GProperty::GetSize(unsigned int& inSize) const
+{
+	return ComputeSizeV1(inSize);
+}
+
+void GProperty::Deserialize(char*& source)
+{
+	DeserializeV1(source);
+}
+
+std::string GProperty::ToString() const
 {
 	return " (" + std::to_string((int)propertyStructure) + ") " + propertyType + " " + propertyName + " (" + std::to_string(propertyLength) + ") ";
 }

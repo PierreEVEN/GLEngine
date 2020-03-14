@@ -22,6 +22,7 @@ public:
 	void Serialize(char*& outData, unsigned int& outLength);
 	void Deserialize(char*& inData);
 
+
 	GProperty* GetProperty(std::string propertyName);
 
 	GSerialisable() {}
@@ -35,6 +36,8 @@ public:
 	double prop2 = 4.8;
 	float prop3 = 3.5f;
 	virtual void RegisterProperties() override;
+
+	void OnSerialized();
 
 	GSerialisableTest() : GSerialisable() {}
 };
