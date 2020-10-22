@@ -3,16 +3,33 @@
 
 C++ Game engine using OpenGL
 
-This is my first C++ project
+Thi
 
 
 ## Features
 
-
+- Basic lighting
+- Advanced physics using Bullet3D
+- Separated render and game threads
+- Multithreaded data loading
+- Custom asset binary format
+- Render targets
+- Content browser with dynamic thumbnails
+- Frustrum culling
+- Max display screen size
+- ImGui user interface
+- Easy to use profiler
+- Procedural landscapes
+- Generated project files with a custom tool
 
 
 
 ## Dependencies
+- assimp
+- glfw
+- glad
+- stbi
+
 
 ## Videos
 
