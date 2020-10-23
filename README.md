@@ -1,10 +1,9 @@
 
 # GLEngine
 
-C++ Game engine using OpenGL
+__This is and abandonned project | don't use it for game development__
 
-Thi
-
+GLEngine was my first C++ project and my first attempt to create my own 3D game engine using OpenGL. 
 
 ## Features
 
@@ -18,18 +17,17 @@ Thi
 - Frustrum culling
 - Max display screen size
 - ImGui user interface
-- Easy to use profiler
+- Easy to use CPU profiler
 - Procedural landscapes
-- Generated project files with a custom tool
-
-
+- Generated project vs files with a custom tool (C#)
+- Raycasting
 
 ## Dependencies
 - assimp
 - glfw
 - glad
 - stbi
-
+- glm
 
 ## Videos
 
@@ -63,7 +61,3 @@ Procedural infinite landscape (async mesh generation)
 
 Generated foliages (Quick implementation of my landscape library, no instancing)
 ![](https://github.com/PierreEVEN/GLEngine/blob/master/Showcase/ProceduralLandscaleAndFoliage.png?raw=true)
-
-
-
-
